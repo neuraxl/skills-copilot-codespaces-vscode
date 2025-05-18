@@ -1,490 +1,251 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Galaxie X - Exploration Interactive</title>
-<style>
-  body, html {
-    margin: 0; padding: 0; overflow: hidden;
-    background: radial-gradient(ellipse at center, #0b0f23 0%, #000010 100%);
-    color: #eee;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    height: 100vh;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-  }
-  canvas {
-    display: block;
-    background: transparent;
-  }
-  #info {
-    position: fixed;
-    top: 20px; left: 50%;
-    transform: translateX(-50%);
-    color: #68b0f1;
-    font-weight: bold;
-    font-size: 1.2rem;
-    user-select: none;
-    z-index: 10;
-  }
-  #backBtn {
-    position: fixed;
-    top: 20px; right: 20px;
-    background: #3468c1;
-    border: none;
-    color: white;
-    padding: 10px 18px;
-    font-size: 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    display: none;
-    z-index: 10;
-  }
-  #backBtn:hover {
-    background: #2550a1;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeuraX – Galaxies Titans</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+      color: white;
+      font-family: 'Papyrus', fantasy;
+    }
+    #galaxyCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.4);
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      color: gold;
+      text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00, 0 0 30px #ff9900;
+      animation: glow 3s ease-in-out infinite alternate;
+      backdrop-filter: blur(6px);
+      z-index: 10;
+    }
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #ffcc00; }
+      to { text-shadow: 0 0 30px #ffaa00; }
+    }
+    .solar-system {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 2px solid gold;
+      padding: 20px;
+      background: rgba(20, 20, 0, 0.9);
+      border-radius: 15px;
+      text-align: center;
+    }
+    .planet {
+      display: inline-block;
+      margin: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffaa00, #550000);
+      cursor: pointer;
+      animation: orbit 5s linear infinite;
+      position: relative;
+    }
+    @keyframes orbit {
+      0% { transform: rotate(0deg) translateX(100px) rotate(0deg); }
+      100% { transform: rotate(360deg) translateX(100px) rotate(-360deg); }
+    }
+    .civilization {
+      margin-top: 10px;
+      padding: 10px;
+      background: #111;
+      border: 1px solid #444;
+      border-radius: 10px;
+    }
+    .avatar {
+      width: 50px;
+      height: 50px;
+      background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Egyptian_God_Horus.svg/1200px-Egyptian_God_Horus.svg.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      margin-top: 5px;
+    }
+    .close-btn {
+      margin-top: 15px;
+      padding: 8px 16px;
+      background: crimson;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .intro {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: gold;
+      font-size: 24px;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 30px;
+      border: 2px solid gold;
+      border-radius: 20px;
+      z-index: 15;
+    }
+    .intro button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background: gold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
+  <div class="header">Galaxie X – Les Chroniques de NeuraX</div>
+  <canvas id="galaxyCanvas"></canvas>
+  <div id="solarSystem" class="solar-system"></div>
+  <div id="intro" class="intro">
+    <p>Bienvenue dans Galaxie X, l'archive vivante des civilisations titanesques. Chaque étoile cache un secret, chaque planète une légende.</p>
+    <button onclick="startExperience()">Entrer dans la galaxie</button>
+  </div>
+  <audio id="ambientSound" src="https://cdn.pixabay.com/download/audio/2022/08/04/audio_493faebcf4.mp3?filename=deep-space-ambient-112124.mp3" loop></audio>
 
-<div id="info">Vue Galaxies - Cliquez sur une galaxie pour explorer</div>
-<button id="backBtn">Retour</button>
-<canvas id="space"></canvas>
+  <script>
+    const canvas = document.getElementById('galaxyCanvas');
+    const ctx = canvas.getContext('2d');
+    let galaxies = [];
+    let w = window.innerWidth;
+    let h = window.innerHeight;
+    canvas.width = w;
+    canvas.height = h;
 
-<script>
-(() => {
-  const canvas = document.getElementById('space');
-  const ctx = canvas.getContext('2d');
-  const info = document.getElementById('info');
-  const backBtn = document.getElementById('backBtn');
-
-  let width, height;
-  let mode = 'galaxies'; // modes: galaxies | systeme
-  let galaxies = [];
-  let systeme = null;
-  let stars = [];
-  let twinkleStars = [];
-
-  // Resize canvas to fill window
-  function resize() {
-    width = window.innerWidth;
-    height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-  }
-  window.addEventListener('resize', resize);
-  resize();
-
-  // Utility random function
-  function rand(min, max) {
-    return Math.random() * (max - min) + min;
-  }
-
-  // Stars background class (static stars)
-  class Star {
-    constructor() {
-      this.x = rand(0, width);
-      this.y = rand(0, height);
-      this.radius = rand(0.5, 1.5);
-      this.color = 'rgba(100,150,255,0.3)';
-    }
-    draw(ctx) {
-      ctx.fillStyle = this.color;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  // Twinkling stars with pulsation
-  class TwinkleStar {
-    constructor() {
-      this.x = rand(0, width);
-      this.y = rand(0, height);
-      this.baseRadius = rand(0.8, 1.8);
-      this.radius = this.baseRadius;
-      this.color = 'rgba(130,180,255,0.6)';
-      this.twinkleSpeed = rand(0.005, 0.015);
-      this.twinklePhase = rand(0, Math.PI * 2);
-    }
-    update() {
-      this.twinklePhase += this.twinkleSpeed;
-      this.radius = this.baseRadius + Math.sin(this.twinklePhase) * 0.5;
-    }
-    draw(ctx) {
-      ctx.fillStyle = this.color;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  // Galaxy class
-  class Galaxy {
-    constructor(id) {
-      this.id = id;
-      this.x = rand(50, width - 50);
-      this.y = rand(50, height - 50);
-      this.radius = rand(10, 25);
-      this.orbitAngle = rand(0, Math.PI * 2);
-      this.orbitRadius = rand(5, 15);
-      this.orbitSpeed = rand(0.001, 0.003);
-      this.color = `hsl(${rand(180, 280)}, 70%, 75%)`;
-      this.baseX = this.x;
-      this.baseY = this.y;
-    }
-    update() {
-      this.orbitAngle += this.orbitSpeed;
-      this.x = this.baseX + Math.cos(this.orbitAngle) * this.orbitRadius;
-      this.y = this.baseY + Math.sin(this.orbitAngle) * this.orbitRadius;
-    }
-    draw(ctx) {
-      // Glow
-      const glowRadius = this.radius * 2;
-      let gradient = ctx.createRadialGradient(this.x, this.y, this.radius * 0.5, this.x, this.y, glowRadius);
-      gradient.addColorStop(0, this.color);
-      gradient.addColorStop(1, 'transparent');
-
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, glowRadius, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Core circle
-      ctx.fillStyle = this.color;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    isClicked(mx, my) {
-      const dx = mx - this.x;
-      const dy = my - this.y;
-      return dx * dx + dy * dy < this.radius * this.radius;
-    }
-  }
-
-  // Planet class for systeme solaire
-  class Planet {
-    constructor(index, sunX, sunY) {
-      this.index = index;
-      this.sunX = sunX;
-      this.sunY = sunY;
-      this.orbitRadius = 50 + index * 25;
-      this.orbitAngle = rand(0, Math.PI * 2);
-      this.orbitSpeed = 0.002 + index * 0.0004;
-      this.radius = 8 + index; // varied sizes
-      this.color = `hsl(${(index * 30) % 360}, 70%, 60%)`;
-    }
-    update() {
-      this.orbitAngle += this.orbitSpeed;
-      this.x = this.sunX + Math.cos(this.orbitAngle) * this.orbitRadius;
-      this.y = this.sunY + Math.sin(this.orbitAngle) * this.orbitRadius;
-    }
-    draw(ctx) {
-      ctx.fillStyle = this.color;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    isClicked(mx, my) {
-      const dx = mx - this.x;
-      const dy = my - this.y;
-      return dx * dx + dy * dy < this.radius * this.radius;
-    }
-  }
-
-  // Systeme solaire (12 planètes + soleil)
-  class SystemeSolaire {
-    constructor(galaxy) {
-      this.galaxy = galaxy;
-      this.sunX = width / 2;
-      this.sunY = height / 2;
-      this.sunRadius = 40;
-      this.planets = [];
-      for (let i = 0; i < 12; i++) {
-        this.planets.push(new Planet(i, this.sunX, this.sunY));
-      }
-    }
-    update() {
-      this.planets.forEach(p => p.update());
-    }
-    draw(ctx) {
-      // Soleil bleu
-      const sunGradient = ctx.createRadialGradient(this.sunX, this.sunY, 10, this.sunX, this.sunY, this.sunRadius);
-      sunGradient.addColorStop(0, '#88ccff');
-      sunGradient.addColorStop(1, '#004488');
-      ctx.fillStyle = sunGradient;
-      ctx.beginPath();
-      ctx.arc(this.sunX, this.sunY, this.sunRadius, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Planètes en orbite
-      this.planets.forEach(p => p.draw(ctx));
-    }
-    checkPlanetClick(mx, my) {
-      return this.planets.find(p => p.isClicked(mx, my));
-    }
-  }
-
-  // Initialiser galaxies
-  function createGalaxies() {
-    galaxies = [];
     for (let i = 0; i < 100; i++) {
-      galaxies.push(new Galaxy(i));
+      galaxies.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: 6 + Math.random() * 6,
+        id: i
+      });
     }
-  }
 
-  // Initialiser étoiles
-  function createStars() {
-    stars = [];
-    twinkleStars = [];
-    for (let i = 0; i < 150; i++) {
-      stars.push(new Star());
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      galaxies.forEach(g => {
+        ctx.beginPath();
+        const gradient = ctx.createRadialGradient(g.x, g.y, 0, g.x, g.y, g.r);
+        gradient.addColorStop(0, '#fff');
+        gradient.addColorStop(1, '#88f');
+        ctx.fillStyle = gradient;
+        ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
     }
-    for (let i = 
-```
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Galaxie X - Exploration Interactive</title>
-<style>
-  body, html {
-    margin: 0; padding: 0; overflow: hidden;
-    background: radial-gradient(ellipse at center, #0b0f23 0%, #000010 100%);
-    color: #eee;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    height: 100vh;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-  }
-  canvas {
-    display: block;
-    background: transparent;
-  }
-  #info {
-    position: fixed;
-    top: 20px; left: 50%;
-    transform: translateX(-50%);
-    color: #68b0f1;
-    font-weight: bold;
-    font-size: 1.2rem;
-    user-select: none;
-    z-index: 10;
-  }
-  #backBtn {
-    position: fixed;
-    top: 20px; right: 20px;
-    background: #3468c1;
-    border: none;
-    color: white;
-    padding: 10px 18px;
-    font-size: 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    display: none;
-    z-index: 10;
-  }
-  #backBtn:hover {
-    background: #2550a1;
-  }
-</style>
-</head>
-<body>
 
-<div id="info">Vue Galaxies - Cliquez sur une galaxie pour explorer</div>
-<button id="backBtn">Retour</button>
-<canvas id="space"></canvas>
+    function update() {
+      galaxies.forEach(g => {
+        g.x += g.vx;
+        g.y += g.vy;
+        if (g.x < 0 || g.x > w) g.vx *= -1;
+        if (g.y < 0 || g.y > h) g.vy *= -1;
+      });
+    }
 
-<script>
-(() => {
-  const canvas = document.getElementById('space');
-  const ctx = canvas.getContext('2d');
-  const info = document.getElementById('info');
-  const backBtn = document.getElementById('backBtn');
+    function animate() {
+      update();
+      draw();
+      requestAnimationFrame(animate);
+    }
 
-  let width, height;
-  let mode = 'galaxies'; // modes: galaxies | systeme
-  let galaxies = [];
-  let systeme = null;
-  let stars = [];
-  let twinkleStars = [];
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+      galaxies.forEach(g => {
+        const dx = g.x - clickX;
+        const dy = g.y - clickY;
+        if (dx * dx + dy * dy < g.r * g.r) {
+          showSolarSystem(g.id);
+        }
+      });
+    });
 
-  // Resize canvas to fill window
-  function resize() {
-    width = window.innerWidth;
-    height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-  }
-  window.addEventListener('resize', resize);
-  resize();
+    function generateCultureName(id) {
+      const prefixes = ['Ankh', 'Ra', 'Zep', 'Khe', 'Os', 'Sob'];
+      const suffixes = ['mir', 'thys', 'ra', 'tep', 'khet', 'nut'];
+      return prefixes[id % prefixes.length] + suffixes[(id * 3) % suffixes.length];
+    }
 
-  // Utility random function
-  function rand(min, max) {
-    return Math.random() * (max - min) + min;
-  }
-
-  // Stars background class (static stars)
-  class Star {
-    constructor() {
-      this.x = rand(0, width);
-      this.y = rand(0, height);
-      this.radius = rand(0.5, 1.5);
-      this.color = 'rgba(100,150,255,0.3)';
-    }
-    draw(ctx) {
-      ctx.fillStyle = this.color;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  // Twinkling stars with pulsation
-  class TwinkleStar {
-    constructor() {
-      this.x = rand(0, width);
-      this.y = rand(0, height);
-      this.baseRadius = rand(0.8, 1.8);
-      this.radius = this.baseRadius;
-      this.color = 'rgba(130,180,255,0.6)';
-      this.twinkleSpeed = rand(0.005, 0.015);
-      this.twinklePhase = rand(0, Math.PI * 2);
-    }
-    update() {
-      this.twinklePhase += this.twinkleSpeed;
-      this.radius = this.baseRadius + Math.sin(this.twinklePhase) * 0.5;
-    }
-    draw(ctx) {
-      ctx.fillStyle = this.color;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  // Galaxy class
-  class Galaxy {
-    constructor(id) {
-      this.id = id;
-      this.x = rand(50, width - 50);
-      this.y = rand(50, height - 50);
-      this.radius = rand(10, 25);
-      this.orbitAngle = rand(0, Math.PI * 2);
-      this.orbitRadius = rand(5, 15);
-      this.orbitSpeed = rand(0.001, 0.003);
-      this.color = `hsl(${rand(180, 280)}, 70%, 75%)`;
-      this.baseX = this.x;
-      this.baseY = this.y;
-    }
-    update() {
-      this.orbitAngle += this.orbitSpeed;
-      this.x = this.baseX + Math.cos(this.orbitAngle) * this.orbitRadius;
-      this.y = this.baseY + Math.sin(this.orbitAngle) * this.orbitRadius;
-    }
-    draw(ctx) {
-      // Glow
-      const glowRadius = this.radius * 2;
-      let gradient = ctx.createRadialGradient(this.x, this.y, this.radius * 0.5, this.x, this.y, glowRadius);
-      gradient.addColorStop(0, this.color);
-      gradient.addColorStop(1, 'transparent');
-
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, glowRadius, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Core circle
-      ctx.fillStyle = this.color;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    isClicked(mx, my) {
-      const dx = mx - this.x;
-      const dy = my - this.y;
-      return dx * dx + dy * dy < this.radius * this.radius;
-    }
-  }
-
-  // Planet class for systeme solaire
-  class Planet {
-    constructor(index, sunX, sunY) {
-      this.index = index;
-      this.sunX = sunX;
-      this.sunY = sunY;
-      this.orbitRadius = 50 + index * 25;
-      this.orbitAngle = rand(0, Math.PI * 2);
-      this.orbitSpeed = 0.002 + index * 0.0004;
-      this.radius = 8 + index; // varied sizes
-      this.color = `hsl(${(index * 30) % 360}, 70%, 60%)`;
-    }
-    update() {
-      this.orbitAngle += this.orbitSpeed;
-      this.x = this.sunX + Math.cos(this.orbitAngle) * this.orbitRadius;
-      this.y = this.sunY + Math.sin(this.orbitAngle) * this.orbitRadius;
-    }
-    draw(ctx) {
-      ctx.fillStyle = this.color;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    isClicked(mx, my) {
-      const dx = mx - this.x;
-      const dy = my - this.y;
-      return dx * dx + dy * dy < this.radius * this.radius;
-    }
-  }
-
-  // Systeme solaire (12 planètes + soleil)
-  class SystemeSolaire {
-    constructor(galaxy) {
-      this.galaxy = galaxy;
-      this.sunX = width / 2;
-      this.sunY = height / 2;
-      this.sunRadius = 40;
-      this.planets = [];
+    function showSolarSystem(galaxyId) {
+      const system = document.getElementById('solarSystem');
+      system.innerHTML = '';
+      system.style.display = 'block';
       for (let i = 0; i < 12; i++) {
-        this.planets.push(new Planet(i, this.sunX, this.sunY));
+        const planet = document.createElement('div');
+        planet.className = 'planet';
+        planet.onclick = () => showCivilization(i);
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar';
+        planet.appendChild(avatar);
+        system.appendChild(planet);
       }
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = 'Retour';
+      closeBtn.className = 'close-btn';
+      closeBtn.onclick = () => { system.style.display = 'none'; };
+      system.appendChild(closeBtn);
     }
-    update() {
-      this.planets.forEach(p => p.update());
-    }
-    draw(ctx) {
-      // Soleil bleu
-      const sunGradient = ctx.createRadialGradient(this.sunX, this.sunY, 10, this.sunX, this.sunY, this.sunRadius);
-      sunGradient.addColorStop(0, '#88ccff');
-      sunGradient.addColorStop(1, '#004488');
-      ctx.fillStyle = sunGradient;
-      ctx.beginPath();
-      ctx.arc(this.sunX, this.sunY, this.sunRadius, 0, Math.PI * 2);
-      ctx.fill();
 
-      // Planètes en orbite
-      this.planets.forEach(p => p.draw(ctx));
+    function showCivilization(planetId) {
+      const system = document.getElementById('solarSystem');
+      const civ = document.createElement('div');
+      civ.className = 'civilization';
+      const name = generateCultureName(planetId);
+      const text = `Bienvenue dans la civilisation antique des 20,000 millions de Titans, connue sous le nom de ${name}. Leur architecture évoque les temples cosmiques et chaque titan incarne un fragment d'univers perdu.`;
+      civ.innerHTML = `<h3>Planète ${planetId + 1}</h3><p>${text}</p>`;
+      system.appendChild(civ);
+      speak(text);
+      const ambient = document.getElementById('ambientSound');
+      ambient.src = `https://cdn.pixabay.com/download/audio/2022/08/04/audio_493faebcf4.mp3?planet=${planetId}`;
+      ambient.play();
     }
-    checkPlanetClick(mx, my) {
-      return this.planets.find(p => p.isClicked(mx, my));
-    }
-  }
 
-  // Initialiser galaxies
-  function createGalaxies() {
-    galaxies = [];
-    for (let i = 0; i < 100; i++) {
-      galaxies.push(new Galaxy(i));
+    function speak(text) {
+      const synth = window.speechSynthesis;
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'fr-FR';
+      utter.rate = 0.9;
+      utter.pitch = 0.8;
+      synth.speak(utter);
     }
-  }
 
-  // Initialiser étoiles
-  function createStars() {
-    stars = [];
-    twinkleStars = [];
-    for (let i = 0; i < 150; i++) {
-      stars.push(new Star());
+    function startExperience() {
+      document.getElementById('intro').style.display = 'none';
+      document.getElementById('ambientSound').play();
     }
-    for (le
 
+    animate();
+    window.onresize = () => {
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = w;
+      canvas.height = h;
+    };
+  </script>
+</body>
+</html>
