@@ -1,6 +1,284 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Galaxie X - Orbite interactive</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+
+  body {
+    margin: 0; height: 100vh;
+    background: radial-gradient(ellipse at center, #000011 0%, #000000 90%);
+    overflow: hidden;
+    font-family: 'Orbitron', sans-serif;
+    color: #eee;
+  }
+
+  #header {
+    position: fixed; top: 0; left: 0; width: 100%; height: 60px;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    text-shadow: 0 0 5px #00ffee;
+    z-index: 10;
+  }
+
+  #container {
+    position: relative; width: 100vw; height: 100vh; 
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  #sun {
+    position: absolute; 
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, #ffd93b, #f4a261);
+    border-radius: 50%;
+    box-shadow: 0 0 40px 15px #ffec77;
+    z-index: 5;
+  }
+
+  .orbit {
+    position: absolute;
+    border: 1px dashed rgba(255,255,255,0.1);
+    border-radius: 50%;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    pointer-events: none;
+  }
+
+  #orbit1 { width: 180px; height: 180px; top: calc(50% - 90px); left: calc(50% - 90px); animation: orbit1 15s linear infinite;}
+  #orbit2 { width: 260px; height: 260px; top: calc(50% - 130px); left: calc(50% - 130px); animation: orbit2 25s linear infinite reverse;}
+  #orbit3 { width: 350px; height: 350px; top: calc(50% - 175px); left: calc(50% - 175px); animation: orbit3 40s linear infinite;}
+
+  @keyframes orbit1 { from { transform: rotate(0deg);} to {transform: rotate(360deg);}}
+  @keyframes orbit2 { from { transform: rotate(0deg);} to {transform: rotate(360deg);}}
+  @keyframes orbit3 { from { transform: rotate(0deg);} to {transform: rotate(360deg);}}
+
+  .planet {
+    position: absolute;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #6677ff, #223366);
+    box-shadow: 0 0 10px 2px #99bbff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    user-select: none;
+    filter: drop-shadow(0 0 3px #88aaff);
+  }
+
+  #planet1 { top: 0; left: calc(50% - 20px); }
+  #planet2 { top: 0; left: calc(50% - 20px); }
+  #planet3 { top: 0; left: calc(50% - 20px); }
+
+  /* Position planets inside orbits */
+  #orbit1 .planet { top: calc(50% - 20px); left: 160px; }
+  #orbit2 .planet { top: calc(50% - 20px); left: 240px; }
+  #orbit3 .planet { top: calc(50% - 20px); left: 320px; }
+
+  /* Avatar animations: simple pulse */
+  .avatar {
+    animation: pulse 3s infinite alternate ease-in-out;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1);}
+    100% { transform: scale(1.2);}
+  }
+
+  #infoPanel {
+    position: fixed;
+    top: 70px; right: 20px;
+    width: 300px;
+    background: rgba(0,0,20,0.85);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 0 15px #0099ff;
+    display: none;
+    flex-direction: column;
+    z-index: 20;
+  }
+
+  #infoPanel h2 {
+    margin-top: 0;
+    text-shadow: 0 0 5px #00eeff;
+  }
+
+  #infoPanel p {
+    text-shadow: 0 0 4px #00ccff;
+    line-height: 1.3;
+  }
+
+  #closeBtn {
+    margin-top: 10px;
+    align-self: flex-end;
+    cursor: pointer;
+    background: #006699;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: #ccf5ff;
+    font-weight: bold;
+    text-shadow: none;
+    transition: background 0.3s ease;
+  }
+
+  #closeBtn:hover {
+    background: #0099ff;
+  }
+
+  /* Text shadow subtle */
+  .shadowed-text {
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+  }
+
+  /* Starry background with dots */
+  #starfield {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: black;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+  }
+
+</style>
+</head>
+<body>
+
+<div id="header">Galaxie X - Les Chroniques de NeuraX</div>
+<div id="container">
+  <div id="sun" title="Soleil"></div>
+
+  <div id="orbit1" class="orbit">
+    <div class="planet avatar" id="planet1" title="Planète Neferu">👁️</div>
+  </div>
+  <div id="orbit2" class="orbit">
+    <div class="planet avatar" id="planet2" title="Planète Kaelum">🦅</div>
+  </div>
+  <div id="orbit3" class="orbit">
+    <div class="planet avatar" id="planet3" title="Planète Thot">🐦</div>
+  </div>
+</div>
+
+<div id="infoPanel" aria-live="polite">
+  <h2 id="planetName" class="shadowed-text"></h2>
+  <p id="planetDesc" class="shadowed-text"></p>
+  <button id="closeBtn">Fermer</button>
+</div>
+
+<div id="starfield"></div>
+
+<audio id="spaceAmbiance" loop src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c7e0181b14.mp3?filename=ambient-space-11252.mp3"></audio>
+<audio id="planetSound"></audio>
+
+<script>
+  // Générer étoiles aléatoires
+  const starfield = document.getElementById('starfield');
+  for(let i=0; i<120; i++){
+    let star = document.createElement('div');
+    star.classList.add('star');
+    let size = Math.random() * 2 + 1;
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    star.style.top = (Math.random() * 100) + '%';
+    star.style.left = (Math.random() * 100) + '%';
+    star.style.opacity = Math.random() * 0.8 + 0.2;
+    starfield.appendChild(star);
+  }
+
+  // Planètes avec leurs données
+  const planets = {
+    planet1: {
+      name: "Neferu",
+      desc: "Planète mystique, berceau des anciens titans aux hiéroglyphes vivants. Son peuple vénère le soleil et les étoiles.",
+      sound: "https://cdn.pixabay.com/download/audio/2021/09/27/audio_b0344e20d7.mp3?filename=magic-chimes-12681.mp3",
+      avatar: "👁️"
+    },
+    planet2: {
+      name: "Kaelum",
+      desc: "Planète des vents, où des aigles majestueux guident les âmes vers la connaissance cosmique.",
+      sound: "https://cdn.pixabay.com/download/audio/2021/11/29/audio_76d79db168.mp3?filename=wind-1273.mp3",
+      avatar: "🦅"
+    },
+    planet3: {
+      name: "Thot",
+      desc: "Planète du savoir et des scribes, emplie de bibliothèques infinies et de mystères à découvrir.",
+      sound: "https://cdn.pixabay.com/download/audio/2021/11/29/audio_1892eeb907.mp3?filename=page-flip-1138.mp3",
+      avatar: "🐦"
+    }
+  };
+
+  const infoPanel = document.getElementById('infoPanel');
+  const planetNameEl = document.getElementById('planetName');
+  const planetDescEl = document.getElementById('planetDesc');
+  const closeBtn = document.getElementById('closeBtn');
+  const spaceAmbiance = document.getElementById('spaceAmbiance');
+  const planetSound = document.getElementById('planetSound');
+
+  // Démarre l’ambiance spatiale
+  spaceAmbiance.volume = 0.3;
+  spaceAmbiance.play();
+
+  // Synthèse vocale fonction
+  function speak(text){
+    if(!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    let utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 0.9;
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // Afficher infos planète + lancer son + synthèse vocale
+  function showPlanetInfo(id){
+    const data = planets[id];
+    if(!data) return;
+    planetNameEl.textContent = data.name;
+    planetDescEl.textContent = data.desc;
+    infoPanel.style.display = 'flex';
+
+    planetSound.src = data.sound;
+    planetSound.volume = 0.6;
+    planetSound.play();
+
+    speak(data.desc);
+  }
+
+  // Cacher panneau infos
+  closeBtn.addEventListener('click', () => {
+    infoPanel.style.display = 'none';
+    window.speechSynthesis.cancel();
+    planetSound.pause();
+    planetSound.currentTime = 0;
+  });
+
+  // Listener clic planètes
+  Object.keys(planets).forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showPlanetInfo(id);
+    });
+  });
+
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NeuraX – Galaxies Titans</title>
