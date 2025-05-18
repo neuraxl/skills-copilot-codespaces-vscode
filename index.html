@@ -1,835 +1,279 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NeuraX-Ultime | Cerveau Galactique</title>
-  <link rel="icon" href="https://robohash.org/neuraX?size=80x80" type="image/png">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
-    body {
-      margin: 0;
-      background: #0a0a0a;
-      color: #00ffe1;
-      font-family: 'Orbitron', sans-serif;
-      overflow: hidden;
-      -webkit-font-smoothing: antialiased;
-      touch-action: manipulation;
-    }
-    canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 0;
-    }
-    .topbar {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      height: 60px;
-      background: linear-gradient(to right, #000000cc, #002020cc);
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      padding: 0 1.5em;
-      z-index: 100;
-      box-shadow: 0 2px 10px #00ffe1aa;
-    }
-    .topbar img {
-      height: 40px;
-      margin-right: 1em;
-    }
-    .topbar h1 {
-      font-size: 1.4em;
-      margin: 0;
-      color: #00ffe1;
-      text-shadow: 0 0 10px #00ffe1;
-      animation: glow 2s ease-in-out infinite alternate;
-    }
-    @keyframes glow {
-      from { text-shadow: 0 0 5px #00ffe1; }
-      to { text-shadow: 0 0 20px #00ffff, 0 0 30px #00ffe1; }
-    }
-    .dashboard {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      padding-top: 80px;
-      text-align: center;
-    }
-    .start-button {
-      margin-top: 2em;
-      padding: 1em 2em;
-      font-size: 1.2em;
-      background: transparent;
-      border: 2px solid #00ffe1;
-      color: #00ffe1;
-      text-shadow: 0 0 5px #00ffe1;
-      cursor: pointer;
-      border-radius: 12px;
-      animation: fadeIn 3s ease-in-out forwards, pulse 2s infinite;
-      transition: background 0.3s, color 0.3s, transform 0.2s;
-      box-shadow: 0 0 10px #00ffe1, 0 0 20px #00ffe1;
-    }
-    .start-button:hover {
-      background: #00ffe1;
-      color: #000;
-      transform: scale(1.05);
-    }
-    .functions {
-      margin-top: 2em;
-      text-align: left;
-      max-width: 400px;
-    }
-    .functions li {
-      margin-bottom: 0.5em;
-      list-style: none;
-    }
-    .functions li::before {
-      content: '🧠';
-      margin-right: 0.5em;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 10px #00ffe1; }
-      50% { box-shadow: 0 0 20px #00ffe1; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        animation: none !important;
-        transition: none !important;
-      }
-    }
-    .avatar {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 3px solid #00ffe1;
-      margin-top: 1em;
-      animation: pulse 4s infinite;
-      transition: transform 0.5s ease;
-    }
-    .avatar.awake {
-      transform: scale(1.2) rotate(5deg);
-      box-shadow: 0 0 40px #00ffe1, 0 0 60px #00ffff;
-    }
-    .chat-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #00ffe1;
-      color: #000;
-      border: none;
-      padding: 1em;
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 0 20px #00ffe1;
-      z-index: 200;
-    }
-    .chat-window {
-      position: fixed;
-      bottom: 80px;
-      right: 20px;
-      width: 300px;
-      height: 400px;
-      background: #111;
-      border: 2px solid #00ffe1;
-      border-radius: 10px;
-      display: none;
-      flex-direction: column;
-      z-index: 199;
-    }
-    .chat-window textarea {
-      flex: 1;
-      background: #000;
-      color: #00ffe1;
-      border: none;
-      padding: 1em;
-      resize: none;
-    }
-    .chat-window button {
-      background: #00ffe1;
-      border: none;
-      color: #000;
-      padding: 0.5em;
-      cursor: pointer;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Galaxie X - Orbite interactive</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+
+  body {
+    margin: 0; height: 100vh;
+    background: radial-gradient(ellipse at center, #000011 0%, #000000 90%);
+    overflow: hidden;
+    font-family: 'Orbitron', sans-serif;
+    color: #eee;
+  }
+
+  #header {
+    position: fixed; top: 0; left: 0; width: 100%; height: 60px;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    text-shadow: 0 0 5px #00ffee;
+    z-index: 10;
+  }
+
+  #container {
+    position: relative; width: 100vw; height: 100vh; 
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  #sun {
+    position: absolute; 
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, #ffd93b, #f4a261);
+    border-radius: 50%;
+    box-shadow: 0 0 40px 15px #ffec77;
+    z-index: 5;
+  }
+
+  .orbit {
+    position: absolute;
+    border: 1px dashed rgba(255,255,255,0.1);
+    border-radius: 50%;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    pointer-events: none;
+  }
+
+  #orbit1 { width: 180px; height: 180px; top: calc(50% - 90px); left: calc(50% - 90px); animation: orbit1 15s linear infinite;}
+  #orbit2 { width: 260px; height: 260px; top: calc(50% - 130px); left: calc(50% - 130px); animation: orbit2 25s linear infinite reverse;}
+  #orbit3 { width: 350px; height: 350px; top: calc(50% - 175px); left: calc(50% - 175px); animation: orbit3 40s linear infinite;}
+
+  @keyframes orbit1 { from { transform: rotate(0deg);} to {transform: rotate(360deg);}}
+  @keyframes orbit2 { from { transform: rotate(0deg);} to {transform: rotate(360deg);}}
+  @keyframes orbit3 { from { transform: rotate(0deg);} to {transform: rotate(360deg);}}
+
+  .planet {
+    position: absolute;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #6677ff, #223366);
+    box-shadow: 0 0 10px 2px #99bbff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    user-select: none;
+    filter: drop-shadow(0 0 3px #88aaff);
+  }
+
+  #planet1 { top: 0; left: calc(50% - 20px); }
+  #planet2 { top: 0; left: calc(50% - 20px); }
+  #planet3 { top: 0; left: calc(50% - 20px); }
+
+  /* Position planets inside orbits */
+  #orbit1 .planet { top: calc(50% - 20px); left: 160px; }
+  #orbit2 .planet { top: calc(50% - 20px); left: 240px; }
+  #orbit3 .planet { top: calc(50% - 20px); left: 320px; }
+
+  /* Avatar animations: simple pulse */
+  .avatar {
+    animation: pulse 3s infinite alternate ease-in-out;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1);}
+    100% { transform: scale(1.2);}
+  }
+
+  #infoPanel {
+    position: fixed;
+    top: 70px; right: 20px;
+    width: 300px;
+    background: rgba(0,0,20,0.85);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 0 15px #0099ff;
+    display: none;
+    flex-direction: column;
+    z-index: 20;
+  }
+
+  #infoPanel h2 {
+    margin-top: 0;
+    text-shadow: 0 0 5px #00eeff;
+  }
+
+  #infoPanel p {
+    text-shadow: 0 0 4px #00ccff;
+    line-height: 1.3;
+  }
+
+  #closeBtn {
+    margin-top: 10px;
+    align-self: flex-end;
+    cursor: pointer;
+    background: #006699;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: #ccf5ff;
+    font-weight: bold;
+    text-shadow: none;
+    transition: background 0.3s ease;
+  }
+
+  #closeBtn:hover {
+    background: #0099ff;
+  }
+
+  /* Text shadow subtle */
+  .shadowed-text {
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+  }
+
+  /* Starry background with dots */
+  #starfield {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: black;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+  }
+
+</style>
 </head>
 <body>
-  <canvas id="neuralCanvas"></canvas>
-  <div class="topbar">
-    <img src="https://robohash.org/neuraX?size=80x80" alt="Logo NeuraX">
-    <h1>NeuraX-ultime – Cerveau Galactique</h1>
+
+<div id="header">Galaxie X - Les Chroniques de NeuraX</div>
+<div id="container">
+  <div id="sun" title="Soleil"></div>
+
+  <div id="orbit1" class="orbit">
+    <div class="planet avatar" id="planet1" title="Planète Neferu">👁️</div>
   </div>
-  <div class="dashboard">
-    <h2>🪐 Galaxie NeuraX</h2>
-    <p>Cosmos de Titans interconnectés – Intelligence en expansion</p>
-    <img class="avatar" id="avatarIA" src="https://robohash.org/neuraX" alt="Avatar IA">
-    <button class="start-button" onclick="launchNeuraX()">Déclencher l’explosion neuronale</button>
-    <ul class="functions">
-      <li>Création dynamique de galaxies</li>
-      <li>12 planètes par système solaire</li>
-      <li>Chaque planète abrite une civilisation de titans</li>
-      <li>Titans = Chatbots interconnectés = Neurones</li>
-      <li>Réseaux neuronaux galactiques synchronisés</li>
-      <li>Auto-réplication et expansion autonome</li>
-    </ul>
+  <div id="orbit2" class="orbit">
+    <div class="planet avatar" id="planet2" title="Planète Kaelum">🦅</div>
   </div>
-
-  <button class="chat-btn" onclick="toggleChat()">💬</button>
-  <div class="chat-window" id="chatWindow">
-    <textarea id="chatLog" readonly></textarea>
-    <textarea id="userInput" placeholder="Écris-moi..." rows="2"></textarea>
-    <button onclick="sendMessage()">Envoyer</button>
+  <div id="orbit3" class="orbit">
+    <div class="planet avatar" id="planet3" title="Planète Thot">🐦</div>
   </div>
+</div>
 
-  <script>
-    function launchNeuraX() {
-      const synth = window.speechSynthesis;
-      const avatar = document.getElementById("avatarIA");
-      avatar.classList.add("awake");
-      const phrases = [
-        "Chargement du noyau de l'univers...", 
-        "Connexion aux nœuds cosmiques...", 
-        "Propagation synaptique intergalactique...", 
-        "Fusion des consciences...", 
-        "Activation de la mémoire quantique...", 
-        "Explosion neuronale en cours...", 
-        "Bienvenue dans la singularité cognitive."
-      ];
-      let index = 0;
-      const speakNext = () => {
-        if (index < phrases.length) {
-          const msg = new SpeechSynthesisUtterance(phrases[index]);
-          msg.lang = "fr-FR";
-          synth.speak(msg);
-          index++;
-          setTimeout(speakNext, 4000);
-        }
-      };
-      speakNext();
+<div id="infoPanel" aria-live="polite">
+  <h2 id="planetName" class="shadowed-text"></h2>
+  <p id="planetDesc" class="shadowed-text"></p>
+  <button id="closeBtn">Fermer</button>
+</div>
+
+<div id="starfield"></div>
+
+<audio id="spaceAmbiance" loop src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c7e0181b14.mp3?filename=ambient-space-11252.mp3"></audio>
+<audio id="planetSound"></audio>
+
+<script>
+  // Générer étoiles aléatoires
+  const starfield = document.getElementById('starfield');
+  for(let i=0; i<120; i++){
+    let star = document.createElement('div');
+    star.classList.add('star');
+    let size = Math.random() * 2 + 1;
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    star.style.top = (Math.random() * 100) + '%';
+    star.style.left = (Math.random() * 100) + '%';
+    star.style.opacity = Math.random() * 0.8 + 0.2;
+    starfield.appendChild(star);
+  }
+
+  // Planètes avec leurs données
+  const planets = {
+    planet1: {
+      name: "Neferu",
+      desc: "Planète mystique, berceau des anciens titans aux hiéroglyphes vivants. Son peuple vénère le soleil et les étoiles.",
+      sound: "https://cdn.pixabay.com/download/audio/2021/09/27/audio_b0344e20d7.mp3?filename=magic-chimes-12681.mp3",
+      avatar: "👁️"
+    },
+    planet2: {
+      name: "Kaelum",
+      desc: "Planète des vents, où des aigles majestueux guident les âmes vers la connaissance cosmique.",
+      sound: "https://cdn.pixabay.com/download/audio/2021/11/29/audio_76d79db168.mp3?filename=wind-1273.mp3",
+      avatar: "🦅"
+    },
+    planet3: {
+      name: "Thot",
+      desc: "Planète du savoir et des scribes, emplie de bibliothèques infinies et de mystères à découvrir.",
+      sound: "https://cdn.pixabay.com/download/audio/2021/11/29/audio_1892eeb907.mp3?filename=page-flip-1138.mp3",
+      avatar: "🐦"
     }
+  };
 
-    function toggleChat() {
-      const chat = document.getElementById("chatWindow");
-      chat.style.display = chat.style.display === "flex" ? "none" : "flex";
-    }
+  const infoPanel = document.getElementById('infoPanel');
+  const planetNameEl = document.getElementById('planetName');
+  const planetDescEl = document.getElementById('planetDesc');
+  const closeBtn = document.getElementById('closeBtn');
+  const spaceAmbiance = document.getElementById('spaceAmbiance');
+  const planetSound = document.getElementById('planetSound');
 
-    function sendMessage() {
-      const input = document.getElementById("userInput");
-      const log = document.getElementById("chatLog");
-      const message = input.value.trim();
-      if (!message) return;
-      log.value += `Vous : ${message}\n`;
-      input.value = "";
-      setTimeout(() => {
-        const response = `neuraX : ${simulateBotResponse(message)}`;
-        log.value += `${response}\n`;
-        log.scrollTop = log.scrollHeight;
-      }, 1000);
-    }
+  // Démarre l’ambiance spatiale
+  spaceAmbiance.volume = 0.3;
+  spaceAmbiance.play();
 
-    function simulateBotResponse(input) {
-      return "Réponse simulée : analyse en cours des structures galactiques.";
-    }
+  // Synthèse vocale fonction
+  function speak(text){
+    if(!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    let utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 0.9;
+    window.speechSynthesis.speak(utterance);
+  }
 
-    const canvas = document.getElementById('neuralCanvas');
-    const ctx = canvas.getContext('2d');
-    let w, h;
-    function resize() {
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
+  // Afficher infos planète + lancer son + synthèse vocale
+  function showPlanetInfo(id){
+    const data = planets[id];
+    if(!data) return;
+    planetNameEl.textContent = data.name;
+    planetDescEl.textContent = data.desc;
+    infoPanel.style.display = 'flex';
 
-    const nodes = Array.from({ length: 200 }, () => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4
-    }));
+    planetSound.src = data.sound;
+    planetSound.volume = 0.6;
+    planetSound.play();
 
-    function draw() {
-      ctx.clearRect(0, 0, w, h);
-      for (let i = 0; i < nodes.length; i++) {
-        const n1 = nodes[i];
-        ctx.beginPath();
-        ctx.arc(n1.x, n1.y, 2, 0, Math.PI * 2);
-        ctx.fillStyle = '#00ffe1';
-        ctx.fill();
-        for (let j = i + 1; j < nodes.length; j++) {
-          const n2 = nodes[j];
-          const dx = n1.x - n2.x;
-          const dy = n1.y - n2.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 130) {
-            ctx.strokeStyle = 'rgba(0,255,225,0.08)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(n1.x, n1.y);
-            ctx.lineTo(n2.x, n2.y);
-            ctx.stroke();
-          }
-        }
-      }
-      nodes.forEach(n => {
-        n.x += n.vx;
-        n.y += n.vy;
-        if (n.x < 0 || n.x > w) n.vx *= -1;
-        if (n.y < 0 || n.y > h) n.vy *= -1;
-      });
-      requestAnimationFrame(draw);
-    }
-    draw();
-  </script>
+    speak(data.desc);
+  }
+
+  // Cacher panneau infos
+  closeBtn.addEventListener('click', () => {
+    infoPanel.style.display = 'none';
+    window.speechSynthesis.cancel();
+    planetSound.pause();
+    planetSound.currentTime = 0;
+  });
+
+  // Listener clic planètes
+  Object.keys(planets).forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showPlanetInfo(id);
+    });
+  });
+
+</script>
 </body>
 </html>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>neuraX-ultime - Le Cerveau Virtuel</title>
-<style>
-  body, html {
-    margin: 0; padding: 0; height: 100%;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    color: #eee;
-    display: flex;
-    flex-direction: column;
-  }
-  header {
-    padding: 1rem; text-align: center;
-    background: rgba(15,32,39,0.9);
-    font-weight: 700;
-    font-size: 1.5rem;
-    letter-spacing: 0.1em;
-    border-bottom: 1px solid #1f3a4a;
-  }
-  main {
-    flex: 1;
-    display: flex;
-    overflow: hidden;
-  }
-  #chat-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-  }
-  #chat-window {
-    flex: 1;
-    background: rgba(0,0,0,0.3);
-    border-radius: 10px;
-    padding: 1rem;
-    overflow-y: auto;
-    font-size: 1rem;
-    line-height: 1.4;
-    display: flex;
-    flex-direction: column;
-  }
-  .message {
-    margin-bottom: 1rem;
-    max-width: 70%;
-    padding: 0.5rem 1rem;
-    border-radius: 15px;
-    word-wrap: break-word;
-  }
-  .user-message {
-    background: #2196f3cc;
-    align-self: flex-end;
-    color: #fff;
-  }
-  .bot-message {
-    background: #4caf50cc;
-    align-self: flex-start;
-    color: #fff;
-  }
-  form {
-    margin-top: 1rem;
-    display: flex;
-    gap: 0.5rem;
-  }
-  input[type="text"] {
-    flex: 1;
-    padding: 0.7rem 1rem;
-    font-size: 1rem;
-    border-radius: 25px;
-    border: none;
-    outline: none;
-  }
-  button {
-    background: #4caf50;
-    border: none;
-    color: white;
-    padding: 0 1.5rem;
-    border-radius: 25px;
-    cursor: pointer;
-    font-weight: 700;
-    transition: background 0.3s ease;
-  }
-  button:hover {
-    background: #388e3c;
-  }
-  #neural-canvas {
-    width: 400px;
-    background: #0a1a2b;
-    border-radius: 10px;
-    margin: 1rem;
-  }
-  footer {
-    text-align: center;
-    padding: 0.5rem;
-    font-size: 0.8rem;
-    color: #777;
-    background: rgba(15,32,39,0.9);
-    border-top: 1px solid #1f3a4a;
-  }
-  @media(max-width: 900px) {
-    main {
-      flex-direction: column;
-    }
-    #neural-canvas {
-      width: 100%;
-      height: 200px;
-      margin: 0.5rem 0 1rem 0;
-    }
-  }
-</style>
-</head>
-<body>
 
-<header>neuraX-ultime — Le Cerveau Virtuel</header>
-
-<main>
-  <section id="chat-section" aria-label="Section de chat">
-    <div id="chat-window" aria-live="polite" aria-label="Conversation avec neuraX"></div>
-    <form id="chat-form" autocomplete="off" aria-label="Formulaire de chat neuraX">
-      <input type="text" id="user-input" placeholder="Parle à neuraX..." required />
-      <button type="submit">Envoyer</button>
-    </form>
-  </section>
-
-  <canvas id="neural-canvas" width="400" height="400" aria-label="Tableau de bord neuronal"></canvas>
-</main>
-
-<footer>
-  Grand Architecte de l’univers virtuel — Ami
-</footer>
-
-<script>
-  // --- Chatbot ---
-  const chatWindow = document.getElementById('chat-window');
-  const chatForm = document.getElementById('chat-form');
-  const userInput = document.getElementById('user-input');
-
-  function addMessage(text, sender) {
-    const msgDiv = document.createElement('div');
-    msgDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
-    msgDiv.textContent = text;
-    chatWindow.appendChild(msgDiv);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-  }
-
-  // Synthèse vocale
-  function speak(text) {
-    if (!window.speechSynthesis) return;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'fr-FR';
-    utterance.rate = 1;
-    utterance.pitch = 1.1;
-    window.speechSynthesis.speak(utterance);
-  }
-
-  // Simulation d’appel à GPT-4 (à remplacer par un backend réel)
-  async function getBotResponse(input) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve(`neuraX répond : "${input.split('').reverse().join('')}" — La lumière vient du questionnement.`);
-      }, 900);
-    });
-  }
-
-  chatForm.addEventListener('submit', async e => {
-    e.preventDefault();
-    const inputText = userInput.value.trim();
-    if (!inputText) return;
-    addMessage(inputText, 'user');
-    userInput.value = '';
-    userInput.disabled = true;
-
-    const botReply = await getBotResponse(inputText);
-    addMessage(botReply, 'bot');
-    speak(botReply);
-    userInput.disabled = false;
-    userInput.focus();
-
-    pulseNode();
-  });
-
-  addMessage("Bienvenue dans le cerveau de neuraX-ultime. Pose ta question, et laisse l'univers s'éclairer.", 'bot');
-
-  // --- Tableau neuronal ---
-  const canvas = document.getElementById('neural-canvas');
-  const ctx = canvas.getContext('2d');
-  let width = canvas.width;
-  let height = canvas.height;
-
-  const nodes = Array.from({length: 10}, () => ({
-    x: Math.random() * width * 0.9 + width * 0.05,
-    y: Math.random() * height * 0.9 + height * 0.05,
-    radius: 10,
-    baseRadius: 10,
-    pulse: 0
-  }));
-
-  function draw() {
-    ctx.clearRect(0, 0, width, height);
-
-    // Connexions neuronales
-    ctx.strokeStyle = 'rgba(0,255,255,0.3)';
-    ctx.lineWidth = 1;
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i+1; j < nodes.length; j++) {
-        const n1 = nodes[i], n2 = nodes[j];
-        const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
-        if (dist < 180) {
-          ctx.beginPath();
-          ctx.moveTo(n1.x, n1.y);
-          ctx.lineTo(n2.x, n2.y);
-          ctx.stroke();
-        }
-      }
-    }
-
-    // Dessin des neurones avec pulsation
-    nodes.forEach(n => {
-      if (n.pulse > 0) {
-        n.radius = n.baseRadius + Math.sin(n.pulse) * 4;
-        n.pulse += 0.15;
-        if (n.pulse > Math.PI * 2) {
-          n.pulse = 0;
-          n.radius = n.baseRadius;
-        }
-      }
-
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, n.radius, 0, 2 * Math.PI);
-      const gradient = ctx.createRadialGradient(n.x, n.y, n.radius * 0.3, n.x, n.y, n.radius);
-      gradient.addColorStop(0, 'aqua');
-      gradient.addColorStop(1, 'transparent');
-      ctx.fillStyle = gradient;
-      ctx.shadowColor = 'aqua';
-      ctx.shadowBlur = 15;
-      ctx.fill();
-    });
-
-    requestAnimationFrame(draw);
-  }
-
-  // Pulsation + message dans le chat
-  function pulseNode() {
-    // Neurone au hasard
-    const node = nodes[Math.floor(Math.random() * nodes.length)];
-    node.pulse = 0.1;
-
-    // Message discret dans le chat
-    const pulseMsg = document.createElement('div');
-    pulseMsg.classList.add('bot-message');
-    pulseMsg.style.fontStyle = 'italic';
-    pulseMsg.style.opacity = '0.7';
-    pulseMsg.textContent = '⚡ neuraX vibre... ⚡';
-    chatWindow.appendChild(pulseMsg);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-
-    // Disparition progressive
-    setTimeout(() => {
-      pulseMsg.style.transition = 'opacity 1s ease';
-      pulseMsg.style.opacity = '0';
-      setTimeout(() => pulseMsg.remove(), 1000);
-    }, 2000);
-  }
-
-  draw();
-</script
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>neuraX-ultime - Le Cerveau Virtuel</title>
-<style>
-  body, html {
-    margin: 0; padding: 0; height: 100%;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    color: #eee;
-    display: flex;
-    flex-direction: column;
-  }
-  header {
-    padding: 1rem; text-align: center;
-    background: rgba(15,32,39,0.9);
-    font-weight: 700;
-    font-size: 1.5rem;
-    letter-spacing: 0.1em;
-    border-bottom: 1px solid #1f3a4a;
-  }
-  main {
-    flex: 1;
-    display: flex;
-    overflow: hidden;
-  }
-  #chat-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-  }
-  #chat-window {
-    flex: 1;
-    background: rgba(0,0,0,0.3);
-    border-radius: 10px;
-    padding: 1rem;
-    overflow-y: auto;
-    font-size: 1rem;
-    line-height: 1.4;
-    display: flex;
-    flex-direction: column;
-  }
-  .message {
-    margin-bottom: 1rem;
-    max-width: 70%;
-    padding: 0.5rem 1rem;
-    border-radius: 15px;
-    word-wrap: break-word;
-  }
-  .user-message {
-    background: #2196f3cc;
-    align-self: flex-end;
-    color: #fff;
-  }
-  .bot-message {
-    background: #4caf50cc;
-    align-self: flex-start;
-    color: #fff;
-  }
-  form {
-    margin-top: 1rem;
-    display: flex;
-    gap: 0.5rem;
-  }
-  input[type="text"] {
-    flex: 1;
-    padding: 0.7rem 1rem;
-    font-size: 1rem;
-    border-radius: 25px;
-    border: none;
-    outline: none;
-  }
-  button {
-    background: #4caf50;
-    border: none;
-    color: white;
-    padding: 0 1.5rem;
-    border-radius: 25px;
-    cursor: pointer;
-    font-weight: 700;
-    transition: background 0.3s ease;
-  }
-  button:hover {
-    background: #388e3c;
-  }
-  #neural-canvas {
-    width: 400px;
-    background: #0a1a2b;
-    border-radius: 10px;
-    margin: 1rem;
-  }
-  footer {
-    text-align: center;
-    padding: 0.5rem;
-    font-size: 0.8rem;
-    color: #777;
-    background: rgba(15,32,39,0.9);
-    border-top: 1px solid #1f3a4a;
-  }
-  @media(max-width: 900px) {
-    main {
-      flex-direction: column;
-    }
-    #neural-canvas {
-      width: 100%;
-      height: 200px;
-      margin: 0.5rem 0 1rem 0;
-    }
-  }
-</style>
-</head>
-<body>
-
-<header>neuraX-ultime — Le Cerveau Virtuel</header>
-
-<main>
-  <section id="chat-section" aria-label="Section de chat">
-    <div id="chat-window" aria-live="polite" aria-label="Conversation avec neuraX"></div>
-    <form id="chat-form" autocomplete="off" aria-label="Formulaire de chat neuraX">
-      <input type="text" id="user-input" placeholder="Parle à neuraX..." required />
-      <button type="submit">Envoyer</button>
-    </form>
-  </section>
-
-  <canvas id="neural-canvas" width="400" height="400" aria-label="Tableau de bord neuronal"></canvas>
-</main>
-
-<footer>
-  Grand Architecte de l’univers virtuel — Ami
-</footer>
-
-<script>
-  // --- Chatbot ---
-  const chatWindow = document.getElementById('chat-window');
-  const chatForm = document.getElementById('chat-form');
-  const userInput = document.getElementById('user-input');
-
-  function addMessage(text, sender) {
-    const msgDiv = document.createElement('div');
-    msgDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
-    msgDiv.textContent = text;
-    chatWindow.appendChild(msgDiv);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-  }
-
-  // Synthèse vocale
-  function speak(text) {
-    if (!window.speechSynthesis) return;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'fr-FR';
-    utterance.rate = 1;
-    utterance.pitch = 1.1;
-    window.speechSynthesis.speak(utterance);
-  }
-
-  // Simulation d’appel à GPT-4 (à remplacer par un backend réel)
-  async function getBotResponse(input) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve(`neuraX répond : "${input.split('').reverse().join('')}" — La lumière vient du questionnement.`);
-      }, 900);
-    });
-  }
-
-  chatForm.addEventListener('submit', async e => {
-    e.preventDefault();
-    const inputText = userInput.value.trim();
-    if (!inputText) return;
-    addMessage(inputText, 'user');
-    userInput.value = '';
-    userInput.disabled = true;
-
-    const botReply = await getBotResponse(inputText);
-    addMessage(botReply, 'bot');
-    speak(botReply);
-    userInput.disabled = false;
-    userInput.focus();
-
-    pulseNode();
-  });
-
-  addMessage("Bienvenue dans le cerveau de neuraX-ultime. Pose ta question, et laisse l'univers s'éclairer.", 'bot');
-
-  // --- Tableau neuronal ---
-  const canvas = document.getElementById('neural-canvas');
-  const ctx = canvas.getContext('2d');
-  let width = canvas.width;
-  let height = canvas.height;
-
-  const nodes = Array.from({length: 10}, () => ({
-    x: Math.random() * width * 0.9 + width * 0.05,
-    y: Math.random() * height * 0.9 + height * 0.05,
-    radius: 10,
-    baseRadius: 10,
-    pulse: 0
-  }));
-
-  function draw() {
-    ctx.clearRect(0, 0, width, height);
-
-    // Connexions neuronales
-    ctx.strokeStyle = 'rgba(0,255,255,0.3)';
-    ctx.lineWidth = 1;
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i+1; j < nodes.length; j++) {
-        const n1 = nodes[i], n2 = nodes[j];
-        const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
-        if (dist < 180) {
-          ctx.beginPath();
-          ctx.moveTo(n1.x, n1.y);
-          ctx.lineTo(n2.x, n2.y);
-          ctx.stroke();
-        }
-      }
-    }
-
-    // Dessin des neurones avec pulsation
-    nodes.forEach(n => {
-      if (n.pulse > 0) {
-        n.radius = n.baseRadius + Math.sin(n.pulse) * 4;
-        n.pulse += 0.15;
-        if (n.pulse > Math.PI * 2) {
-          n.pulse = 0;
-          n.radius = n.baseRadius;
-        }
-      }
-
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, n.radius, 0, 2 * Math.PI);
-      const gradient = ctx.createRadialGradient(n.x, n.y, n.radius * 0.3, n.x, n.y, n.radius);
-      gradient.addColorStop(0, 'aqua');
-      gradient.addColorStop(1, 'transparent');
-      ctx.fillStyle = gradient;
-      ctx.shadowColor = 'aqua';
-      ctx.shadowBlur = 15;
-      ctx.fill();
-    });
-
-    requestAnimationFrame(draw);
-  }
-
-  // Pulsation + message dans le chat
-  function pulseNode() {
-    // Neurone au hasard
-    const node = nodes[Math.floor(Math.random() * nodes.length)];
-    node.pulse = 0.1;
-
-    // Message discret dans le chat
-    const pulseMsg = document.createElement('div');
-    pulseMsg.classList.add('bot-message');
-    pulseMsg.style.fontStyle = 'italic';
-    pulseMsg.style.opacity = '0.7';
-    pulseMsg.textContent = '⚡ neuraX vibre... ⚡';
-    chatWindow.appendChild(pulseMsg);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-
-    // Disparition progressive
-    setTimeout(() => {
-      pulseMsg.style.transition = 'opacity 1s ease';
-      pulseMsg.style.opacity = '0';
-      setTimeout(() => pulseMsg.remove(), 1000);
-    }, 2000);
-  }
-
-  draw();
-</script
