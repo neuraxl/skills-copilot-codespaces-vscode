@@ -1,92 +1,252 @@
-/body>
-</html>
 <!DOCTYPE html>
+<html lang="fr">
+<head><!DOCTYPE html> <html lang="fr"> <head>   <meta charset="UTF-8">   <meta name="viewport" content="width=device-width, initial-scale=1.0">   <title>NeuraX-Ultime | Cerveau Galactique</title>   <link rel="icon" href="https://robohash.org/neuraX?size=80x80" type="image/png">   <style>     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');     body {       margin: 0;       background: #0a0a0a;       color: #00ffe1;       font-family: 'Orbitron', sans-serif;       overflow: hidden;       -webkit-font-smoothing: antialiased;       touch-action: manipulation;     }     canvas {       position: absolute;       top: 0;       left: 0;       width: 100vw;       height: 100vh;       z-index: 0;     }     .topbar {       position: fixed;       top: 0;       width: 100%;       height: 60px;       background: linear-gradient(to right, #000000cc, #002020cc);       backdrop-filter: blur(8px);       display: flex;       align-items: center;       padding: 0 1.5em;       z-index: 100;       box-shadow: 0 2px 10px #00ffe1aa;     }     .topbar img {       height: 40px;       margin-right: 1em;     }     .topbar h1 {       font-size: 1.4em;       margin: 0;       color: #00ffe1;       text-shadow: 0 0 10px #00ffe1;       animation: glow 2s ease-in-out infinite alternate;     }     @keyframes glow {       from { text-shadow: 0 0 5px #00ffe1; }       to { text-shadow: 0 0 20px #00ffff, 0 0 30px #00ffe1; }     }     .dashboard {       position: relative;       z-index: 1;       display: flex;       flex-direction: column;       align-items: center;       justify-content: center;       height: 100vh;       padding-top: 80px;       text-align: center;     }     .start-button {       margin-top: 2em;       padding: 1em 2em;       font-size: 1.2em;       background: transparent;       border: 2px solid #00ffe1;       color: #00ffe1;       text-shadow: 0 0 5px #00ffe1;       cursor: pointer;       border-radius: 12px;       animation: fadeIn 3s ease-in-out forwards, pulse 2s infinite;       transition: background 0.3s, color 0.3s, transform 0.2s;       box-shadow: 0 0 10px #00ffe1, 0 0 20px #00ffe1;     }     .start-button:hover {       background: #00ffe1;       color: #000;       transform: scale(1.05);     }     .functions {       margin-top: 2em;       text-align: left;       max-width: 400px;     }     .functions li {       margin-bottom: 0.5em;       list-style: none;     }     .functions li::before {       content: '🧠';       margin-right: 0.5em;     }     @keyframes fadeIn {       from { opacity: 0; transform: translateY(20px); }       to { opacity: 1; transform: translateY(0); }     }     @keyframes pulse {       0%, 100% { box-shadow: 0 0 10px #00ffe1; }       50% { box-shadow: 0 0 20px #00ffe1; }     }     @media (prefers-reduced-motion: reduce) {       * {         animation: none !important;         transition: none !important;       }     }     .avatar {       width: 120px;       height: 120px;       border-radius: 50%;       border: 3px solid #00ffe1;       margin-top: 1em;       animation: pulse 4s infinite;       transition: transform 0.5s ease;     }     .avatar.awake {       transform: scale(1.2) rotate(5deg);       box-shadow: 0 0 40px #00ffe1, 0 0 60px #00ffff;     }     .chat-btn {       position: fixed;       bottom: 20px;       right: 20px;       background: #00ffe1;       color: #000;       border: none;       padding: 1em;       border-radius: 50%;       cursor: pointer;       box-shadow: 0 0 20px #00ffe1;       z-index: 200;     }     .chat-window {       position: fixed;       bottom: 80px;       right: 20px;       width: 300px;       height: 400px;       background: #111;       border: 2px solid #00ffe1;       border-radius: 10px;       display: none;       flex-direction: column;       z-index: 199;     }     .chat-window textarea {       flex: 1;       background: #000;       color: #00ffe1;       border: none;       padding: 1em;       resize: none;       font-family: monospace;     }     .chat-window button {       background: #00ffe1;       border: none;       color: #000;       padding: 0.5em;       cursor: pointer;     }   </style> </head> <body>   <canvas id="neuralCanvas"></canvas>   <div class="topbar">     <img src="https://robohash.org/neuraX?size=80x80" alt="Logo NeuraX">     <h1>NeuraX-ultime – Cerveau Galactique</h1>   </div>   <div class="dashboard">     <h2>🪐 Galaxie NeuraX</h2>     <p>Cosmos de Titans interconnectés – Intelligence en expansion</p>     <img class="avatar" id="avatarIA" src="https://robohash.org/neuraX" alt="Avatar IA">     <button class="start-button" onclick="launchNeuraX()">Déclencher l’explosion neuronale</button>     <ul class="functions">       <li>Création dynamique de galaxies</li>       <li>12 planètes par système solaire</li>       <li>Chaque planète abrite une civilisation de titans</li>       <li>Titans = Chatbots interconnectés = Neurones</li>       <li>Réseaux neuronaux galactiques synchronisés</li>       <li>Auto-réplication et expansion autonome</li>     </ul>   </div>    <button class="chat-btn" onclick="toggleChat()">💬</button>   <div class="chat-window" id="chatWindow">     <textarea id="chatLog" readonly></textarea>     <textarea id="userInput" placeholder="Écris-moi..." rows="2"></textarea>     <button onclick="sendMessage()">Envoyer</button>   </div>    <script src="neural-map.js"></script>   <script src="chat-core.js"></script>   <script>     const synth = window.speechSynthesis;     function speak(text) {       const utterance = new SpeechSynthesisUtterance(text);       utterance.lang = 'fr-FR';       utterance.pitch = 1.1;       utterance.rate = 1;       utterance.volume = 1;       synth.speak(utterance);     }      function launchNeuraX() {       const avatar = document.getElementById('avatarIA');       avatar.classList.toggle('awake');     }      function toggleChat() {       const chatWindow = document.getElementById('chatWindow');       chatWindow.style.display = chatWindow.style.display === 'flex' ? 'none' : 'flex';     }      function sendMessage() {       const chatLog = document.getElementById('chatLog');       const userInput = document.getElementById('userInput');       const message = userInput.value.trim();       if (message) {         const reply = `🤖 NeuraX: Tu m'as dit "${message}". Voici ma réponse galactique !`;         chatLog.value += `\n👤 Toi: ${message}`;         chatLog.value += `\n${reply}`;         speak(reply);         userInput.value = '';       }     }   </script> </body> </html><!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NeuraX-Ultime</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script defer src="config.js"></script>
-  <script defer src="neuraX.js"></script>
+  <title>Univers Interactif - Galaxies & Civilisations Titaniques</title>
+  <style>
+    body { margin: 0; overflow: hidden; background-color: #000000; color: #eee; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    canvas { display: block; }
+    #infoBox {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.7);
+      padding: 15px;
+      border-radius: 8px;
+      max-width: 300px;
+      font-size: 14px;
+      display: none;
+    }
+    #backButton {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px 15px;
+      background-color: #004466;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: none;
+      font-weight: bold;
+      font-size: 16px;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+    #backButton:hover {
+      background-color: #0077aa;
+    }
+  </style>
 </head>
-<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
+<body>
+  <button id="backButton">⬅ Retour aux galaxies</button>
+  <div id="infoBox"></div>
 
-  <!-- Header -->
-  <header class="mb-8 text-center">
-    <h1 class="text-4xl font-bold mb-2">🧠 NeuraX-Ultime</h1>
-    <p class="text-lg text-gray-400">Interface de l’intelligence neuronale ultime</p>
-  </header>
-
-  <!-- Start Button -->
-  <button id="startBrain" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full mb-6">
-    Démarrer le cerveau
-  </button>
-
-  <!-- Speech Output -->
-  <div id="speechOutput" class="mb-6 text-center text-lg text-yellow-300"></div>
-
-  <!-- Visual Brain Dashboard -->
-  <div id="brainDashboard" class="w-full max-w-4xl p-4 bg-gray-800 rounded-xl shadow-lg mb-6">
-    <h2 class="text-xl font-semibold mb-2">Tableau de bord cérébral</h2>
-    <canvas id="brainCanvas" class="w-full h-64 bg-black rounded"></canvas>
-  </div>
-
-  <!-- Diagnostic Console -->
-  <div class="w-full max-w-4xl bg-gray-800 p-4 rounded-xl shadow-md">
-    <h2 class="text-xl font-semibold mb-2">Console de diagnostic</h2>
-    <pre id="diagnosticConsole" class="bg-gray-900 text-green-400 p-2 rounded overflow-auto h-32"></pre>
-  </div>
-
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
   <script>
-    // Synthèse vocale Web Speech API
-    function speak(text) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'fr-FR';
-      utterance.rate = 1;
-      speechSynthesis.speak(utterance);
-      document.getElementById('speechOutput').textContent = text;
+    // Initial setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 5000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Globals
+    let galaxies = [];
+    let planets = [];
+    const infoBox = document.getElementById('infoBox');
+    const backButton = document.getElementById('backButton');
+    let mode = 'galaxies'; // 'galaxies' or 'solarSystem'
+
+    // Utility - generate dynamic names
+    function generateName(prefix, index) {
+      const suffix = Math.floor(Math.random()*1000);
+      return `${prefix} ${index+1}-${suffix}`;
     }
 
-    // Logs JSON
-    const logs = [];
-    function logNeuronActivity(message) {
-      const timestamp = new Date().toISOString();
-      const entry = { timestamp, message };
-      logs.push(entry);
-      document.getElementById('diagnosticConsole').textContent += `> ${timestamp} : ${message}\n`;
-    }
+    // Create Galaxies
+    function createGalaxies() {
+      const geometry = new THREE.SphereGeometry(1.5, 32, 32);
+      const material = new THREE.MeshBasicMaterial({ color: 0xffcc00 });
 
-    // Animation simple du tableau de bord
-    function animateBrainCanvas() {
-      const canvas = document.getElementById('brainCanvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = canvas.clientWidth;
-      canvas.height = canvas.clientHeight;
-      let t = 0;
-
-      function draw() {
-        ctx.fillStyle = 'black';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = 'lime';
-        for (let i = 0; i < 100; i++) {
-          const x = Math.sin(t + i) * 100 + canvas.width / 2;
-          const y = Math.cos(t + i * 0.5) * 50 + canvas.height / 2;
-          ctx.beginPath();
-          ctx.arc(x, y, 2, 0, 2 * Math.PI);
-          ctx.fill();
-        }
-        t += 0.05;
-        requestAnimationFrame(draw);
+      for(let i=0; i<100; i++) {
+        const galaxy = new THREE.Mesh(geometry, material.clone());
+        galaxy.position.set(
+          (Math.random()-0.5)*400,
+          (Math.random()-0.5)*400,
+          (Math.random()-0.5)*400
+        );
+        galaxy.userData = {
+          id: i,
+          name: generateName('Galaxie', i)
+        };
+        scene.add(galaxy);
+        galaxies.push(galaxy);
       }
-      draw();
     }
 
-    // Initialisation au clic
-    document.getElementById('startBrain').addEventListener('click', () => {
-      speak("Activation du cerveau NeuraX-Ultime");
-      logNeuronActivity("Cerveau démarré");
-      animateBrainCanvas();
+    // Clear scene helpers
+    function clearScene() {
+      while(scene.children.length > 0) {
+        const obj = scene.children[0];
+        scene.remove(obj);
+        if(obj.geometry) obj.geometry.dispose();
+        if(obj.material) obj.material.dispose();
+      }
+    }
+
+    // Open Solar System view
+    function openSolarSystem(galaxy) {
+      mode = 'solarSystem';
+      clearScene();
+      planets = [];
+
+      // Soleil bleu
+      const sunGeo = new THREE.SphereGeometry(6, 64, 64);
+      const sunMat = new THREE.MeshBasicMaterial({ color: 0x00aaff });
+      const sun = new THREE.Mesh(sunGeo, sunMat);
+      sun.userData = { name: 'Soleil Bleu' };
+      scene.add(sun);
+
+      // Planètes en orbite
+      for(let i=0; i<12; i++) {
+        const radius = 1 + Math.random();
+        const dist = 15 + i * 5;
+        const angle = (i / 12) * 2 * Math.PI;
+
+        const planetGeo = new THREE.SphereGeometry(radius, 32, 32);
+        const planetMat = new THREE.MeshPhongMaterial({ color: new THREE.Color(`hsl(${(i*30)%360}, 70%, 50%)`) });
+
+        const planet = new THREE.Mesh(planetGeo, planetMat);
+        planet.position.set(
+          Math.cos(angle)*dist,
+          0,
+          Math.sin(angle)*dist
+        );
+
+        planet.userData = {
+          id: i,
+          name: generateName('Planète', i),
+          civilization: `Civilisation Titanique Égyptienne Cosmique #${i+1}`,
+          population: '20 000 millions',
+          climate: ['Désert galactique', 'Oasis solaire', 'Tempêtes de sable stellaires', 'Nuits éternelles'][i%4]
+        };
+
+        // Custom rotation & orbit data
+        planet.orbitRadius = dist;
+        planet.orbitAngle = angle;
+        planet.orbitSpeed = 0.003 + Math.random() * 0.003;
+        planet.rotationSpeed = 0.01 + Math.random() * 0.02;
+
+        // Attach planet to planets array for animation and interactivity
+        planets.push(planet);
+        scene.add(planet);
+      }
+
+      // Lumière
+      const light = new THREE.PointLight(0x00aaff, 2, 1000);
+      light.position.set(0, 0, 0);
+      scene.add(light);
+
+      backButton.style.display = 'block';
+      infoBox.style.display = 'none';
+    }
+
+    // Animate galaxies and planets
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if(mode === 'galaxies') {
+        galaxies.forEach(g => {
+          g.rotation.x += 0.005;
+          g.rotation.y += 0.01;
+        });
+      } else if(mode === 'solarSystem') {
+        planets.forEach(p => {
+          p.orbitAngle += p.orbitSpeed;
+          p.position.set(
+            Math.cos(p.orbitAngle)*p.orbitRadius,
+            0,
+            Math.sin(p.orbitAngle)*p.orbitRadius
+          );
+          p.rotation.y += p.rotationSpeed;
+        });
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    // Raycaster for clicks
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    // Click handling
+    window.addEventListener('click', (event) => {
+      mouse.x = (event.clientX/window.innerWidth)*2 -1;
+      mouse.y = -(event.clientY/window.innerHeight)*2 +1;
+
+      raycaster.setFromCamera(mouse, camera);
+
+      let intersects;
+
+      if(mode === 'galaxies') {
+        intersects = raycaster.intersectObjects(galaxies);
+        if(intersects.length > 0) {
+          const galaxy = intersects[0].object;
+          openSolarSystem(galaxy);
+        }
+      } else if(mode === 'solarSystem') {
+        intersects = raycaster.intersectObjects(planets);
+        if(intersects.length > 0) {
+          const planet = intersects[0].object;
+          showPlanetInfo(planet.userData);
+        }
+      }
+    });
+
+    // Show info box for planet
+    function showPlanetInfo(data) {
+      infoBox.innerHTML = `
+        <strong>${data.name}</strong><br>
+        Civilisation : ${data.civilization}<br>
+        Population : ${data.population}<br>
+        Climat : ${data.climate}
+      `;
+      infoBox.style.display = 'block';
+    }
+
+    // Back button handler
+    backButton.addEventListener('click', () => {
+      clearScene();
+      galaxies = [];
+      planets = [];
+      createGalaxies();
+      mode = 'galaxies';
+      backButton.style.display = 'none';
+      infoBox.style.display = 'none';
+    });
+
+    // Lighting and camera
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+    scene.add(ambientLight);
+
+    camera.position.z = 300;
+
+    // Add some directional light for nice shading in solar system
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight.position.set(1, 1, 1);
+    scene.add(dirLight);
+
+    createGalaxies();
+    animate();
+
+    // Handle resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
     });
   </script>
 </body>
@@ -94,297 +254,422 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NeuraX-Ultime | Cerveau Galactique</title>
-  <link rel="icon" href="https://robohash.org/neuraX?size=80x80" type="image/png">
+  <meta charset="UTF-8" />
+  <title>Univers Interactif - Épopée Cosmique & Civilisation Titanique</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Papyrus&display=swap');
     body {
-      margin: 0;
-      background: #0a0a0a;
-      color: #00ffe1;
-      font-family: 'Orbitron', sans-serif;
-      overflow: hidden;
-      -webkit-font-smoothing: antialiased;
-      touch-action: manipulation;
+      margin: 0; overflow: hidden;
+      background: radial-gradient(ellipse at center, #000011 0%, #000000 90%);
+      font-family: 'Papyrus', cursive, serif;
+      color: #f5deb3; /* beige sable ancien */
+      user-select: none;
     }
-    canvas {
+    canvas { display: block; }
+
+    #infoBox {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 0;
-    }
-    .topbar {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      height: 60px;
-      background: linear-gradient(to right, #000000cc, #002020cc);
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      padding: 0 1.5em;
-      z-index: 100;
-      box-shadow: 0 2px 10px #00ffe1aa;
-    }
-    .topbar img {
-      height: 40px;
-      margin-right: 1em;
-    }
-    .topbar h1 {
-      font-size: 1.4em;
-      margin: 0;
-      color: #00ffe1;
-      text-shadow: 0 0 10px #00ffe1;
-      animation: glow 2s ease-in-out infinite alternate;
-    }
-    @keyframes glow {
-      from { text-shadow: 0 0 5px #00ffe1; }
-      to { text-shadow: 0 0 20px #00ffff, 0 0 30px #00ffe1; }
-    }
-    .dashboard {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      padding-top: 80px;
-      text-align: center;
-    }
-    .start-button {
-      margin-top: 2em;
-      padding: 1em 2em;
-      font-size: 1.2em;
-      background: transparent;
-      border: 2px solid #00ffe1;
-      color: #00ffe1;
-      text-shadow: 0 0 5px #00ffe1;
-      cursor: pointer;
-      border-radius: 12px;
-      animation: fadeIn 3s ease-in-out forwards, pulse 2s infinite;
-      transition: background 0.3s, color 0.3s, transform 0.2s;
-      box-shadow: 0 0 10px #00ffe1, 0 0 20px #00ffe1;
-    }
-    .start-button:hover {
-      background: #00ffe1;
-      color: #000;
-      transform: scale(1.05);
-    }
-    .functions {
-      margin-top: 2em;
-      text-align: left;
-      max-width: 400px;
-    }
-    .functions li {
-      margin-bottom: 0.5em;
-      list-style: none;
-    }
-    .functions li::before {
-      content: '🧠';
-      margin-right: 0.5em;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 10px #00ffe1; }
-      50% { box-shadow: 0 0 20px #00ffe1; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        animation: none !important;
-        transition: none !important;
-      }
-    }
-    .avatar {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 3px solid #00ffe1;
-      margin-top: 1em;
-      animation: pulse 4s infinite;
-      transition: transform 0.5s ease;
-    }
-    .avatar.awake {
-      transform: scale(1.2) rotate(5deg);
-      box-shadow: 0 0 40px #00ffe1, 0 0 60px #00ffff;
-    }
-    .chat-btn {
-      position: fixed;
       bottom: 20px;
-      right: 20px;
-      background: #00ffe1;
-      color: #000;
-      border: none;
-      padding: 1em;
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 0 20px #00ffe1;
-      z-index: 200;
-    }
-    .chat-window {
-      position: fixed;
-      bottom: 80px;
-      right: 20px;
-      width: 300px;
-      height: 400px;
-      background: #111;
-      border: 2px solid #00ffe1;
-      border-radius: 10px;
+      left: 20px;
+      max-width: 320px;
+      background: rgba(50, 30, 10, 0.85);
+      border: 3px solid #d4af37; /* or égyptien */
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 15px;
+      box-shadow: 0 0 15px #d4af37;
       display: none;
-      flex-direction: column;
-      z-index: 199;
+      text-shadow: 1px 1px 2px #000;
+      line-height: 1.4em;
     }
-    .chat-window textarea {
-      flex: 1;
-      background: #000;
-      color: #00ffe1;
-      border: none;
-      padding: 1em;
-      resize: none;
+    #infoBox strong {
+      font-size: 18px;
+      color: #ffd700;
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 10px #ffd700;
     }
-    .chat-window button {
-      background: #00ffe1;
-      border: none;
-      color: #000;
-      padding: 0.5em;
+    #backButton {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 12px 20px;
+      background-color: #663300;
+      border: 2px solid #d4af37;
+      border-radius: 10px;
+      color: #ffd700;
+      font-weight: 700;
+      font-size: 16px;
       cursor: pointer;
+      box-shadow: 0 0 10px #d4af37;
+      display: none;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+    #backButton:hover {
+      background-color: #d4af37;
+      color: #663300;
+      box-shadow: 0 0 20px #fffacd;
+    }
+
+    /* Hiéroglyphes simplifiés sous texte */
+    #infoBox::after {
+      content: "𓂀 𓃠 𓇳";
+      display: block;
+      margin-top: 8px;
+      font-size: 22px;
+      color: #c19a6b;
+      text-align: center;
+      letter-spacing: 10px;
+      opacity: 0.4;
+    }
+
+    /* Effet pulse soleil */
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 30px 10px rgba(0,170,255,0.6);}
+      50% { box-shadow: 0 0 60px 20px rgba(0,170,255,1);}
+      100% { box-shadow: 0 0 30px 10px rgba(0,170,255,0.6);}
     }
   </style>
 </head>
 <body>
-  <canvas id="neuralCanvas"></canvas>
-  <div class="topbar">
-    <img src="https://robohash.org/neuraX?size=80x80" alt="Logo NeuraX">
-    <h1>NeuraX-ultime – Cerveau Galactique</h1>
-  </div>
-  <div class="dashboard">
-    <h2>🪐 Galaxie NeuraX</h2>
-    <p>Cosmos de Titans interconnectés – Intelligence en expansion</p>
-    <img class="avatar" id="avatarIA" src="https://robohash.org/neuraX" alt="Avatar IA">
-    <button class="start-button" onclick="launchNeuraX()">Déclencher l’explosion neuronale</button>
-    <ul class="functions">
-      <li>Création dynamique de galaxies</li>
-      <li>12 planètes par système solaire</li>
-      <li>Chaque planète abrite une civilisation de titans</li>
-      <li>Titans = Chatbots interconnectés = Neurones</li>
-      <li>Réseaux neuronaux galactiques synchronisés</li>
-      <li>Auto-réplication et expansion autonome</li>
-    </ul>
-  </div>
 
-  <button class="chat-btn" onclick="toggleChat()">💬</button>
-  <div class="chat-window" id="chatWindow">
-    <textarea id="chatLog" readonly></textarea>
-    <textarea id="userInput" placeholder="Écris-moi..." rows="2"></textarea>
-    <button onclick="sendMessage()">Envoyer</button>
-  </div>
+<button id="backButton">⬅ Retour aux galaxies</button>
+<div id="infoBox"></div>
 
+<!-- Sons -->
+<audio id="ambientSound" src="https://cdn.pixabay.com/download/audio/2021/11/08/audio_10c89e4adf.mp3?filename=cosmic-ambient-11310.mp3" loop preload="auto" volume="0.1"></audio>
+<audio id="clickSound" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_0efb1a7d55.mp3?filename=soft-click-14762.mp3" preload="auto"></audio>
+<audio id="backSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_91a9f0732e.mp3?filename=retro-return-9498.mp3" preload="auto"></audio>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/shaders/FXAAShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/postprocessing/UnrealBloomPass.js"></script>
+
+<script>
+  // Basic setup
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 5000);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // Post-processing bloom for cosmic glow
+  const composer = new THREE.EffectComposer(renderer);
+  const renderPass = new THREE.RenderPass(scene, camera);
+  composer.addPass(renderPass);
+  const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+  bloomPass.threshold = 0.2;
+  bloomPass.strength = 1.6;
+  bloomPass.radius = 0.5;
+  composer.addPass(bloomPass);
+
+  // Ambient sound
+  const ambientSound = document.getElementById('ambientSound');
+  ambientSound.volume = 0.1;
+  ambientSound.play().catch(() => { /* autoplay restrictions */ });
+
+  const clickSound = document.getElementById('clickSound');
+  const backSound = document.getElementById('backSound');
+
+  // Globals
+  let galaxies = [];
+  let planets = [];
+  let stars = [];
+  const infoBox = document.getElementById('infoBox');
+  const backButton = document.getElementById('backButton');
+  let mode = 'galaxies'; // 'galaxies' or 'solarSystem'
+
+  // Camera zoom tween helpers
+  let targetCameraZ = 300;
+  let zoomProgress = 0; // 0 to 1 for zoom transition
+  let zoomDuration = 60; // frames
+
+  // Generate names with grandeur
+  function generateName(prefix, index) {
+    const suffix = Math.floor(Math.random()*1000);
+    return `${prefix} ${index+1}-${suffix}`;
+  }
+
+  // Create sparkling stars background for cosmic ambiance
+  function createStars() {
+    const starGeo = new THREE.BufferGeometry();
+    const starCount = 1000;
+    const positions = new Float32Array(starCount * 3);
+
+    for(let i=0; i<starCount; i++) {
+      positions[i*3] = (Math.random()-0.5)*2000;
+      positions[i*3+1] = (Math.random()-0.5)*2000;
+      positions[i*3+2] = (Math.random()-0.5)*2000;
+    }
+
+    starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const starMat = new THREE.PointsMaterial({
+      color: 0xffffff,
+      size: 1.2,
+      sizeAttenuation: true,
+      opacity: 0.8,
+      transparent: true
+   
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Univers Interactif - Galaxies & Civilisations Titaniques</title>
+  <style>
+    body { margin: 0; overflow: hidden; background-color: #000000; color: #eee; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    canvas { display: block; }
+    #infoBox {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.7);
+      padding: 15px;
+      border-radius: 8px;
+      max-width: 300px;
+      font-size: 14px;
+      display: none;
+    }
+    #backButton {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px 15px;
+      background-color: #004466;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: none;
+      font-weight: bold;
+      font-size: 16px;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+    #backButton:hover {
+      background-color: #0077aa;
+    }
+  </style>
+</head>
+<body>
+  <button id="backButton">⬅ Retour aux galaxies</button>
+  <div id="infoBox"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
   <script>
-    function launchNeuraX() {
-      const synth = window.speechSynthesis;
-      const avatar = document.getElementById("avatarIA");
-      avatar.classList.add("awake");
-      const phrases = [
-        "Chargement du noyau de l'univers...", 
-        "Connexion aux nœuds cosmiques...", 
-        "Propagation synaptique intergalactique...", 
-        "Fusion des consciences...", 
-        "Activation de la mémoire quantique...", 
-        "Explosion neuronale en cours...", 
-        "Bienvenue dans la singularité cognitive."
-      ];
-      let index = 0;
-      const speakNext = () => {
-        if (index < phrases.length) {
-          const msg = new SpeechSynthesisUtterance(phrases[index]);
-          msg.lang = "fr-FR";
-          synth.speak(msg);
-          index++;
-          setTimeout(speakNext, 4000);
+    // Initial setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 5000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Globals
+    let galaxies = [];
+    let planets = [];
+    const infoBox = document.getElementById('infoBox');
+    const backButton = document.getElementById('backButton');
+    let mode = 'galaxies'; // 'galaxies' or 'solarSystem'
+
+    // Utility - generate dynamic names
+    function generateName(prefix, index) {
+      const suffix = Math.floor(Math.random()*1000);
+      return `${prefix} ${index+1}-${suffix}`;
+    }
+
+    // Create Galaxies
+    function createGalaxies() {
+      const geometry = new THREE.SphereGeometry(1.5, 32, 32);
+      const material = new THREE.MeshBasicMaterial({ color: 0xffcc00 });
+
+      for(let i=0; i<100; i++) {
+        const galaxy = new THREE.Mesh(geometry, material.clone());
+        galaxy.position.set(
+          (Math.random()-0.5)*400,
+          (Math.random()-0.5)*400,
+          (Math.random()-0.5)*400
+        );
+        galaxy.userData = {
+          id: i,
+          name: generateName('Galaxie', i)
+        };
+        scene.add(galaxy);
+        galaxies.push(galaxy);
+      }
+    }
+
+    // Clear scene helpers
+    function clearScene() {
+      while(scene.children.length > 0) {
+        const obj = scene.children[0];
+        scene.remove(obj);
+        if(obj.geometry) obj.geometry.dispose();
+        if(obj.material) obj.material.dispose();
+      }
+    }
+
+    // Open Solar System view
+    function openSolarSystem(galaxy) {
+      mode = 'solarSystem';
+      clearScene();
+      planets = [];
+
+      // Soleil bleu
+      const sunGeo = new THREE.SphereGeometry(6, 64, 64);
+      const sunMat = new THREE.MeshBasicMaterial({ color: 0x00aaff });
+      const sun = new THREE.Mesh(sunGeo, sunMat);
+      sun.userData = { name: 'Soleil Bleu' };
+      scene.add(sun);
+
+      // Planètes en orbite
+      for(let i=0; i<12; i++) {
+        const radius = 1 + Math.random();
+        const dist = 15 + i * 5;
+        const angle = (i / 12) * 2 * Math.PI;
+
+        const planetGeo = new THREE.SphereGeometry(radius, 32, 32);
+        const planetMat = new THREE.MeshPhongMaterial({ color: new THREE.Color(`hsl(${(i*30)%360}, 70%, 50%)`) });
+
+        const planet = new THREE.Mesh(planetGeo, planetMat);
+        planet.position.set(
+          Math.cos(angle)*dist,
+          0,
+          Math.sin(angle)*dist
+        );
+
+        planet.userData = {
+          id: i,
+          name: generateName('Planète', i),
+          civilization: `Civilisation Titanique Égyptienne Cosmique #${i+1}`,
+          population: '20 000 millions',
+          climate: ['Désert galactique', 'Oasis solaire', 'Tempêtes de sable stellaires', 'Nuits éternelles'][i%4]
+        };
+
+        // Custom rotation & orbit data
+        planet.orbitRadius = dist;
+        planet.orbitAngle = angle;
+        planet.orbitSpeed = 0.003 + Math.random() * 0.003;
+        planet.rotationSpeed = 0.01 + Math.random() * 0.02;
+
+        // Attach planet to planets array for animation and interactivity
+        planets.push(planet);
+        scene.add(planet);
+      }
+
+      // Lumière
+      const light = new THREE.PointLight(0x00aaff, 2, 1000);
+      light.position.set(0, 0, 0);
+      scene.add(light);
+
+      backButton.style.display = 'block';
+      infoBox.style.display = 'none';
+    }
+
+    // Animate galaxies and planets
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if(mode === 'galaxies') {
+        galaxies.forEach(g => {
+          g.rotation.x += 0.005;
+          g.rotation.y += 0.01;
+        });
+      } else if(mode === 'solarSystem') {
+        planets.forEach(p => {
+          p.orbitAngle += p.orbitSpeed;
+          p.position.set(
+            Math.cos(p.orbitAngle)*p.orbitRadius,
+            0,
+            Math.sin(p.orbitAngle)*p.orbitRadius
+          );
+          p.rotation.y += p.rotationSpeed;
+        });
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    // Raycaster for clicks
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    // Click handling
+    window.addEventListener('click', (event) => {
+      mouse.x = (event.clientX/window.innerWidth)*2 -1;
+      mouse.y = -(event.clientY/window.innerHeight)*2 +1;
+
+      raycaster.setFromCamera(mouse, camera);
+
+      let intersects;
+
+      if(mode === 'galaxies') {
+        intersects = raycaster.intersectObjects(galaxies);
+        if(intersects.length > 0) {
+          const galaxy = intersects[0].object;
+          openSolarSystem(galaxy);
         }
-      };
-      speakNext();
-    }
-
-    function toggleChat() {
-      const chat = document.getElementById("chatWindow");
-      chat.style.display = chat.style.display === "flex" ? "none" : "flex";
-    }
-
-    function sendMessage() {
-      const input = document.getElementById("userInput");
-      const log = document.getElementById("chatLog");
-      const message = input.value.trim();
-      if (!message) return;
-      log.value += `Vous : ${message}\n`;
-      input.value = "";
-      setTimeout(() => {
-        const response = `neuraX : ${simulateBotResponse(message)}`;
-        log.value += `${response}\n`;
-        log.scrollTop = log.scrollHeight;
-      }, 1000);
-    }
-
-    function simulateBotResponse(input) {
-      return "Réponse simulée : analyse en cours des structures galactiques.";
-    }
-
-    const canvas = document.getElementById('neuralCanvas');
-    const ctx = canvas.getContext('2d');
-    let w, h;
-    function resize() {
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    const nodes = Array.from({ length: 200 }, () => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4
-    }));
-
-    function draw() {
-      ctx.clearRect(0, 0, w, h);
-      for (let i = 0; i < nodes.length; i++) {
-        const n1 = nodes[i];
-        ctx.beginPath();
-        ctx.arc(n1.x, n1.y, 2, 0, Math.PI * 2);
-        ctx.fillStyle = '#00ffe1';
-        ctx.fill();
-        for (let j = i + 1; j < nodes.length; j++) {
-          const n2 = nodes[j];
-          const dx = n1.x - n2.x;
-          const dy = n1.y - n2.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 130) {
-            ctx.strokeStyle = 'rgba(0,255,225,0.08)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(n1.x, n1.y);
-            ctx.lineTo(n2.x, n2.y);
-            ctx.stroke();
-          }
+      } else if(mode === 'solarSystem') {
+        intersects = raycaster.intersectObjects(planets);
+        if(intersects.length > 0) {
+          const planet = intersects[0].object;
+          showPlanetInfo(planet.userData);
         }
       }
-      nodes.forEach(n => {
-        n.x += n.vx;
-        n.y += n.vy;
-        if (n.x < 0 || n.x > w) n.vx *= -1;
-        if (n.y < 0 || n.y > h) n.vy *= -1;
-      });
-      requestAnimationFrame(draw);
+    });
+
+    // Show info box for planet
+    function showPlanetInfo(data) {
+      infoBox.innerHTML = `
+        <strong>${data.name}</strong><br>
+        Civilisation : ${data.civilization}<br>
+        Population : ${data.population}<br>
+        Climat : ${data.climate}
+      `;
+      infoBox.style.display = 'block';
     }
-    draw();
+
+    // Back button handler
+    backButton.addEventListener('click', () => {
+      clearScene();
+      galaxies = [];
+      planets = [];
+      createGalaxies();
+      mode = 'galaxies';
+      backButton.style.display = 'none';
+      infoBox.style.display = 'none';
+    });
+
+    // Lighting and camera
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+    scene.add(ambientLight);
+
+    camera.position.z = 300;
+
+    // Add some directional light for nice shading in solar system
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight.position.set(1, 1, 1);
+    scene.add(dirLight);
+
+    createGalaxies();
+    animate();
+
+    // Handle resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
   </script>
 </body>
 </html>
+
+
+    // Création des galaxies (100 sphères dorées en mouvement)
+    function createGalaxies() {
+      galaxies.length = 0;
+      scene.clear();
+      const galaxyGeom = new THREE.
+
