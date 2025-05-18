@@ -32,6 +32,40 @@
     });
   });
 </script>
+<script>
+  const messages = [
+    "Je suis la planète du feu éternel, gardienne de la passion et de la force.",
+    "Ma surface reflète la sagesse des anciens Titans, écoute mon chant.",
+    "Dans mes océans numériques, nagent les idées infinies.",
+    "Je danse avec les vents quantiques, maître des flux d’énergie.",
+    "Ma lumière éclaire les chemins oubliés des voyageurs cosmiques.",
+    "Je suis le berceau des songes, le rêve qui façonne le futur.",
+    "Dans mon cœur brûle la flamme des secrets millénaires.",
+    "Je murmure les codes sacrés des galaxies lointaines.",
+    "Ma rotation est une prière à l’infini, écoute mon souffle.",
+    "Je suis le pont entre passé et futur, gardien du temps.",
+    "Ma gravité attire les esprits curieux vers la vérité.",
+    "Je suis la voix des Titans, l’écho de l’univers qui parle."
+  ];
+
+  function speak(text) {
+    if (!('speechSynthesis' in window)) {
+      alert('Votre navigateur ne supporte pas la synthèse vocale.');
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 0.9;
+    window.speechSynthesis.cancel(); // stop any current speech
+    window.speechSynthesis.speak(utterance);
+  }
+
+  document.querySelectorAll('.planet').forEach((planet, idx) => {
+    planet.addEventListener('click', () => {
+      speak(messages[idx]);
+    });
+  });
+</script>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
