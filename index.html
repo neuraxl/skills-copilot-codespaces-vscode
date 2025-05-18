@@ -1,1 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>NeuraX-Core</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+    .brain-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    canvas {
+      border: 1px solid white;
+      border-radius: 2xl;
+      box-shadow: 0 0 20px #00f0ff;
+    }
+    #log {
+      margin-top: 2rem;
+      background: #111;
+      padding: 1rem;
+      max-width: 800px;
+      height: 150px;
+      overflow-y: auto;
+      border-radius: 10px;
+    }
+    #speak-btn {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border: none;
+      background-color: #00f0ff;
+      color: black;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div class="brain-container">
+  <h1>🧠 NeuraX-Core</h1>
+  <canvas id="brainCanvas" width="500" height="300"></canvas>
+  <button id="speak-btn">🗣️ Parle-moi, NeuraX</button>
+  <div id="log"></div>
+</div>
 
+<script>
+  // Dessin du cerveau animé
+  const canvas = document.getElementById('brainCanvas');
+  const ctx = canvas.getContext('2d');
+
+  function drawNeuron(x, y, active) {
+    ctx.beginPath();
+    ctx.arc(x, y, 10, 0, Math.PI * 2);
+    ctx.fillStyle = active ? '#00f0ff' : '#555';
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  function animateBrain() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < 10; i++) {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      drawNeuron(x, y, Math.random() > 0.5);
+    }
+  }
+
+  setInterval(animateBrain, 500);
+
+  // Synthèse vocale
+  const speakBtn = document.getElementById("speak-btn");
+  speakBtn.addEventListener("click", () => {
+    const message = "Bonjour Architecte. Le multivers est en expansion.";
+    const speech = new SpeechSynthesisUtterance(message);
+    speech.lang = 'fr-FR';
+    window.speechSynthesis.speak(speech);
+    logMessage("NeuraX-Core: " + message);
+  });
+
+  // Log neuronal
+  const logDiv = document.getElementById("log");
+  function logMessage(msg) {
+    const p = document.createElement("p");
+    p.textContent = msg;
+    logDiv.appendChild(p);
+    logDiv.scrollTop = logDiv.scrollHeight;
+  }
+</script>
+</body>
+</html>
