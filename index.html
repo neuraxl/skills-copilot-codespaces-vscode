@@ -1,150 +1,584 @@
+// Auto-réplication des neurones et amélioration visuelle pour NeuraX Ultime
 
+// ========== SYSTÈME D'AUTO-RÉPLICATION DES NEURONES ==========
 
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NeuraX-Ultime | Cerveau en Opération</title>
-  <style>
-    body {
-      margin: 0;
-      background: #0a0a0a;
-      color: #00ffe1;
-      font-family: 'Orbitron', sans-serif;
-      overflow: hidden;
+class NeuronManager {
+  constructor(canvas, ctx) {
+    this.canvas = canvas;
+    this.ctx = ctx;
+    this.width = canvas.width;
+    this.height = canvas.height;
+    this.neurons = [];
+    this.maxNeurons = 150;
+    this.minNeurons = 80;
+    this.maxDistance = 150;
+    this.synapses = [];
+    this.healthData = {
+      replicationCount: 0,
+      deadNeurons: 0,
+      synapseStrength: 0,
+      networkStability: 100
+    };
+    
+    // Configuration de l'auto-diagnostic
+    this.diagnosticInterval = setInterval(() => this.performNetworkDiagnostic(), 5000);
+    
+    // Initialisation des premiers neurones
+    this.initializeNeurons(100);
+  }
+  
+  // Création des neurones initiaux
+  initializeNeurons(count) {
+    for (let i = 0; i < count; i++) {
+      this.neurons.push(this.createNeuron());
     }
-    canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 0;
+  }
+  
+  // Créer un nouveau neurone
+  createNeuron(parent = null) {
+    // Si c'est une réplication, hériter certaines caractéristiques du parent
+    if (parent) {
+      const mutation = Math.random() * 0.2 - 0.1; // Facteur de mutation: ±10%
+      return {
+        x: parent.x + (Math.random() - 0.5) * 50,
+        y: parent.y + (Math.random() - 0.5) * 50,
+        vx: parent.vx * (1 + mutation),
+        vy: parent.vy * (1 + mutation),
+        radius: Math.min(Math.max(parent.radius * (1 + mutation), 1.5), 4),
+        color: this.mutateColor(parent.color, mutation),
+        age: 0,
+        lifespan: parent.lifespan * (1 + mutation * 0.5),
+        health: 100,
+        pulseRate: parent.pulseRate * (1 + mutation),
+        brightness: 0,
+        brightnessDirection: 1,
+        synapticStrength: parent.synapticStrength * (1 + mutation),
+        parentId: this.neurons.indexOf(parent)
+      };
     }
-    .dashboard {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      padding: 2em;
-      text-align: center;
+    
+    // Création de neurone original
+    return {
+      x: Math.random() * this.width,
+      y: Math.random() * this.height,
+      vx: (Math.random() - 0.5) * 0.6,
+      vy: (Math.random() - 0.5) * 0.6,
+      radius: 1.5 + Math.random() * 2.5,
+      color: {
+        r: Math.floor(Math.random() * 100), 
+        g: 200 + Math.floor(Math.random() * 55),
+        b: 200 + Math.floor(Math.random() * 55)
+      },
+      age: 0,
+      lifespan: 500 + Math.random() * 1000, // Durée de vie variable
+      health: 100,
+      pulseRate: 0.01 + Math.random() * 0.03,
+      brightness: 0,
+      brightnessDirection: 1,
+      synapticStrength: 0.5 + Math.random() * 0.5,
+      parentId: null
+    };
+  }
+  
+  // Muter légèrement la couleur
+  mutateColor(parentColor, mutationFactor) {
+    return {
+      r: Math.min(255, Math.max(0, parentColor.r + parentColor.r * mutationFactor)),
+      g: Math.min(255, Math.max(0, parentColor.g + parentColor.g * mutationFactor)),
+      b: Math.min(255, Math.max(0, parentColor.b + parentColor.b * mutationFactor))
+    };
+  }
+  
+  // Effectuer un diagnostic du réseau neuronal
+  performNetworkDiagnostic() {
+    // Calculer la stabilité du réseau
+    const totalNeurons = this.neurons.length;
+    const healthyNeurons = this.neurons.filter(n => n.health > 70).length;
+    const networkHealth = (healthyNeurons / totalNeurons) * 100;
+    
+    // Calculer la force moyenne des synapses
+    let totalSynapticStrength = 0;
+    this.neurons.forEach(neuron => {
+      totalSynapticStrength += neuron.synapticStrength;
+    });
+    const avgSynapticStrength = totalSynapticStrength / totalNeurons;
+    
+    // Mettre à jour les métriques de santé
+    this.healthData.networkStability = networkHealth;
+    this.healthData.synapseStrength = avgSynapticStrength;
+    
+    // Décider si une auto-réparation ou réplication est nécessaire
+    if (networkHealth < 75 || totalNeurons < this.minNeurons) {
+      this.autoRepair();
     }
-    .start-button {
-      margin-top: 2em;
-      padding: 1em 2em;
-      font-size: 1.2em;
-      background: transparent;
-      border: 2px solid #00ffe1;
-      color: #00ffe1;
-      text-shadow: 0 0 5px #00ffe1;
-      cursor: pointer;
-      border-radius: 12px;
-      animation: fadeIn 3s ease-in-out forwards, pulse 2s infinite;
-      transition: background 0.3s, color 0.3s, transform 0.2s;
-      box-shadow: 0 0 10px #00ffe1, 0 0 20px #00ffe1;
-    }
-    .start-button:hover {
-      background: #00ffe1;
-      color: #000;
-      transform: scale(1.05);
-    }
-    .functions {
-      margin-top: 2em;
-      text-align: left;
-      max-width: 400px;
-    }
-    .functions li {
-      margin-bottom: 0.5em;
-      list-style: none;
-    }
-    .functions li::before {
-      content: '🧠';
-      margin-right: 0.5em;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 10px #00ffe1; }
-      50% { box-shadow: 0 0 20px #00ffe1; }
-    }
-  </style>
-</head>
-<body>
-  <canvas id="neuralCanvas"></canvas>
-  <div class="dashboard">
-    <h1>🧠 NeuraX-Ultime</h1>
-    <p>Tableau de bord neuronal en temps réel</p>
-    <button class="start-button" onclick="launchNeuraX()">Activer le cerveau</button>
-    <ul class="functions">
-      <li>Auto-réplication neuronale</li>
-      <li>Sauvegarde JSON automatique</li>
-      <li>Statistiques du cerveau</li>
-      <li>Synthèse vocale intégrée</li>
-      <li>Interconnexion des modules</li>
-    </ul>
-  </div>
-  <script>
-    function launchNeuraX() {
-      const phrase = "Connexion à NeuraX établie. Le système cérébral est opérationnel.";
-      const utterance = new SpeechSynthesisUtterance(phrase);
-      utterance.lang = "fr-FR";
-      speechSynthesis.speak(utterance);
-      alert(phrase);
-    }
-
-    // Animation canvas neurale
-    const canvas = document.getElementById('neuralCanvas');
-    const ctx = canvas.getContext('2d');
-    let w, h;
-    function resize() {
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    const nodes = Array.from({ length: 50 }, () => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5
-    }));
-
-    function draw() {
-      ctx.clearRect(0, 0, w, h);
-      for (let i = 0; i < nodes.length; i++) {
-        const n1 = nodes[i];
-        ctx.beginPath();
-        ctx.arc(n1.x, n1.y, 2, 0, Math.PI * 2);
-        ctx.fillStyle = '#00ffe1';
-        ctx.fill();
-        for (let j = i + 1; j < nodes.length; j++) {
-          const n2 = nodes[j];
-          const dx = n1.x - n2.x;
-          const dy = n1.y - n2.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            ctx.strokeStyle = 'rgba(0,255,225,0.1)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(n1.x, n1.y);
-            ctx.lineTo(n2.x, n2.y);
-            ctx.stroke();
-          }
+    
+    // Loguer les données (peut être remplacé par l'enregistrement JSON plus tard)
+    console.log(`Diagnostic du réseau neuronal:`, this.healthData);
+  }
+  
+  // Auto-réparation du réseau
+  autoRepair() {
+    console.log("Démarrage de l'auto-réparation du réseau...");
+    
+    // 1. Éliminer les neurones très malades qui ne sont plus fonctionnels
+    this.neurons = this.neurons.filter(neuron => neuron.health > 10);
+    
+    // 2. Régénérer si trop peu de neurones
+    if (this.neurons.length < this.minNeurons) {
+      const neuronsToAdd = Math.min(10, this.minNeurons - this.neurons.length);
+      for (let i = 0; i < neuronsToAdd; i++) {
+        // Choisir un neurone parent sain
+        const healthyNeurons = this.neurons.filter(n => n.health > 60);
+        if (healthyNeurons.length > 0) {
+          const parent = healthyNeurons[Math.floor(Math.random() * healthyNeurons.length)];
+          this.neurons.push(this.createNeuron(parent));
+          this.healthData.replicationCount++;
+          
+          // Effet visuel pour la réplication
+          this.createReplicationEffect(parent.x, parent.y);
+        } else {
+          // Si pas de parents sains, créer un neurone de base
+          this.neurons.push(this.createNeuron());
         }
       }
-      nodes.forEach(n => {
-        n.x += n.vx;
-        n.y += n.vy;
-        if (n.x < 0 || n.x > w) n.vx *= -1;
-        if (n.y < 0 || n.y > h) n.vy *= -1;
-      });
-      requestAnimationFrame(draw);
+      console.log(`Auto-réplication: ${neuronsToAdd} nouveaux neurones créés`);
     }
-    draw();
-  </script>
-</body>
-</html>
+    
+    // 3. Soigner partiellement les neurones malades
+    this.neurons.forEach(neuron => {
+      if (neuron.health < 70) {
+        neuron.health += 20;
+        if (neuron.health > 100) neuron.health = 100;
+      }
+    });
+  }
+  
+  // Effet visuel pour la réplication
+  createReplicationEffect(x, y) {
+    // Créer un effet visuel temporaire pour montrer la réplication
+    const ripple = {
+      x: x,
+      y: y,
+      radius: 5,
+      maxRadius: 50,
+      alpha: 1,
+      growRate: 1
+    };
+    
+    // Ajouter l'effet à une liste d'effets (à implémenter dans le système de rendu)
+    if (!this.visualEffects) this.visualEffects = [];
+    this.visualEffects.push(ripple);
+    
+    // Ajouter un effet sonore subtil si l'audio est implémenté
+    if (window.audioManager) {
+      window.audioManager.playSound('replication', {volume: 0.3});
+    }
+  }
+  
+  // Mise à jour de tous les neurones
+  update() {
+    // Mettre à jour chaque neurone
+    for (let i = this.neurons.length - 1; i >= 0; i--) {
+      const neuron = this.neurons[i];
+      
+      // Mise à jour de la position
+      neuron.x += neuron.vx;
+      neuron.y += neuron.vy;
+      
+      // Rebond sur les bords
+      if (neuron.x < 0 || neuron.x > this.width) neuron.vx *= -1;
+      if (neuron.y < 0 || neuron.y > this.height) neuron.vy *= -1;
+      
+      // Pulsation de luminosité
+      neuron.brightness += neuron.brightnessDirection * neuron.pulseRate;
+      if (neuron.brightness >= 1) neuron.brightnessDirection = -1;
+      if (neuron.brightness <= 0) neuron.brightnessDirection = 1;
+      
+      // Vieillissement et santé
+      neuron.age++;
+      if (neuron.age > neuron.lifespan) {
+        neuron.health -= 0.5; // Déclin progressif
+      }
+      
+      // Auto-réplication spontanée (rare)
+      if (neuron.health > 80 && Math.random() < 0.0005 && this.neurons.length < this.maxNeurons) {
+        this.neurons.push(this.createNeuron(neuron));
+        this.healthData.replicationCount++;
+        this.createReplicationEffect(neuron.x, neuron.y);
+      }
+      
+      // Mort du neurone
+      if (neuron.health <= 0) {
+        this.neurons.splice(i, 1);
+        this.healthData.deadNeurons++;
+      }
+    }
+    
+    // Mettre à jour les effets visuels
+    if (this.visualEffects) {
+      for (let i = this.visualEffects.length - 1; i >= 0; i--) {
+        const effect = this.visualEffects[i];
+        effect.radius += effect.growRate;
+        effect.alpha -= 0.02;
+        
+        if (effect.alpha <= 0 || effect.radius >= effect.maxRadius) {
+          this.visualEffects.splice(i, 1);
+        }
+      }
+    }
+    
+    // Recalculer les synapses
+    this.synapses = [];
+    for (let i = 0; i < this.neurons.length; i++) {
+      for (let j = i + 1; j < this.neurons.length; j++) {
+        const n1 = this.neurons[i];
+        const n2 = this.neurons[j];
+        const dist = this.distance(n1, n2);
+        
+        if (dist < this.maxDistance) {
+          // Force de la synapse: distance + santé des deux neurones + force synaptique
+          const healthFactor = (n1.health + n2.health) / 200;
+          const strength = (1 - dist / this.maxDistance) * healthFactor * 
+                          ((n1.synapticStrength + n2.synapticStrength) / 2);
+          
+          this.synapses.push({
+            n1: i,
+            n2: j,
+            strength: strength
+          });
+        }
+      }
+    }
+  }
+  
+  // Calculer la distance entre deux neurones
+  distance(n1, n2) {
+    const dx = n1.x - n2.x;
+    const dy = n1.y - n2.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+  
+  // Rendu du réseau neuronal
+  render() {
+    // Nettoyer le canvas
+    this.ctx.clearRect(0, 0, this.width, this.height);
+    
+    // Ajouter un effet de dégradé pour l'arrière-plan
+    const gradient = this.ctx.createRadialGradient(
+      this.width/2, this.height/2, 0, 
+      this.width/2, this.height/2, Math.max(this.width, this.height)
+    );
+    gradient.addColorStop(0, "rgba(0, 20, 30, 1)");
+    gradient.addColorStop(1, "rgba(0, 0, 5, 1)");
+    this.ctx.fillStyle = gradient;
+    this.ctx.fillRect(0, 0, this.width, this.height);
+    
+    // Dessiner d'abord les effets de réplication
+    if (this.visualEffects && this.visualEffects.length > 0) {
+      this.visualEffects.forEach(effect => {
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = `rgba(0, 255, 255, ${effect.alpha})`;
+        this.ctx.lineWidth = 2;
+        this.ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI * 2);
+        this.ctx.stroke();
+      });
+    }
+    
+    // Dessiner les synapses
+    this.synapses.forEach(synapse => {
+      const n1 = this.neurons[synapse.n1];
+      const n2 = this.neurons[synapse.n2];
+      
+      const gradient = this.ctx.createLinearGradient(n1.x, n1.y, n2.x, n2.y);
+      gradient.addColorStop(0, `rgba(${n1.color.r}, ${n1.color.g}, ${n1.color.b}, ${synapse.strength})`);
+      gradient.addColorStop(1, `rgba(${n2.color.r}, ${n2.color.g}, ${n2.color.b}, ${synapse.strength})`);
+      
+      this.ctx.beginPath();
+      this.ctx.strokeStyle = gradient;
+      this.ctx.lineWidth = synapse.strength * 1.5;
+      this.ctx.moveTo(n1.x, n1.y);
+      this.ctx.lineTo(n2.x, n2.y);
+      this.ctx.stroke();
+    });
+    
+    // Dessiner les neurones
+    this.neurons.forEach(neuron => {
+      // Base du neurone
+      this.ctx.beginPath();
+      this.ctx.fillStyle = `rgba(${neuron.color.r}, ${neuron.color.g}, ${neuron.color.b}, ${0.3 + neuron.brightness * 0.7})`;
+      
+      // Ajouter un effet de lueur (glow)
+      this.ctx.shadowColor = `rgba(${neuron.color.r}, ${neuron.color.g}, ${neuron.color.b}, ${neuron.brightness})`;
+      this.ctx.shadowBlur = neuron.brightness * 15;
+      
+      // La taille du neurone dépend de sa santé
+      const displayRadius = neuron.radius * (0.5 + neuron.health/200);
+      this.ctx.arc(neuron.x, neuron.y, displayRadius, 0, Math.PI * 2);
+      this.ctx.fill();
+      
+      // Réinitialiser les effets d'ombre pour ne pas affecter le reste
+      this.ctx.shadowBlur = 0;
+    });
+    
+    // Afficher les statistiques du réseau
+    this.renderStats();
+  }
+  
+  // Affichage des statistiques réseau
+  renderStats() {
+    this.ctx.fillStyle = "rgba(0, 30, 40, 0.7)";
+    this.ctx.fillRect(10, 10, 200, 70);
+    this.ctx.strokeStyle = "rgba(0, 255, 225, 0.7)";
+    this.ctx.strokeRect(10, 10, 200, 70);
+    
+    this.ctx.fillStyle = "#0ff";
+    this.ctx.font = "12px monospace";
+    this.ctx.fillText(`Neurones: ${this.neurons.length}`, 20, 30);
+    this.ctx.fillText(`Stabilité: ${this.healthData.networkStability.toFixed(1)}%`, 20, 50);
+    this.ctx.fillText(`Réplications: ${this.healthData.replicationCount}`, 20, 70);
+  }
+  
+  // Redimensionnement du canvas
+  resize(width, height) {
+    this.width = width;
+    this.height = height;
+  }
+}
+
+// ========== AMÉLIORATIONS DE L'INTERFACE VISUELLE ==========
+
+class NeuraXInterface {
+  constructor() {
+    // Initialisation de l'interface
+    this.setupElements();
+    this.setupEvents();
+    this.setupAudio();
+    
+    // État initial
+    this.chatVisible = true;
+    this.fullscreen = false;
+    this.voiceEnabled = true;
+    this.visualMode = 'default'; // 'default', 'cosmic', 'matrix', 'aurora'
+    
+    // Cycle jour/nuit
+    this.dayNightCycle = {
+      active: true,
+      currentTime: 'night', // 'day' ou 'night'
+      transitionInProgress: false
+    };
+    
+    // Animation de typographie pour les messages
+    this.typingSpeed = 30; // ms par caractère
+    
+    // Intervalle jour/nuit si activé
+    if (this.dayNightCycle.active) {
+      setInterval(() => this.toggleDayNight(), 300000); // 5 minutes
+    }
+  }
+  
+  // Création des éléments d'interface
+  setupElements() {
+    // Créer la barre de contrôle
+    this.controlBar = document.createElement('div');
+    this.controlBar.className = 'control-bar';
+    this.controlBar.innerHTML = `
+      <div class="control-icon" id="toggleChat" title="Afficher/masquer le chat">
+        <i class="icon-chat"></i>
+      </div>
+      <div class="control-icon" id="toggleVoice" title="Activer/désactiver la voix">
+        <i class="icon-voice-on"></i>
+      </div>
+      <div class="control-icon" id="toggleVisualMode" title="Changer le mode visuel">
+        <i class="icon-visual"></i>
+      </div>
+      <div class="control-icon" id="toggleDayNight" title="Jour/Nuit">
+        <i class="icon-night"></i>
+      </div>
+      <div class="control-icon" id="toggleFullscreen" title="Plein écran">
+        <i class="icon-fullscreen"></i>
+      </div>
+    `;
+    document.body.appendChild(this.controlBar);
+    
+    // Créer le conteneur pour les notifications
+    this.notificationArea = document.createElement('div');
+    this.notificationArea.className = 'notification-area';
+    document.body.appendChild(this.notificationArea);
+    
+    // Style pour les icônes (à remplacer par un vrai fichier CSS)
+    const iconStyle = document.createElement('style');
+    iconStyle.textContent = `
+      .control-bar {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 100;
+        background: rgba(0, 30, 40, 0.7);
+        border-radius: 12px;
+        padding: 8px;
+        display: flex;
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+      }
+      
+      .control-icon {
+        width: 40px;
+        height: 40px;
+        margin: 0 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0ff;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+      }
+      
+      .control-icon:hover {
+        background: rgba(0, 255, 255, 0.2);
+      }
+      
+      .notification-area {
+        position: fixed;
+        top: 80px;
+        left: 20px;
+        width: 300px;
+        z-index: 99;
+      }
+      
+      .notification {
+        background: rgba(0, 30, 40, 0.85);
+        border-left: 3px solid #0ff;
+        color: #0ff;
+        padding: 10px 15px;
+        margin-bottom: 10px;
+        border-radius: 0 8px 8px 0;
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        transform: translateX(-100%);
+        opacity: 0;
+        animation: slideIn 0.5s forwards, fadeOut 0.5s 4.5s forwards;
+      }
+      
+      @keyframes slideIn {
+        to { transform: translateX(0); opacity: 1; }
+      }
+      
+      @keyframes fadeOut {
+        to { opacity: 0; transform: translateX(-100%); }
+      }
+      
+      /* Icônes temporaires (à remplacer par une police d'icônes ou SVG) */
+      [class^="icon-"] {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      
+      .icon-chat {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2300ffff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>');
+      }
+      
+      .icon-voice-on {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2300ffff" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>');
+      }
+      
+      .icon-voice-off {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2300ffff" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2c0 .95-.19 1.85-.52 2.67"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>');
+      }
+      
+      .icon-visual {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2300ffff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="4.93" y1="4.93" x2="9.17" y2="9.17"></line><line x1="14.83" y1="14.83" x2="19.07" y2="19.07"></line><line x1="14.83" y1="9.17" x2="19.07" y2="4.93"></line><line x1="4.93" y1="19.07" x2="9.17" y2="14.83"></line></svg>');
+      }
+      
+      .icon-night {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2300ffff" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>');
+      }
+      
+      .icon-day {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2300ffff" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>');
+      }
+      
+      .icon-fullscreen {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%2300ffff" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>');
+      }
+    `;
+    document.head.appendChild(iconStyle);
+    
+    // Appliquer un style amélioré au chat existant
+    const chatWindow = document.getElementById('chatWindow');
+    if (chatWindow) {
+      chatWindow.style.boxShadow = '0 0 25px rgba(0, 255, 255, 0.4)';
+      chatWindow.style.border = '1px solid rgba(0, 255, 255, 0.3)';
+      chatWindow.style.background = 'rgba(0, 20, 30, 0.85)';
+      chatWindow.style.backdropFilter = 'blur(10px)';
+      
+      // Améliorer les boutons
+      const sendBtn = document.getElementById('sendBtn');
+      if (sendBtn) {
+        sendBtn.style.background = 'linear-gradient(to right, #0cc, #08f)';
+        sendBtn.style.boxShadow = '0 0 10px rgba(0, 255, 255, 0.5)';
+        sendBtn.style.transition = 'all 0.3s ease';
+      }
+    }
+  }
+  
+  // Mettre en place les gestionnaires d'événements
+  setupEvents() {
+    // Toggle chat
+    document.getElementById('toggleChat').addEventListener('click', () => {
+      const chatWindow = document.getElementById('chatWindow');
+      if (chatWindow) {
+        this.chatVisible = !this.chatVisible;
+        chatWindow.style.display = this.chatVisible ? 'flex' : 'none';
+        this.showNotification(this.chatVisible ? 'Chat activé' : 'Chat désactivé');
+      }
+    });
+    
+    // Toggle voix
+    document.getElementById('toggleVoice').addEventListener('click', () => {
+      this.voiceEnabled = !this.voiceEnabled;
+      document.getElementById('toggleVoice').innerHTML = 
+        `<i class="icon-voice-${this.voiceEnabled ? 'on' : 'off'}"></i>`;
+      this.showNotification(this.voiceEnabled ? 'Voix activée' : 'Voix désactivée');
+      
+      // Modifier la fonction globale speakText si elle existe
+      if (window.speakText) {
+        const originalSpeakText = window.speakText;
+        window.speakText = (text) => {
+          if (this.voiceEnabled) {
+            originalSpeakText(text);
+          }
+        };
+      }
+    });
+    
+    // Toggle mode visuel
+    document.getElementById('toggleVisualMode').addEventListener('click', () => {
+      // Rotation des modes visuels
+      const modes = ['default', 'cosmic', 'matrix', 'aurora'];
+      const currentIndex = modes.indexOf(this.visualMode);
+      this.visualMode = modes[(currentIndex + 1) % modes.length];
+      this.applyVisualMode();
+      this.showNotification(`Mode visuel: ${this.visualMode}`);
+    });
+    
+    // Toggle jour/nuit
+    document.getElementById('toggleDayNight').addEventListener('click', () => {
+      this.toggleDayNight(true); // force toggle
+    });
+    
+    // Toggle plein écran
+    document.getElementById('toggleFullscreen').addEventListener('click', () => {
+      this.toggleFullscreen();
+    });
+  }
+  
+  // Configuration audio
+  setupAudio() {
+    // Créer un gestionnaire audio simple
+    window.audioManager = {
+      sounds: {
+        notification: {
+       
