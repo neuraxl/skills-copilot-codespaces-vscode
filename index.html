@@ -32,6 +32,35 @@
     galaxyZone.appendChild(galaxy);
   }
 </script>
+<script>
+  const galaxyZone = document.createElement('div');
+  galaxyZone.style.position = 'absolute';
+  galaxyZone.style.top = '0';
+  galaxyZone.style.left = '0';
+  galaxyZone.style.width = '100%';
+  galaxyZone.style.height = '100%';
+  galaxyZone.style.pointerEvents = 'none';
+  document.body.appendChild(galaxyZone);
+
+  for (let i = 0; i < 100; i++) {
+    const galaxy = document.createElement('div');
+    galaxy.classList.add('galaxy');
+    galaxy.style.position = 'absolute';
+    galaxy.style.width = '10px';
+    galaxy.style.height = '10px';
+    galaxy.style.borderRadius = '50%';
+    galaxy.style.background = '#88f';
+    galaxy.style.boxShadow = '0 0 5px #88f';
+    galaxy.style.top = `${Math.random() * 100}%`;
+    galaxy.style.left = `${Math.random() * 100}%`;
+    galaxy.style.cursor = 'pointer';
+    galaxy.style.pointerEvents = 'auto';
+    galaxy.title = `Galaxie ${i + 1}`;
+    galaxy.onclick = () => alert(`Bienvenue dans la galaxie ${i + 1} ✨`);
+
+    galaxyZone.appendChild(galaxy);
+  }
+</script>
 
     body {
       margin: 0;
