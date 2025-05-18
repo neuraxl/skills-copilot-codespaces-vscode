@@ -1,3 +1,28 @@
+<!-- Partie ajout -->
+<input id="newOracle" placeholder="Entrez une nouvelle prophétie" style="width:80%" />
+<button onclick="addOracle()">Ajouter l’Oracle</button>
+
+<script>
+async function loadOracles() {
+  const res = await fetch('http://localhost:5000/oracles');
+  const oracles = await res.json();
+  document.getElementById('archive').innerHTML = oracles.map(o => `<p><strong>#${o.id}</strong> : ${o.texte} <em>(${new Date(o.date).toLocaleString()})</em></p>`).join('');
+}
+
+async function addOracle() {
+  const texte = document.getElementById('newOracle').value.trim();
+  if (!texte) return alert("Le texte ne peut pas être vide");
+  await fetch('http://localhost:5000/oracles', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({texte})
+  });
+  document.getElementById('newOracle').value = '';
+  loadOracles();
+}
+
+loadOracles();
+</script>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
