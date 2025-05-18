@@ -1,9 +1,127 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NeuraX-Ultime : Galaxie & Système Solaire</title>
+<style>
+  body {
+    margin: 0;
+    background: radial-gradient(ellipse at center, #0a0a2a 0%, #000 90%);
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .galaxy {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, #111 30%, transparent 70%);
+    box-shadow: 0 0 30px 10px rgba(255, 255, 255, 0.05);
+  }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
+  .sun {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    margin: -40px 0 0 -40px;
+    background: radial-gradient(circle at center, #ffd93b, #f0a500);
+    border-radius: 50%;
+    box-shadow: 0 0 20px 8px #ffeb3b;
+    filter: drop-shadow(0 0 10px #ffeb3b);
+  }
+
+  /* Orbites */
+  .orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    transform-origin: center center;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  /* Planète */
+  .planet {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 24px;
+    margin: -12px 0 0 -12px;
+    border-radius: 50%;
+    box-shadow: 0 0 8px 2px currentColor;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .planet:hover {
+    transform: scale(1.4);
+    box-shadow: 0 0 16px 6px currentColor;
+  }
+
+  /* Génération dynamique des orbites et vitesses */
+</style>
+</head>
+<body>
+
+<div class="galaxy" id="galaxy">
+  <div class="sun" title="Soleil"></div>
+</div>
+
+<script>
+  const galaxy = document.getElementById('galaxy');
+  const numPlanets = 12;
+
+  // Couleurs vibrantes pour chaque planète
+  const colors = [
+    '#ff6f61', '#ffca3a', '#8ac926', '#1982c4',
+    '#6a4c93', '#ff595e', '#1982c4', '#f9844a',
+    '#6a4c93', '#ffca3a', '#8ac926', '#ff6f61'
+  ];
+
+  for(let i = 1; i <= numPlanets; i++) {
+    const orbit = document.createElement('div');
+    orbit.classList.add('orbit');
+
+    // Taille et position orbitale croissante
+    const orbitSize = 80 + i * 35;
+    orbit.style.width = `${orbitSize}px`;
+    orbit.style.height = `${orbitSize}px`;
+    orbit.style.margin = `-${orbitSize/2}px 0 0 -${orbitSize/2}px`;
+
+    // Vitesse d'animation (plus loin = plus lent)
+    const duration = 30 + i * 10; // secondes
+
+    orbit.style.animationName = `spin${i}`;
+    orbit.style.animationDuration = `${duration}s`;
+
+    // Création de la planète
+    const planet = document.createElement('div');
+    planet.classList.add('planet');
+    planet.style.color = colors[i - 1];
+    planet.title = `Planète #${i}`;
+
+    // Position initiale de la planète sur l'orbite (à droite)
+    planet.style.top = '50%';
+    planet.style.left = '100%';
+    planet.style.margin = '-12px 0 0 -12px';
+
+    orbit.appendChild(planet);
+    galaxy.appendChild(orbit);
+
+    // Création de l'
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
