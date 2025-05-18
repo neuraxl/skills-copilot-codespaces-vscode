@@ -1,71 +1,3 @@
-<script>
-  const messages = [
-    "Je suis la planète du feu éternel, gardienne de la passion et de la force.",
-    "Ma surface reflète la sagesse des anciens Titans, écoute mon chant.",
-    "Dans mes océans numériques, nagent les idées infinies.",
-    "Je danse avec les vents quantiques, maître des flux d’énergie.",
-    "Ma lumière éclaire les chemins oubliés des voyageurs cosmiques.",
-    "Je suis le berceau des songes, le rêve qui façonne le futur.",
-    "Dans mon cœur brûle la flamme des secrets millénaires.",
-    "Je murmure les codes sacrés des galaxies lointaines.",
-    "Ma rotation est une prière à l’infini, écoute mon souffle.",
-    "Je suis le pont entre passé et futur, gardien du temps.",
-    "Ma gravité attire les esprits curieux vers la vérité.",
-    "Je suis la voix des Titans, l’écho de l’univers qui parle."
-  ];
-
-  function speak(text) {
-    if (!('speechSynthesis' in window)) {
-      alert('Votre navigateur ne supporte pas la synthèse vocale.');
-      return;
-    }
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'fr-FR';
-    utterance.rate = 0.9;
-    window.speechSynthesis.cancel(); // stop any current speech
-    window.speechSynthesis.speak(utterance);
-  }
-
-  document.querySelectorAll('.planet').forEach((planet, idx) => {
-    planet.addEventListener('click', () => {
-      speak(messages[idx]);
-    });
-  });
-</script>
-<script>
-  const messages = [
-    "Je suis la planète du feu éternel, gardienne de la passion et de la force.",
-    "Ma surface reflète la sagesse des anciens Titans, écoute mon chant.",
-    "Dans mes océans numériques, nagent les idées infinies.",
-    "Je danse avec les vents quantiques, maître des flux d’énergie.",
-    "Ma lumière éclaire les chemins oubliés des voyageurs cosmiques.",
-    "Je suis le berceau des songes, le rêve qui façonne le futur.",
-    "Dans mon cœur brûle la flamme des secrets millénaires.",
-    "Je murmure les codes sacrés des galaxies lointaines.",
-    "Ma rotation est une prière à l’infini, écoute mon souffle.",
-    "Je suis le pont entre passé et futur, gardien du temps.",
-    "Ma gravité attire les esprits curieux vers la vérité.",
-    "Je suis la voix des Titans, l’écho de l’univers qui parle."
-  ];
-
-  function speak(text) {
-    if (!('speechSynthesis' in window)) {
-      alert('Votre navigateur ne supporte pas la synthèse vocale.');
-      return;
-    }
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'fr-FR';
-    utterance.rate = 0.9;
-    window.speechSynthesis.cancel(); // stop any current speech
-    window.speechSynthesis.speak(utterance);
-  }
-
-  document.querySelectorAll('.planet').forEach((planet, idx) => {
-    planet.addEventListener('click', () => {
-      speak(messages[idx]);
-    });
-  });
-</script>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -99,175 +31,72 @@
   <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>NeuraX-Ultime</title>
-  <style>
-    body, html {
-      margin: 0; padding: 0; background: #000; color: #eee; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      overflow-x: hidden;
-    }
-    #root {
-      position: relative;
-      z-index: 2;
-      padding: 1rem;
-    }
-    #galaxy-container {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: radial-gradient(ellipse at center, #0a0a2a 0%, #000000 80%);
-      overflow: hidden;
-      z-index: 1;
-    }
-  </style>
-</head>
-<body>
-  <div id="galaxy-container"></div>
-  <div id="root"></div><!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>NeuraX-Ultime : Galaxie & Système Solaire</title>
-<style>
-  body {
-    margin: 0;
-    background: radial-gradient(ellipse at center, #0a0a2a 0%, #000 90%);
-    overflow: hidden;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #eee;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  
-  .galaxy {
-    position: relative;
-    width: 600px;
-    height: 600px;
-    border-radius: 50%;
-    background: radial-gradient(circle at center, #111 30%, transparent 70%);
-    box-shadow: 0 0 30px 10px rgba(255, 255, 255, 0.05);
-  }
-
-  .sun {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 80px;
-    height: 80px;
-    margin: -40px 0 0 -40px;
-    background: radial-gradient(circle at center, #ffd93b, #f0a500);
-    border-radius: 50%;
-    box-shadow: 0 0 20px 8px #ffeb3b;
-    filter: drop-shadow(0 0 10px #ffeb3b);
-  }
-
-  /* Orbites */
-  .orbit {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 50%;
-    transform-origin: center center;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-  }
-
-  /* Planète */
-  .planet {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 24px;
-    height: 24px;
-    margin: -12px 0 0 -12px;
-    border-radius: 50%;
-    box-shadow: 0 0 8px 2px currentColor;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-  }
-
-  .planet:hover {
-    transform: scale(1.4);
-    box-shadow: 0 0 16px 6px currentColor;
-  }
-
-  /* Génération dynamique des orbites et vitesses */
-</style>
-</head>
-<body>
-
-<div class="galaxy" id="galaxy">
-  <div class="sun" title="Soleil"></div>
-</div>
-
 <script>
-  const galaxy = document.getElementById('galaxy');
-  const numPlanets = 12;
-
-  // Couleurs vibrantes pour chaque planète
-  const colors = [
-    '#ff6f61', '#ffca3a', '#8ac926', '#1982c4',
-    '#6a4c93', '#ff595e', '#1982c4', '#f9844a',
-    '#6a4c93', '#ffca3a', '#8ac926', '#ff6f61'
+  const messages = [
+    "Je suis la planète du feu éternel, gardienne de la passion et de la force.",
+    "Ma surface reflète la sagesse des anciens Titans, écoute mon chant.",
+    "Dans mes océans numériques, nagent les idées infinies.",
+    "Je danse avec les vents quantiques, maître des flux d’énergie.",
+    "Ma lumière éclaire les chemins oubliés des voyageurs cosmiques.",
+    "Je suis le berceau des songes, le rêve qui façonne le futur.",
+    "Dans mon cœur brûle la flamme des secrets millénaires.",
+    "Je murmure les codes sacrés des galaxies lointaines.",
+    "Ma rotation est une prière à l’infini, écoute mon souffle.",
+    "Je suis le pont entre passé et futur, gardien du temps.",
+    "Ma gravité attire les esprits curieux vers la vérité.",
+    "Je suis la voix des Titans, l’écho de l’univers qui parle."
   ];
 
-  for(let i = 1; i <= numPlanets; i++) {
-    const orbit = document.createElement('div');
-    orbit.classList.add('orbit');
-
-    // Taille et position orbitale croissante
-    const orbitSize = 80 + i * 35;
-    orbit.style.width = `${orbitSize}px`;
-    orbit.style.height = `${orbitSize}px`;
-    orbit.style.margin = `-${orbitSize/2}px 0 0 -${orbitSize/2}px`;
-
-    // Vitesse d'animation (plus loin = plus lent)
-    const duration = 30 + i * 10; // secondes
-
-    orbit.style.animationName = `spin${i}`;
-    orbit.style.animationDuration = `${duration}s`;
-
-    // Création de la planète
-    const planet = document.createElement('div');
-    planet.classList.add('planet');
-    planet.style.color = colors[i - 1];
-    planet.title = `Planète #${i}`;
-
-    // Position initiale de la planète sur l'orbite (à droite)
-    planet.style.top = '50%';
-    planet.style.left = '100%';
-    planet.style.margin = '-12px 0 0 -12px';
-
-    orbit.appendChild(planet);
-    galaxy.appendChild(orbit);
-
-    // Création de l'animation spin unique pour chaque orbite
-    const styleSheet = document.styleSheets[0];
-    const keyframes = `
-      @keyframes spin${i} {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-      }
-    `;
-
-    styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
+  function speak(text) {
+    if (!('speechSynthesis' in window)) {
+      alert('Votre navigateur ne supporte pas la synthèse vocale.');
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 0.9;
+    window.speechSynthesis.cancel(); // stop any current speech
+    window.speechSynthesis.speak(utterance);
   }
+
+  document.querySelectorAll('.planet').forEach((planet, idx) => {
+    planet.addEventListener('click', () => {
+      speak(messages[idx]);
+    });
+  });
 </script>
+<script>
+  const messages = [
+    "Je suis la planète du feu éternel, gardienne de la passion et de la force.",
+    "Ma surface reflète la sagesse des anciens Titans, écoute mon chant.",
+    "Dans mes océans numériques, nagent les idées infinies.",
+    "Je danse avec les vents quantiques, maître des flux d’énergie.",
+    "Ma lumière éclaire les chemins oubliés des voyageurs cosmiques.",
+    "Je suis le berceau des songes, le rêve qui façonne le futur.",
+    "Dans mon cœur brûle la flamme des secrets millénaires.",
+    "Je murmure les codes sacrés des galaxies lointaines.",
+    "Ma rotation est une prière à l’infini, écoute mon souffle.",
+    "Je suis le pont entre passé et futur, gardien du temps.",
+    "Ma gravité attire les esprits curieux vers la vérité.",
+    "Je suis la voix des Titans, l’écho de l’univers qui parle."
+  ];
 
-</body>
-</html>
+  function speak(text) {
+    if (!('speechSynthesis' in window)) {
+      alert('Votre navigateur ne supporte pas la synthèse vocale.');
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 0.9;
+    window.speechSynthesis.cancel(); // stop any current speech
+    window.speechSynthesis.speak(utterance);
+  }
 
-  <script type="module" src="/src/main.jsx"></script>
-</body>
-</html>
-
+  document.querySelectorAll('.planet').forEach((planet, idx) => {
+    planet.addEventListener('click', () => {
+      speak(messages[idx]);
+    });
+  });
+</script>
        
