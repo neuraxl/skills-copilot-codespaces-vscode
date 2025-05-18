@@ -1,6 +1,39 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NeuraX-Ultime</title>
+  <style>
+    body, html {
+      margin: 0; padding: 0; background: #000; color: #eee; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+    }
+    #root {
+      position: relative;
+      z-index: 2;
+      padding: 1rem;
+    }
+    #galaxy-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(ellipse at center, #0a0a2a 0%, #000000 80%);
+      overflow: hidden;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="galaxy-container"></div>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
 <meta charset="UTF-8" />
 <title>NeuraX Cosmos - Galaxie et Système Solaire</title>
 <style>
