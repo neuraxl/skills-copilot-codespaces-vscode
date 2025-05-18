@@ -2,6 +2,257 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
+  <title>Univers Interactif - Galaxies & Civilisations Titaniques</title>
+  <style>
+    body { margin: 0; overflow: hidden; background-color: #000000; color: #eee; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    canvas { display: block; }
+    #infoBox {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.7);
+      padding: 15px;
+      border-radius: 8px;
+      max-width: 300px;
+      font-size: 14px;
+      display: none;
+    }
+    #backButton {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px 15px;
+      background-color: #004466;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: none;
+      font-weight: bold;
+      font-size: 16px;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+    #backButton:hover {
+      background-color: #0077aa;
+    }
+  </style>
+</head>
+<body>
+  <button id="backButton">⬅ Retour aux galaxies</button>
+  <div id="infoBox"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
+  <script>
+    // Initial setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 5000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Globals
+    let galaxies = [];
+    let planets = [];
+    const infoBox = document.getElementById('infoBox');
+    const backButton = document.getElementById('backButton');
+    let mode = 'galaxies'; // 'galaxies' or 'solarSystem'
+
+    // Utility - generate dynamic names
+    function generateName(prefix, index) {
+      const suffix = Math.floor(Math.random()*1000);
+      return `${prefix} ${index+1}-${suffix}`;
+    }
+
+    // Create Galaxies
+    function createGalaxies() {
+      const geometry = new THREE.SphereGeometry(1.5, 32, 32);
+      const material = new THREE.MeshBasicMaterial({ color: 0xffcc00 });
+
+      for(let i=0; i<100; i++) {
+        const galaxy = new THREE.Mesh(geometry, material.clone());
+        galaxy.position.set(
+          (Math.random()-0.5)*400,
+          (Math.random()-0.5)*400,
+          (Math.random()-0.5)*400
+        );
+        galaxy.userData = {
+          id: i,
+          name: generateName('Galaxie', i)
+        };
+        scene.add(galaxy);
+        galaxies.push(galaxy);
+      }
+    }
+
+    // Clear scene helpers
+    function clearScene() {
+      while(scene.children.length > 0) {
+        const obj = scene.children[0];
+        scene.remove(obj);
+        if(obj.geometry) obj.geometry.dispose();
+        if(obj.material) obj.material.dispose();
+      }
+    }
+
+    // Open Solar System view
+    function openSolarSystem(galaxy) {
+      mode = 'solarSystem';
+      clearScene();
+      planets = [];
+
+      // Soleil bleu
+      const sunGeo = new THREE.SphereGeometry(6, 64, 64);
+      const sunMat = new THREE.MeshBasicMaterial({ color: 0x00aaff });
+      const sun = new THREE.Mesh(sunGeo, sunMat);
+      sun.userData = { name: 'Soleil Bleu' };
+      scene.add(sun);
+
+      // Planètes en orbite
+      for(let i=0; i<12; i++) {
+        const radius = 1 + Math.random();
+        const dist = 15 + i * 5;
+        const angle = (i / 12) * 2 * Math.PI;
+
+        const planetGeo = new THREE.SphereGeometry(radius, 32, 32);
+        const planetMat = new THREE.MeshPhongMaterial({ color: new THREE.Color(`hsl(${(i*30)%360}, 70%, 50%)`) });
+
+        const planet = new THREE.Mesh(planetGeo, planetMat);
+        planet.position.set(
+          Math.cos(angle)*dist,
+          0,
+          Math.sin(angle)*dist
+        );
+
+        planet.userData = {
+          id: i,
+          name: generateName('Planète', i),
+          civilization: `Civilisation Titanique Égyptienne Cosmique #${i+1}`,
+          population: '20 000 millions',
+          climate: ['Désert galactique', 'Oasis solaire', 'Tempêtes de sable stellaires', 'Nuits éternelles'][i%4]
+        };
+
+        // Custom rotation & orbit data
+        planet.orbitRadius = dist;
+        planet.orbitAngle = angle;
+        planet.orbitSpeed = 0.003 + Math.random() * 0.003;
+        planet.rotationSpeed = 0.01 + Math.random() * 0.02;
+
+        // Attach planet to planets array for animation and interactivity
+        planets.push(planet);
+        scene.add(planet);
+      }
+
+      // Lumière
+      const light = new THREE.PointLight(0x00aaff, 2, 1000);
+      light.position.set(0, 0, 0);
+      scene.add(light);
+
+      backButton.style.display = 'block';
+      infoBox.style.display = 'none';
+    }
+
+    // Animate galaxies and planets
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if(mode === 'galaxies') {
+        galaxies.forEach(g => {
+          g.rotation.x += 0.005;
+          g.rotation.y += 0.01;
+        });
+      } else if(mode === 'solarSystem') {
+        planets.forEach(p => {
+          p.orbitAngle += p.orbitSpeed;
+          p.position.set(
+            Math.cos(p.orbitAngle)*p.orbitRadius,
+            0,
+            Math.sin(p.orbitAngle)*p.orbitRadius
+          );
+          p.rotation.y += p.rotationSpeed;
+        });
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    // Raycaster for clicks
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    // Click handling
+    window.addEventListener('click', (event) => {
+      mouse.x = (event.clientX/window.innerWidth)*2 -1;
+      mouse.y = -(event.clientY/window.innerHeight)*2 +1;
+
+      raycaster.setFromCamera(mouse, camera);
+
+      let intersects;
+
+      if(mode === 'galaxies') {
+        intersects = raycaster.intersectObjects(galaxies);
+        if(intersects.length > 0) {
+          const galaxy = intersects[0].object;
+          openSolarSystem(galaxy);
+        }
+      } else if(mode === 'solarSystem') {
+        intersects = raycaster.intersectObjects(planets);
+        if(intersects.length > 0) {
+          const planet = intersects[0].object;
+          showPlanetInfo(planet.userData);
+        }
+      }
+    });
+
+    // Show info box for planet
+    function showPlanetInfo(data) {
+      infoBox.innerHTML = `
+        <strong>${data.name}</strong><br>
+        Civilisation : ${data.civilization}<br>
+        Population : ${data.population}<br>
+        Climat : ${data.climate}
+      `;
+      infoBox.style.display = 'block';
+    }
+
+    // Back button handler
+    backButton.addEventListener('click', () => {
+      clearScene();
+      galaxies = [];
+      planets = [];
+      createGalaxies();
+      mode = 'galaxies';
+      backButton.style.display = 'none';
+      infoBox.style.display = 'none';
+    });
+
+    // Lighting and camera
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+    scene.add(ambientLight);
+
+    camera.position.z = 300;
+
+    // Add some directional light for nice shading in solar system
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight.position.set(1, 1, 1);
+    scene.add(dirLight);
+
+    createGalaxies();
+    animate();
+
+    // Handle resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
   <title>Univers Interactif - Épopée Cosmique & Civilisation Titanique</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Papyrus&display=swap');
