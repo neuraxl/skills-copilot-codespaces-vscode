@@ -1,4 +1,157 @@
-<!DOCTYPE html>
+# permission_system/core.py
+from enum import Enum, auto
+from typing import Dict, List, Set, Optional, Union, Any
+from dataclasses import dataclass, field
+import json
+import time
+from datetime import datetime, timedelta
+import uuid
+
+
+class UserCategory(Enum):
+    """Catégories principales d'utilisateurs"""
+    RESEARCHER = auto()
+    ENTERPRISE = auto()
+    PUBLIC = auto()
+
+
+class ResearcherLevel(Enum):
+    """Niveaux de chercheurs"""
+    JUNIOR = auto()
+    SENIOR = auto()
+    PRINCIPAL = auto()
+
+
+class EnterpriseRole(Enum):
+    """Rôles en entreprise"""
+    ANALYST = auto()
+    DEVELOPER = auto()
+    DECISION_MAKER = auto()
+    ADMINISTRATOR = auto()
+
+
+class PublicTier(Enum):
+    """Niveaux utilisateurs publics"""
+    STANDARD = auto()
+    PREMIUM = auto()
+    CREATOR = auto()
+
+
+class PermissionLevel(Enum):
+    """Niveaux d'accès aux fonctionnalités"""
+    NONE = 0
+    VIEW = 10
+    USE = 20
+    MODIFY = 30
+    MANAGE = 40
+    ADMIN = 50
+
+
+@dataclass
+class UserAttributes:
+    """Attributs contextuels de l'utilisateur"""
+    geographic_location: str
+    data_sensitivity_clearance: int  # 1-5, 5 étant le plus haut niveau
+    expertise_score: int  # 1-100
+    usage_history: Dict[str, int] = field(default_factory=dict)  # fonctionnalité -> nombre d'utilisations
+    time_constraints: Dict[str, Any] = field(default_factory=dict)  # contraintes temporelles
+
+
+@dataclass
+class UserRole:
+    """Définition du rôle utilisateur"""
+    user_category: UserCategory
+    specific_role: Union[ResearcherLevel, EnterpriseRole, PublicTier]
+    attributes: UserAttributes
+    additional_roles: List[str] = field(default_factory=list)
+
+
+@dataclass
+class Feature:
+    """Définition d'une fonctionnalité"""
+    id: str
+    name: str
+    category: str
+    subcategory: str
+    min_data_sensitivity: int  # Niveau de sensibilité minimum requis
+    min_expertise: int  # Niveau d'expertise minimum requis
+    parent_feature_id: Optional[str] = None
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class Permission:
+    """Permission associant un rôle à une fonctionnalité"""
+    role_category: UserCategory
+    specific_role: Union[ResearcherLevel, EnterpriseRole, PublicTier]
+    feature_id: str
+    level: PermissionLevel
+    conditions: Dict[str, Any] = field(default_factory=dict)
+    expiry: Optional[datetime] = None
+
+
+@dataclass
+class TemporaryAccess:
+    """Accès temporaire à une fonctionnalité"""
+    user_id: str
+    feature_id: str
+    level: PermissionLevel
+    granted_by: str
+    reason: str
+    created_at: datetime = field(default_factory=datetime.now)
+    expires_at: Optional[datetime] = None
+    access_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+
+
+class PermissionMatrix:
+    """Matrice de permissions liant rôles et fonctionnalités"""
+    
+    def __init__(self):
+        self.permissions: List[Permission] = []
+        self.features: Dict[str, Feature] = {}
+        self.temporary_accesses: List[TemporaryAccess] = []
+    
+    def add_feature(self, feature: Feature) -> None:
+        """Ajoute une fonctionnalité au système"""
+        self.features[feature.id] = feature
+    
+    def add_permission(self, permission: Permission) -> None:
+        """Ajoute une permission à la matrice"""
+        self.permissions.append(permission)
+    
+    def get_permission_level(self, user_role: UserRole, feature_id: str) -> PermissionLevel:
+        """Détermine le niveau de permission pour un rôle et une fonctionnalité"""
+        highest_level = PermissionLevel.NONE
+        
+        # Vérifier les permissions standards
+        for permission in self.permissions:
+            if (permission.role_category == user_role.user_category and 
+                permission.specific_role == user_role.specific_role and
+                permission.feature_id == feature_id):
+                
+                # Vérifier si la permission a expiré
+                if permission.expiry and datetime.now() > permission.expiry:
+                    continue
+                
+                # Vérifier les conditions contextuelles
+                if self._check_conditions(permission.conditions, user_role.attributes):
+                    highest_level = max(highest_level, permission.level)
+        
+        return highest_level
+    
+    def _check_conditions(self, conditions: Dict[str, Any], attributes: UserAttributes) -> bool:
+        """Vérifie si les attributs de l'utilisateur respectent les conditions"""
+        # Implémentation simplifiée - à développer selon les besoins spécifiques
+        if 'min_expertise' in conditions and attributes.expertise_score < conditions['min_expertise']:
+            return False
+        
+        if 'allowed_locations' in conditions and attributes.geographic_location not in conditions['allowed_locations']:
+            return False
+            
+        if 'min_data_clearance' in conditions and attributes.data_sensitivity_clearance < conditions['min_data_clearance']:
+            return False
+            
+        return T<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8" />
