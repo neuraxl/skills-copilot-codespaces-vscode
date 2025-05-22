@@ -344,6 +344,11 @@
                     </a>
                 </li>
                 <li class="mb-2">
+                    <a href="#externalServices" class="nav-item flex items-center p-3 rounded-lg text-lg" data-target-content="externalServicesContent">
+                        <span class="mr-3">🔗</span> Extensions & Services
+                    </a>
+                </li>
+                <li class="mb-2">
                     <a href="#logs" class="nav-item flex items-center p-3 rounded-lg text-lg" data-target-content="logsContent">
                         <span class="mr-3">📜</span> Journal
                     </a>
@@ -499,6 +504,52 @@
                             </button>
                             <button id="brainFuncGoToConfigBtn" class="btn-secondary py-3 px-6 rounded-lg text-lg font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out">
                                 Accéder à la Configuration
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="externalServicesContent" class="content-section">
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">Extensions & Services Externes</h2>
+                        <p class="text-gray-600 mb-6">Explorez comment NeuraX-Ultime pourrait interagir avec des systèmes externes (intégrations conceptuelles).</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <button class="btn-secondary py-3 px-4 rounded-lg text-base font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out external-service-btn" data-service="Google">
+                                <span class="mr-2">🌐</span> Google
+                            </button>
+                            <button class="btn-secondary py-3 px-4 rounded-lg text-base font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out external-service-btn" data-service="Gemini">
+                                <span class="mr-2">✨</span> Gemini (LLM)
+                            </button>
+                            <button class="btn-secondary py-3 px-4 rounded-lg text-base font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out external-service-btn" data-service="Grok">
+                                <span class="mr-2">💡</span> Grok (LLM)
+                            </button>
+                            <button class="btn-secondary py-3 px-4 rounded-lg text-base font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out external-service-btn" data-service="Ask">
+                                <span class="mr-2">❓</span> Ask (Moteur de Recherche)
+                            </button>
+                            <button class="btn-secondary py-3 px-4 rounded-lg text-base font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out external-service-btn" data-service="Cloud AI">
+                                <span class="mr-2">☁️</span> Cloud AI (GCP)
+                            </button>
+                            <button class="btn-secondary py-3 px-4 rounded-lg text-base font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out external-service-btn" data-service="Gamma AI">
+                                <span class="mr-2">⚛️</span> Gamma AI
+                            </button>
+                            <button class="btn-secondary py-3 px-4 rounded-lg text-base font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out external-service-btn" data-service="Google Lens">
+                                <span class="mr-2">📸</span> Google Lens
+                            </button>
+                            <button class="btn-secondary py-3 px-4 rounded-lg text-base font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out external-service-btn" data-service="Google Home">
+                                <span class="mr-2">🏠</span> Google Home
+                            </button>
+                            <button class="btn-secondary py-3 px-4 rounded-lg text-base font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out external-service-btn" data-service="Google Authenticator">
+                                <span class="mr-2">🔐</span> Google Authenticator
+                            </button>
+                            <button class="btn-secondary py-3 px-4 rounded-lg text-base font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out external-service-btn" data-service="Google Analytics">
+                                <span class="mr-2">📊</span> Google Analytics
+                            </button>
+                            <button class="btn-secondary py-3 px-4 rounded-lg text-base font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out external-service-btn" data-service="Google One">
+                                <span class="mr-2">☁️</span> Google One
+                            </button>
+                            <button class="btn-secondary py-3 px-4 rounded-lg text-base font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out external-service-btn" data-service="Google Go">
+                                <span class="mr-2">🔍</span> Google Go
                             </button>
                         </div>
                     </div>
@@ -1245,6 +1296,14 @@
                     this.showToast('Naviguer vers la configuration.', 'info', 1500);
                 });
 
+                // External Services Buttons
+                document.querySelectorAll('.external-service-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const serviceName = e.target.dataset.service;
+                        this.handleExternalServiceClick(serviceName);
+                    });
+                });
+
                 // Initial chat message
                 this.addChatMessage('Bonjour ! Je suis NeuraX. Comment puis-je vous aider aujourd\'hui ?', 'ai');
 
@@ -1382,6 +1441,11 @@
                 } else if (lowerCaseMessage.includes("config") || lowerCaseMessage.includes("paramètres")) {
                     this.showSection('configContent');
                     response = `Vous pouvez ajuster les paramètres du réseau dans la section "Configuration".`;
+                } else if (lowerCaseMessage.includes("google") || lowerCaseMessage.includes("gemini") || lowerCaseMessage.includes("grok") || lowerCaseMessage.includes("ask") ||
+                           lowerCaseMessage.includes("cloud ai") || lowerCaseMessage.includes("gamma ai") || lowerCaseMessage.includes("google lens") ||
+                           lowerCaseMessage.includes("google home") || lowerCaseMessage.includes("google authenticator") || lowerCaseMessage.includes("google analytics") ||
+                           lowerCaseMessage.includes("google one") || lowerCaseMessage.includes("google go")) {
+                    response = "Mon intégration avec des services externes comme ceux-ci est actuellement conceptuelle. Dans une version complète, je pourrais les utiliser pour étendre mes capacités de recherche, d'analyse ou d'interaction.";
                 }
                  else {
                     const recognizedPattern = this.neuralNetwork.recognizePatterns();
@@ -1394,6 +1458,42 @@
                     }
                 }
                 this.addChatMessage(response, 'ai');
+            },
+            // Handle clicks on external service buttons
+            handleExternalServiceClick(serviceName) {
+                let message = `Intégration conceptuelle : NeuraX-Ultime pourrait utiliser ${serviceName} pour `;
+                switch(serviceName) {
+                    case 'Google':
+                    case 'Ask':
+                    case 'Google Go':
+                        message += "des capacités de recherche d'informations avancées.";
+                        break;
+                    case 'Gemini':
+                    case 'Grok':
+                    case 'Cloud AI':
+                    case 'Gamma AI':
+                        message += "des capacités de traitement du langage naturel, de génération de texte ou d'analyse complexe.";
+                        break;
+                    case 'Google Lens':
+                        message += "l'analyse et la compréhension d'informations visuelles.";
+                        break;
+                    case 'Google Home':
+                        message += "le contrôle d'appareils connectés et l'interaction vocale avec l'environnement.";
+                        break;
+                    case 'Google Authenticator':
+                        message += "une authentification sécurisée et la gestion des accès utilisateurs (nécessite un backend).";
+                        break;
+                    case 'Google Analytics':
+                        message += "la collecte et l'analyse de données sur l'utilisation de NeuraX-Ultime ou d'autres systèmes.";
+                        break;
+                    case 'Google One':
+                        message += "le stockage sécurisé de données et la gestion des ressources cloud.";
+                        break;
+                    default:
+                        message += "des fonctions spécifiques non définies.";
+                }
+                this.showToast(message, 'info', 4000);
+                this.addLogEntry(`Interaction conceptuelle avec ${serviceName}.`);
             },
             // Voice Recognition Toggle
             toggleVoiceRecognition(buttonElement) {
