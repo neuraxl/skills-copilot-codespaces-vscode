@@ -339,6 +339,11 @@
                     </a>
                 </li>
                 <li class="mb-2">
+                    <a href="#brainFunctions" class="nav-item flex items-center p-3 rounded-lg text-lg" data-target-content="brainFunctionsContent">
+                        <span class="mr-3">🧠</span> Fonctions du Cerveau
+                    </a>
+                </li>
+                <li class="mb-2">
                     <a href="#logs" class="nav-item flex items-center p-3 rounded-lg text-lg" data-target-content="logsContent">
                         <span class="mr-3">📜</span> Journal
                     </a>
@@ -416,6 +421,7 @@
                 <section id="statsContent" class="content-section">
                     <div class="bg-white p-6 rounded-lg shadow-md mb-8">
                         <h2 class="text-2xl font-bold text-gray-800 mb-4">Statistiques du Réseau</h2>
+                        <p class="text-gray-600 mb-4">Aperçu des métriques clés du réseau neuronal en temps réel.</p>
                         <div id="statsReport" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
                             <p><strong>Comptage des neurones :</strong> <span id="statNeuronCount">--</span></p>
                             <p><strong>Comptage des connexions :</strong> <span id="statConnectionCount">--</span></p>
@@ -467,7 +473,35 @@
                                 <p class="text-sm text-gray-600 mt-1">Actuel: <span id="currentMutationRate">0.02</span></p>
                             </div>
                         </div>
+                    </div>
+                </section>
+
+                <section id="brainFunctionsContent" class="content-section">
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">Fonctions du Cerveau NeuraX</h2>
+                        <p class="text-gray-600 mb-6">Interagissez directement avec les fonctions fondamentales du réseau neuronal.</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <button id="brainFuncActivateBtn" class="btn-primary py-3 px-6 rounded-lg text-lg font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out">
+                                Activer le Réseau
+                            </button>
+                            <button id="brainFuncDeactivateBtn" class="btn-secondary py-3 px-6 rounded-lg text-lg font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out">
+                                Désactiver le Réseau
+                            </button>
+                            <button id="brainFuncAddNeuronBtn" class="btn-primary py-3 px-6 rounded-lg text-lg font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out">
+                                Ajouter un Neurone
+                            </button>
+                            <button id="brainFuncClearMemoryBtn" class="btn-secondary py-3 px-6 rounded-lg text-lg font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out">
+                                Vider la Mémoire des Motifs
+                            </button>
+                            <button id="brainFuncGoToStatsBtn" class="btn-primary py-3 px-6 rounded-lg text-lg font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out">
+                                Voir les Statistiques
+                            </button>
+                            <button id="brainFuncGoToConfigBtn" class="btn-secondary py-3 px-6 rounded-lg text-lg font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out">
+                                Accéder à la Configuration
+                            </button>
                         </div>
+                    </div>
                 </section>
 
                 <section id="logsContent" class="content-section">
@@ -991,6 +1025,11 @@
                 this.trigger('systemDeactivated');
                 return this;
             }
+            clearMemoryPatterns() {
+                this.memoryPatterns = [];
+                this.stats.patternMatches = 0; // Reset recognized patterns count
+                this.trigger('memoryCleared');
+            }
             on(eventName, callback) {
                 if (!this.eventListeners[eventName]) {
                     this.eventListeners[eventName] = [];
@@ -1166,6 +1205,46 @@
                     this.showToast('Journal effacé', 'info', 1500);
                 });
 
+                // Brain Functions Buttons
+                document.getElementById('brainFuncActivateBtn').addEventListener('click', () => {
+                    this.activateSystem();
+                });
+                document.getElementById('brainFuncDeactivateBtn').addEventListener('click', () => {
+                    this.deactivateSystem();
+                });
+                document.getElementById('brainFuncAddNeuronBtn').addEventListener('click', () => {
+                    if (this.neuralNetwork.isActive && this.neuralNetwork.neurons.length < neuralConfig.neurons.maxCount) {
+                        // Add neuron at a random visible position
+                        const canvas = this.neuralNetwork.canvas;
+                        const x = Math.random() * canvas.width;
+                        const y = Math.random() * canvas.height;
+                        this.neuralNetwork.createNeuron(x, y);
+                        this.showToast(`Un neurone a été ajouté au réseau.`, 'info', 1500);
+                    } else if (!this.neuralNetwork.isActive) {
+                        this.showToast("Activez le système pour ajouter des neurones !", 'info', 2000);
+                    } else if (this.neuralNetwork.neurons.length >= neuralConfig.neurons.maxCount) {
+                        this.showToast("Limite maximale de neurones atteinte.", 'warning', 2000);
+                    }
+                });
+                document.getElementById('brainFuncClearMemoryBtn').addEventListener('click', () => {
+                    this.neuralNetwork.clearMemoryPatterns();
+                    this.showToast('Mémoire des motifs effacée.', 'success', 2000);
+                    this.addLogEntry('Mémoire des motifs du réseau effacée.');
+                });
+                document.getElementById('brainFuncGoToStatsBtn').addEventListener('click', () => {
+                    this.showSection('statsContent');
+                    navItems.forEach(navItem => navItem.classList.remove('active'));
+                    document.querySelector('[data-target-content="statsContent"]').classList.add('active');
+                    this.updateStatsDisplay();
+                    this.showToast('Naviguer vers les statistiques.', 'info', 1500);
+                });
+                document.getElementById('brainFuncGoToConfigBtn').addEventListener('click', () => {
+                    this.showSection('configContent');
+                    navItems.forEach(navItem => navItem.classList.remove('active'));
+                    document.querySelector('[data-target-content="configContent"]').classList.add('active');
+                    this.showToast('Naviguer vers la configuration.', 'info', 1500);
+                });
+
                 // Initial chat message
                 this.addChatMessage('Bonjour ! Je suis NeuraX. Comment puis-je vous aider aujourd\'hui ?', 'ai');
 
@@ -1194,6 +1273,9 @@
                 });
                 this.neuralNetwork.on('patternMemorized', (patternData) => {
                     this.addLogEntry(`Nouveau motif mémorisé: "${patternData.originalPattern || patternData.pattern}".`);
+                });
+                this.neuralNetwork.on('memoryCleared', () => {
+                    this.addLogEntry('Mémoire des motifs du réseau effacée.');
                 });
 
                 // Initialize first section view and config display
@@ -1422,3 +1504,4 @@
     </script>
 </body>
 </html>
+
