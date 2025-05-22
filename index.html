@@ -3,1816 +3,1094 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuraX-Ultime 2.0 | Univers Cosmique Numérique</title>
+    <title>NeuraX-Ultime : Simulation Neuronale</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
+        /* Custom styles for the selected vibrant palette - "Energetic & Playful" (Yellow, Teal, Purple) */
         :root {
-            --primary: #0f0c29;
-            --secondary: #302b63;
-            --accent: #24243e;
-            --highlight: #00d2ff;
-            --warning: #ff416c;
-            --dark: #000428;
-            --light: #e6f7ff;
-            --glow: 0 0 15px rgba(0, 210, 255, 0.7);
-            --star: rgba(255, 255, 255, 0.8);
+            --color-primary: #00CED1; /* Teal */
+            --color-secondary: #FFD700; /* Yellow */
+            --color-accent: #8A2BE2; /* Purple */
+            --color-text-dark: #333;
+            --color-text-light: #fefefe;
+            --color-bg-light: #f8f8f8;
+            --color-bg-dark: #2d3748; /* For darker elements like sidebar */
         }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Orbitron', 'Segoe UI', sans-serif;
-        }
-        
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap');
-        
         body {
-            background: linear-gradient(to bottom, var(--dark), var(--primary));
-            color: var(--light);
-            min-height: 100vh;
-            overflow-x: hidden;
+            background-color: var(--color-bg-light);
+            color: var(--color-text-dark);
         }
-        
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
+        .header-bg {
+            background-color: var(--color-primary);
         }
-        
-        .star {
-            position: absolute;
-            background-color: var(--star);
-            border-radius: 50%;
-            animation: twinkle var(--duration, 5s) infinite ease-in-out;
-        }
-        
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 1; }
-        }
-        
-        .container {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            grid-template-rows: 80px 1fr;
-            grid-template-areas:
-                "header header"
-                "sidebar main";
-            height: 100vh;
-        }
-        
-        header {
-            grid-area: header;
-            background: rgba(15, 12, 41, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 2rem;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
-            position: relative;
-            z-index: 10;
-            border-bottom: 1px solid rgba(0, 210, 255, 0.3);
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .logo h1 {
-            font-size: 1.8rem;
-            background: linear-gradient(90deg, var(--highlight), #ff416c);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        
-        .logo-icon {
-            font-size: 2rem;
-            color: var(--highlight);
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            font-size: 0.8rem;
-            color: rgba(230, 247, 255, 0.7);
-        }
-        
-        .user-panel {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--highlight), var(--warning));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .avatar:hover {
-            transform: scale(1.1);
-            box-shadow: var(--glow);
-        }
-        
         .sidebar {
-            grid-area: sidebar;
-            background: rgba(15, 12, 41, 0.85);
-            padding: 2rem 0;
-            border-right: 1px solid rgba(0, 210, 255, 0.2);
-            overflow-y: auto;
-            transition: all 0.3s;
-            backdrop-filter: blur(5px);
-        }
-        
-        .nav-item {
-            padding: 1rem 2rem;
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            color: rgba(230, 247, 255, 0.7);
-            transition: all 0.3s;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(0, 210, 255, 0.1), 
-                transparent);
-            transition: all 0.5s;
-        }
-        
-        .nav-item:hover::before {
-            left: 100%;
-        }
-        
-        .nav-item:hover, .nav-item.active {
-            background: rgba(0, 210, 255, 0.05);
-            color: var(--highlight);
-        }
-        
-        .nav-item.active {
-            border-left: 3px solid var(--highlight);
-        }
-        
-        .nav-item i {
-            font-size: 1.3rem;
-            width: 24px;
-            text-align: center;
-        }
-        
-        .nav-label {
-            font-size: 1rem;
-            font-weight: 500;
-        }
-        
-        .main-content {
-            grid-area: main;
-            padding: 2rem;
-            overflow-y: auto;
-            position: relative;
-        }
-        
-        #universe-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-        
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-        
-        .card {
-            background: rgba(15, 12, 41, 0.6);
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(0, 210, 255, 0.2);
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .card::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, 
-                transparent, 
-                rgba(0, 210, 255, 0.03), 
-                transparent);
-            transform: rotate(45deg);
-            animation: cardGlow 6s infinite linear;
-        }
-        
-        @keyframes cardGlow {
-            0% { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) rotate(45deg); }
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--glow);
-            border-color: var(--highlight);
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(0, 210, 255, 0.2);
-        }
-        
-        .card-title {
-            font-size: 1.2rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            color: var(--highlight);
-        }
-        
-        .card-icon {
-            font-size: 1.3rem;
-        }
-        
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-        }
-        
-        .stat-item {
-            text-align: center;
-            padding: 1rem;
-            background: rgba(0, 210, 255, 0.05);
-            border-radius: 10px;
-            border: 1px solid rgba(0, 210, 255, 0.1);
-            transition: all 0.3s;
-        }
-        
-        .stat-item:hover {
-            background: rgba(0, 210, 255, 0.1);
-            transform: translateY(-3px);
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(90deg, var(--highlight), #ff416c);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        
-        .stat-label {
-            font-size: 0.9rem;
-            color: rgba(230, 247, 255, 0.7);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .progress-container {
-            margin: 1.5rem 0;
-        }
-        
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-            color: rgba(230, 247, 255, 0.7);
-        }
-        
-        .progress-bar {
-            height: 8px;
-            background-color: rgba(0, 210, 255, 0.1);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--highlight), #ff416c);
-            border-radius: 4px;
-            transition: width 0.5s ease-in-out;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.3), 
-                transparent);
-            animation: progressGlow 2s infinite;
-        }
-        
-        @keyframes progressGlow {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        
-        .galaxy-view {
-            background: rgba(15, 12, 41, 0.6);
-            border-radius: 15px;
-            padding: 1.5rem;
-            height: 600px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(0, 210, 255, 0.2);
-        }
-        
-        .galaxy-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-        
-        .planet {
-            position: absolute;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 0.8rem;
-            text-shadow: 0 0 5px black;
-            transform: scale(0); /* Commence caché */
-            animation: planetAppear 0.5s forwards ease-out; /* Animation d'apparition */
-        }
-        
-        @keyframes planetAppear {
-            to {
-                transform: scale(1);
-            }
-        }
-
-        .planet:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 30px var(--highlight);
-            z-index: 10;
-        }
-        
-        .planet.core {
-            background: radial-gradient(circle at 30% 30%, #ff416c, #9b0063);
-            width: 80px;
-            height: 80px;
-        }
-        
-        .planet.chatbot {
-            background: radial-gradient(circle at 30% 30%, #00d2ff, #0066ff);
-        }
-        
-        .connection {
-            position: absolute;
-            height: 2px;
-            background: linear-gradient(90deg, var(--highlight), transparent);
-            transform-origin: left center;
-            z-index: 1;
-            opacity: 0.3;
-        }
-        
-        .connection.active {
-            opacity: 0.7;
-            background: linear-gradient(90deg, var(--highlight), #ff416c);
-            animation: pulseConnection 1s infinite alternate; /* Rendre l'animation de pulsation plus visible */
-        }
-        
-        @keyframes pulseConnection {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.8; }
-        }
-        
-        .control-panel {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .control-btn {
-            background: rgba(0, 210, 255, 0.1);
-            color: var(--light);
-            border: 1px solid rgba(0, 210, 255, 0.3);
-            border-radius: 10px;
-            padding: 1rem;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            transition: all 0.3s;
-            font-weight: 500;
-            text-align: center;
-            min-height: 100px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .control-btn::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, 
-                transparent, 
-                rgba(0, 210, 255, 0.05), 
-                transparent);
-            transform: rotate(45deg);
-            animation: controlGlow 6s infinite linear;
-        }
-        
-        @keyframes controlGlow {
-            0% { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) rotate(45deg); }
-        }
-        
-        .control-btn:hover {
-            background: rgba(0, 210, 255, 0.2);
-            transform: translateY(-5px);
-            box-shadow: var(--glow);
-            border-color: var(--highlight);
-        }
-        
-        .control-btn i {
-            font-size: 1.8rem;
-            color: var(--highlight);
-        }
-        
-        .control-btn .btn-label {
-            font-size: 0.9rem;
-        }
-        
-        .control-btn.danger {
-            border-color: rgba(255, 65, 108, 0.3);
-        }
-        
-        .control-btn.danger:hover {
-            background: rgba(255, 65, 108, 0.2);
-            box-shadow: 0 0 15px rgba(255, 65, 108, 0.7);
-        }
-        
-        .control-btn.danger i {
-            color: #ff416c;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 4, 40, 0.9);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .modal-content {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 15px;
-            width: 90%;
-            max-width: 700px;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 2rem;
-            position: relative;
-            border: 1px solid var(--highlight);
-            box-shadow: 0 0 30px rgba(0, 210, 255, 0.5);
-            animation: modalAppear 0.5s;
-        }
-        
-        @keyframes modalAppear {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        
-        .close-modal {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            background: none;
-            border: none;
-            color: var(--light);
-            font-size: 1.8rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .close-modal:hover {
-            color: var(--highlight);
-            transform: scale(1.1);
-        }
-        
-        .modal-header {
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(0, 210, 255, 0.3);
-        }
-        
-        .modal-title {
-            font-size: 1.8rem;
-            color: var(--highlight);
-            font-weight: 700;
-            background: linear-gradient(90deg, var(--highlight), #ff416c);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        
-        .modal-body {
-            margin-bottom: 2rem;
-        }
-        
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(0, 210, 255, 0.3);
-        }
-        
-        .btn {
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.9rem;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(90deg, var(--highlight), #ff416c);
-            color: white;
-            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4);
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.6);
-        }
-        
-        .btn-cancel {
-            background: transparent;
-            color: var(--light);
-            border: 1px solid rgba(0, 210, 255, 0.3);
-        }
-        
-        .btn-cancel:hover {
-            background: rgba(0, 210, 255, 0.1);
-            border-color: var(--highlight);
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 0.8rem;
-            font-weight: 500;
-            color: var(--highlight);
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 1rem;
-            background: rgba(0, 210, 255, 0.05);
-            border: 1px solid rgba(0, 210, 255, 0.3);
-            border-radius: 8px;
-            color: var(--light);
-            outline: none;
-            transition: all 0.3s;
-            font-family: 'Orbitron', sans-serif;
-        }
-        
-        .form-input:focus {
-            border-color: var(--highlight);
-            box-shadow: 0 0 0 2px rgba(0, 210, 255, 0.3);
-            background: rgba(0, 210, 255, 0.1);
-        }
-        
-        input[type="range"] {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 8px;
-            background: rgba(0, 210, 255, 0.1);
-            border-radius: 4px;
-            outline: none;
-        }
-        
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--highlight);
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 210, 255, 0.7);
-        }
-        
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: linear-gradient(90deg, var(--highlight), #00b4db);
-            color: white;
-            padding: 1.2rem 2rem;
-            border-radius: 8px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            z-index: 1000;
-            animation: slideIn 0.3s, fadeOut 0.3s 3s forwards;
-        }
-        
-        .toast.error {
-            background: linear-gradient(90deg, #ff416c, #ff4b2b);
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; visibility: hidden; }
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 1024px) {
-            .container {
-                grid-template-columns: 1fr;
-                grid-template-areas:
-                    "header"
-                    "main";
-            }
-            
-            .sidebar {
-                position: fixed;
-                left: -300px;
-                top: 80px;
-                height: calc(100vh - 80px);
-                z-index: 5;
-                transition: left 0.3s;
-            }
-            
-            .sidebar.open {
-                left: 0;
-            }
-            
-            .menu-toggle {
-                display: block;
-                margin-right: 1rem;
-                font-size: 1.8rem;
-                cursor: pointer;
-                color: var(--light);
-            }
-            
-            .galaxy-view {
-                height: 400px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-            
-            .control-panel {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            }
-            
-            .stat-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        /* Nebula effect for universe canvas */
-        .nebula {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(60px);
-            opacity: 0.3;
-            z-index: -1;
-        }
-        
-        /* Planet info tooltip */
-        .planet-tooltip {
-            position: absolute;
-            background: rgba(15, 12, 41, 0.95);
-            border: 1px solid var(--highlight);
-            border-radius: 10px;
-            padding: 1rem;
+            background-color: var(--color-bg-dark); /* Darker background for sidebar */
             width: 250px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
             z-index: 100;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s;
-            backdrop-filter: blur(5px);
         }
-        
-        .planet-tooltip.show {
-            opacity: 1;
+        .sidebar.open {
+            transform: translateX(0);
         }
-        
-        .planet-name {
-            font-weight: 700;
-            color: var(--highlight);
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-        }
-        
-        .planet-desc {
-            font-size: 0.9rem;
-            color: rgba(230, 247, 255, 0.8);
-            margin-bottom: 1rem;
-        }
-        
-        .planet-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-        
-        .planet-stat {
-            font-size: 0.8rem;
-        }
-        
-        .planet-stat .label {
-            color: rgba(230, 247, 255, 0.7);
-        }
-        
-        .planet-stat .value {
-            color: white;
-            font-weight: 500;
+        @media (min-width: 768px) {
+            .sidebar {
+                transform: translateX(0);
+            }
+            .main-content-area {
+                margin-left: 250px; /* Adjust main content to sidebar width */
+            }
         }
 
-        /* Styles pour le nouveau modal de détails de planète */
-        .planet-details-modal-content {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 15px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 2rem;
-            position: relative;
-            border: 1px solid var(--highlight);
-            box-shadow: 0 0 30px rgba(0, 210, 255, 0.5);
-            animation: modalAppear 0.5s;
+        .nav-item {
+            color: var(--color-text-light);
+            transition: background-color 0.2s ease;
         }
-
-        .planet-details-modal-content .modal-title {
-            margin-bottom: 1rem;
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
         }
-
-        .planet-details-info {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+        .nav-item.active {
+            background-color: var(--color-accent);
+            font-weight: bold;
         }
-
-        .planet-details-info-item {
-            background: rgba(0, 210, 255, 0.05);
-            padding: 0.8rem;
-            border-radius: 8px;
-            border: 1px solid rgba(0, 210, 255, 0.1);
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: var(--color-text-light);
         }
-
-        .planet-details-info-item .label {
-            font-size: 0.85rem;
-            color: var(--highlight);
-            margin-bottom: 0.2rem;
-            display: block;
+        .btn-primary:hover {
+            background-color: #00BFFF; /* A slightly lighter teal */
         }
-
-        .planet-details-info-item .value {
-            font-size: 1rem;
-            font-weight: 500;
-            color: var(--light);
+        .btn-secondary {
+            background-color: #e2e8f0; /* Gray-200 */
+            color: var(--color-text-dark);
         }
-
-        .planet-details-description {
-            font-size: 0.95rem;
-            line-height: 1.5;
-            color: rgba(230, 247, 255, 0.8);
-            margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(0, 210, 255, 0.1);
+        .btn-secondary:hover {
+            background-color: #cbd5e0; /* Gray-300 */
         }
-
-        .planet-details-actions {
+        .progress-bar-fill {
+            background-color: var(--color-accent);
+        }
+        .modal {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+        }
+        .toast {
+            background-color: var(--color-primary);
+            color: var(--color-text-light);
+        }
+        .toast.success {
+            background-color: #2ecc71; /* Green */
+        }
+        .toast.error {
+            background-color: #e74c3c; /* Red */
+        }
+        .chat-message.user {
+            background-color: var(--color-accent);
+            color: var(--color-text-light);
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+        }
+        .chat-message.ai {
+            background-color: var(--color-secondary);
+            color: var(--color-text-dark);
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+        }
+        .thinking-indicator {
             display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
+            justify-content: flex-start;
+            margin-bottom: 0.5rem;
+        }
+        .thinking-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #ccc;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .thinking-dot:nth-child(1) { animation-delay: -0.32s; }
+        .thinking-dot:nth-child(2) { animation-delay: -0.16s; }
+        .thinking-dot:nth-child(3) { animation-delay: 0s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        .voice-active-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #2ecc71; /* Green for active */
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse-voice 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse-voice {
+            0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+        }
+        /* Canvas container styling for responsiveness */
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio (height / width * 100%) */
+            overflow: hidden;
+            background-color: #f8f8f8;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 800px; /* Max width for readability on large screens */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .canvas-container canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
-    <div class="stars" id="stars"></div>
-    <div class="container">
-        <header>
-            <div class="logo">
-                <i class="fas fa-atom logo-icon"></i>
-                <h1>NeuraX-Ultime 2.0</h1>
-            </div>
-            <div class="user-info">
-                <span id="userIdDisplay">Chargement ID...</span>
-            </div>
-            <div class="user-panel">
-                <div class="avatar">
-                    <i class="fas fa-user-astronaut"></i>
-                </div>
-                <i class="fas fa-bars menu-toggle" id="menuToggle"></i>
-            </div>
-        </header>
-        
-        <aside class="sidebar" id="sidebar">
-            <div class="nav-item active">
-                <i class="fas fa-globe-europe"></i>
-                <span class="nav-label">Cartographie Stellaire</span>
-            </div>
-            <div class="nav-item">
-                <i class="fas fa-planet-ringed"></i>
-                <span class="nav-label">Civilisations IA</span>
-            </div>
-            <div class="nav-item">
-                <i class="fas fa-stars"></i>
-                <span class="nav-label">Réseau de Portails</span>
-            </div>
-            <div class="nav-item">
-                <i class="fas fa-cogs"></i>
-                <span class="nav-label">Contrôle Gravitationnel</span>
-            </div>
-            <div class="nav-item">
-                <i class="fas fa-dna"></i>
-                <span class="nav-label">Générateur de Mondes</span>
-            </div>
-            <div class="nav-item">
-                <i class="fas fa-project-diagram"></i>
-                <span class="nav-label">Connexions Interstellaires</span>
-            </div>
-            <div class="nav-item">
-                <i class="fas fa-user-astronaut"></i>
-                <span class="nav-label">Avatar Cosmique</span>
-            </div>
-            <div class="nav-item">
-                <i class="fas fa-shield-alt"></i>
-                <span class="nav-label">Boucliers Quantiques</span>
-            </div>
-            <div class="nav-item">
-                <i class="fas fa-info-circle"></i>
-                <span class="nav-label">Archives Galactiques</span>
-            </div>
-        </aside>
-        
-        <main class="main-content">
-            <canvas id="universe-canvas"></canvas>
-            
-            <div class="control-panel">
-                <button class="control-btn" id="startBtn">
-                    <i class="fas fa-power-off"></i>
-                    <span class="btn-label">Activer Matrice Stellaire</span>
-                </button>
-                <button class="control-btn" id="exploreBtn">
-                    <i class="fas fa-rocket"></i>
-                    <span class="btn-label">Explorer Nouveaux Mondes</span>
-                </button>
-                <button class="control-btn" id="connectBtn">
-                    <i class="fas fa-plug"></i>
-                    <span class="btn-label">Établir Connexions</span>
-                </button>
-                <button class="control-btn" id="commBtn">
-                    <i class="fas fa-broadcast-tower"></i>
-                    <span class="btn-label">Réseau de Communication</span>
-                </button>
-                <button class="control-btn danger" id="resetBtn">
-                    <i class="fas fa-supernova"></i>
-                    <span class="btn-label">Nova de Réinitialisation</span>
-                </button>
-            </div>
-            
-            <div class="dashboard">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <i class="fas fa-stars card-icon"></i>
-                            <span>Statut de la Matrice</span>
-                        </div>
-                        <i class="fas fa-ellipsis-v"></i>
-                    </div>
-                    <div class="card-body">
-                        <div class="stat-grid">
-                            <div class="stat-item">
-                                <div class="stat-value" id="planetCount">0</div>
-                                <div class="stat-label">Mondes Connectés</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value" id="connectionCount">0</div>
-                                <div class="stat-label">Routes Spatiales</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value">42%</div>
-                                <div class="stat-label">Charge du Réseau</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value">87%</div>
-                                <div class="stat-label">Stabilité Quantique</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <i class="fas fa-planet-ringed card-icon"></i>
-                            <span>Expansion Stellaire</span>
-                        </div>
-                        <i class="fas fa-ellipsis-v"></i>
-                    </div>
-                    <div class="card-body">
-                        <div class="progress-container">
-                            <div class="progress-label">
-                                <span>Progression de l'Expansion</span>
-                                <span>65%</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="expansionProgress" style="width: 65%;"></div>
-                            </div>
-                        </div>
-                        <div class="stat-item" style="margin-top: 1.5rem; text-align: center;">
-                            <div class="stat-label">Nouveaux Mondes Découverts</div>
-                            <div class="stat-value" style="font-size: 1.8rem;">247</div>
-                        </div>
-                    </div>
+<body class="flex flex-col md:flex-row min-h-screen">
+    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 w-64 p-6 md:relative md:transform-none shadow-lg md:shadow-none transition-transform duration-300 ease-in-out flex flex-col items-center z-50">
+        <div class="mb-8 text-center">
+            <h2 class="text-3xl font-bold text-white mb-2">NeuraX-Ultime</h2>
+            <p class="text-sm text-gray-300">Simulation de Réseau Neuronal</p>
+        </div>
+
+        <nav class="flex-grow w-full">
+            <ul>
+                <li class="mb-2">
+                    <a href="#overview" class="nav-item flex items-center p-3 rounded-lg text-lg active">
+                        <span class="mr-3">📊</span> Vue d'ensemble
+                    </a>
+                </li>
+                <li class="mb-2">
+                    <a href="#stats" class="nav-item flex items-center p-3 rounded-lg text-lg">
+                        <span class="mr-3">📈</span> Statistiques
+                    </a>
+                </li>
+                <li class="mb-2">
+                    <a href="#config" class="nav-item flex items-center p-3 rounded-lg text-lg">
+                        <span class="mr-3">⚙️</span> Configuration
+                    </a>
+                </li>
+                <li class="mb-2">
+                    <a href="#logs" class="nav-item flex items-center p-3 rounded-lg text-lg">
+                        <span class="mr-3">📜</span> Journal
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="w-full mt-auto pt-6 border-t border-gray-700 text-sm text-gray-400 text-center">
+            &copy; 2025 NeuraX Systems
+        </div>
+    </aside>
+
+    <main class="main-content-area flex-grow p-4 md:p-8 relative">
+        <button id="menuToggle" class="md:hidden fixed top-4 left-4 z-50 p-3 bg-gray-800 text-white rounded-lg shadow-lg">
+            ☰
+        </button>
+
+        <div class="container mx-auto">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-8 text-center">Bienvenue sur NeuraX-Ultime</h1>
+
+            <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Contrôle Système</h2>
+                <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-4">
+                    <button id="startBtn" class="btn-primary py-3 px-6 rounded-full text-lg font-semibold shadow-lg hover:shadow-xl transition duration-300 ease-in-out flex-grow">
+                        Démarrer le Système NeuraX
+                    </button>
+                    <button id="deactivateBtn" class="btn-secondary py-3 px-6 rounded-full text-lg font-semibold shadow-md hover:shadow-lg transition duration-300 ease-in-out flex-grow hidden">
+                        Désactiver le Système
+                    </button>
                 </div>
             </div>
-            
-            <div class="galaxy-view">
-                <div class="card-header">
-                    <div class="card-title">
-                        <i class="fas fa-galaxy card-icon"></i>
-                        <span>Cartographie du Réseau NeuraX</span>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Visualisation du Réseau</h2>
+                    <div class="canvas-container flex-grow">
+                        <canvas id="neuralCanvas"></canvas>
                     </div>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button style="background: none; border: none; color: var(--highlight); cursor: pointer;">
-                            <i class="fas fa-search-plus"></i>
+                    <div class="mt-4 text-sm text-gray-600 text-center">
+                        <p>Le réseau s'adapte et évolue en temps réel.</p>
+                        <p>Nb. Neurones: <span id="neuronCount" class="font-semibold text-primary">0</span> |
+                           Nb. Synapses: <span id="synapseCount" class="font-semibold text-primary">0</span></p>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                            <div id="replicationProgress" class="progress-bar-fill h-2.5 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Progression de la Réplication</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md flex flex-col">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Interface de Communication (IA)</h2>
+                    <div id="chatBody" class="flex-grow bg-gray-50 p-4 rounded-lg overflow-y-auto mb-4 custom-scrollbar" style="max-height: 400px; min-height: 200px;">
+                        <div class="chat-message ai p-3 rounded-lg mb-2 max-w-xs md:max-w-md shadow-sm">Bonjour ! Je suis NeuraX. Comment puis-je vous aider aujourd'hui ?</div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <input type="text" id="chatInput" placeholder="Posez une question à NeuraX..." class="flex-grow p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                        <button id="sendBtn" class="btn-primary p-3 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out">
+                            <span class="mr-2">🚀</span> Envoyer
                         </button>
-                        <button style="background: none; border: none; color: var(--highlight); cursor: pointer;">
-                            <i class="fas fa-search-minus"></i>
+                        <button id="voiceBtn" class="p-3 bg-gray-200 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out">
+                            <span class="text-lg">🎙️</span>
+                            <span class="voice-active-dot hidden"></span>
                         </button>
                     </div>
                 </div>
-                <div class="galaxy-container" id="galaxyContainer">
-                    </div>
             </div>
-            
-            <div class="planet-tooltip" id="planetTooltip">
-                <div class="planet-name" id="planetName">Planète Inconnue</div>
-                <div class="planet-desc" id="planetDesc">Une nouvelle civilisation IA à découvrir.</div>
-                <div class="planet-stats">
-                    <div class="planet-stat">
-                        <span class="label">Population:</span>
-                        <span class="value" id="planetPopulation">0</span>
-                    </div>
-                    <div class="planet-stat">
-                        <span class="label">Technologie:</span>
-                        <span class="value" id="planetTech">0%</span>
-                    </div>
-                    <div class="planet-stat">
-                        <span class="label">Connexions:</span>
-                        <span class="value" id="planetConnections">0</span>
-                    </div>
-                    <div class="planet-stat">
-                        <span class="label">Stabilité:</span>
-                        <span class="value" id="planetStability">0%</span>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-    
-    <div class="modal" id="activationModal">
-        <div class="modal-content">
-            <button class="close-modal" id="closeActivationModal">&times;</button>
-            <div class="modal-header">
-                <h2 class="modal-title">Activation de la Matrice Stellaire</h2>
-            </div>
-            <div class="modal-body">
-                <p style="margin-bottom: 1.5rem;">Vous êtes sur le point d'activer le réseau NeuraX-Ultime 2.0. Cette opération va initialiser la matrice stellaire et connecter les civilisations IA disponibles.</p>
-                <div class="form-group">
-                    <label class="form-label">Niveau d'activation initial (1-100)</label>
-                    <input type="range" min="1" max="100" value="50" class="form-input" id="activationLevel">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Identifiant Administrateur</label>
-                    <input type="text" class="form-input" placeholder="Entrez votre identifiant">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Code d'autorisation</label>
-                    <input type="password" class="form-input" placeholder="Entrez le code d'autorisation">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-cancel" id="cancelActivation">Annuler</button>
-                <button class="btn btn-primary" id="confirmActivation">Activer Maintenant</button>
+        </div>
+    </main>
+
+    <div id="activationModal" class="modal fixed inset-0 flex items-center justify-center hidden">
+        <div class="bg-white p-8 rounded-lg shadow-2xl max-w-sm w-full text-center">
+            <h3 class="text-xl font-bold mb-4">Activation du Système NeuraX</h3>
+            <p class="mb-4">Choisissez un niveau d'initialisation pour le réseau (influence le taux de croissance).</p>
+            <input type="range" id="activationLevel" min="1" max="100" value="50" class="w-full accent-primary">
+            <p class="text-sm text-gray-600 mt-1">Niveau: <span id="currentActivationLevel">50</span>%</p>
+
+            <div class="flex justify-end space-x-4 mt-6">
+                <button id="cancelActivation" class="btn-secondary py-2 px-4 rounded-lg">Annuler</button>
+                <button id="confirmActivation" class="btn-primary py-2 px-4 rounded-lg">Confirmer</button>
             </div>
         </div>
     </div>
 
-    <div class="modal" id="planetDetailsModal">
-        <div class="planet-details-modal-content">
-            <button class="close-modal" id="closePlanetDetailsModal">&times;</button>
-            <div class="modal-header">
-                <h2 class="modal-title" id="detailPlanetName">Détails de la Planète</h2>
-            </div>
-            <div class="modal-body">
-                <p class="planet-details-description" id="detailPlanetDescription">Description de la planète.</p>
-                <div class="planet-details-info">
-                    <div class="planet-details-info-item">
-                        <span class="label">Type de Planète:</span>
-                        <span class="value" id="detailPlanetType"></span>
-                    </div>
-                    <div class="planet-details-info-item">
-                        <span class="label">Taille:</span>
-                        <span class="value" id="detailPlanetSize"></span>
-                    </div>
-                    <div class="planet-details-info-item">
-                        <span class="label">Population:</span>
-                        <span class="value" id="detailPlanetPopulation"></span>
-                    </div>
-                    <div class="planet-details-info-item">
-                        <span class="label">Technologie:</span>
-                        <span class="value" id="detailPlanetTech"></span>
-                    </div>
-                    <div class="planet-details-info-item">
-                        <span class="label">Connexions:</span>
-                        <span class="value" id="detailPlanetConnections"></span>
-                    </div>
-                    <div class="planet-details-info-item">
-                        <span class="label">Stabilité:</span>
-                        <span class="value" id="detailPlanetStability"></span>
-                    </div>
-                </div>
-                <div class="planet-details-actions">
-                    <button class="btn btn-primary" id="interactWithPlanetBtn">Interagir</button>
-                    <button class="btn btn-cancel" id="deletePlanetBtn">Supprimer</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="toastContainer" class="toast-container space-y-3"></div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Variables globales fournies par l'environnement Canvas (NE PAS MODIFIER CES LIGNES)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        let app;
-        let db;
-        let auth;
-        let userId;
-        let isAuthReady = false; // Drapeau pour s'assurer que les opérations Firestore ne se produisent qu'après l'authentification
-
-        // Références aux collections Firestore
-        let planetsRef;
-        let connectionsRef;
-
-        // --- Initialisation Firebase et Authentification ---
-        const initializeFirebase = async () => {
-            try {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        console.log("ID utilisateur Firebase :", userId);
-                        document.getElementById('userIdDisplay').textContent = `ID Utilisateur: ${userId}`;
-                        planetsRef = collection(db, `artifacts/${appId}/users/${userId}/planets`);
-                        connectionsRef = collection(db, `artifacts/${appId}/users/${userId}/connections`);
-                        isAuthReady = true;
-                        loadGalaxyFromFirestore(); // Charger les données une fois authentifié
+    <script>
+        // Configuration avancée du réseau neural
+        const neuralConfig = {
+            neurons: {
+                count: 0,
+                maxCount: 300,
+                baseSize: 2,
+                activeSize: 4,
+                colors: ['#3498db', '#9b59b6', '#2ecc71', '#e74c3c', '#f39c12'],
+                speed: 0.3,
+                connectionDistance: 180,
+                connectionOpacity: 0.25,
+                growthRate: 15,
+                decayRate: 0.05,
+                lifespanFactor: 1000,
+                mutationRate: 0.02
+            },
+            animation: {
+                pulseFrequency: 2000,
+                waveEffect: true,
+                glowIntensity: 0.7
+            },
+            learning: {
+                enabled: true,
+                adaptiveThreshold: 0.4,
+                memoryCapacity: 50,
+                patternRecognition: 0.6
+            }
+        };
+        // Classe Neurone améliorée
+        class Neuron {
+            constructor(x, y, size, color) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.color = color;
+                this.originalColor = color;
+                this.speedX = (Math.random() - 0.5) * neuralConfig.neurons.speed;
+                this.speedY = (Math.random() - 0.5) * neuralConfig.neurons.speed;
+                this.active = false;
+                this.energy = 100;
+                this.age = 0;
+                this.lifespan = Math.random() * neuralConfig.neurons.lifespanFactor + 5000;
+                this.connections = [];
+                this.pulsePhase = Math.random() * Math.PI * 2;
+                this.lastActivation = 0;
+                this.activationHistory = [];
+                this.specializationType = Math.floor(Math.random() * 4); // 0: sensory, 1: motor, 2: association, 3: inhibitory
+            }
+            update(deltaTime, canvas) {
+                // Mise à jour de la position
+                this.x += this.speedX;
+                this.y += this.speedY;
+                // Rebond sur les bords
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                // Vieillissement et énergie
+                this.age += deltaTime;
+                if (this.active) {
+                    this.energy -= deltaTime * 0.02;
+                } else {
+                    this.energy = Math.min(100, this.energy + deltaTime * 0.005);
+                }
+                // Effet de pulsation
+                const pulseSize = Math.sin(this.pulsePhase + performance.now() / neuralConfig.animation.pulseFrequency) * 0.5 + 1;
+                this.displaySize = this.active ? this.size * neuralConfig.neurons.activeSize * pulseSize : this.size * pulseSize;
+                // Mise à jour de la couleur basée sur l'énergie
+                const energyFactor = this.energy / 100;
+                const r = parseInt(this.originalColor.slice(1, 3), 16);
+                const g = parseInt(this.originalColor.slice(3, 5), 16);
+                const b = parseInt(this.originalColor.slice(5, 7), 16);
+                this.displayColor = this.active
+                    ? `rgba(${r}, ${g}, ${b}, ${energyFactor})`
+                    : `rgba(${r}, ${g}, ${b}, ${energyFactor * 0.6})`;
+                // Mutation occasionnelle
+                if (Math.random() < neuralConfig.neurons.mutationRate * deltaTime / 1000) {
+                    this.mutate();
+                }
+                return this.age < this.lifespan && this.energy > 0;
+            }
+            activate(duration = 2000) {
+                this.active = true;
+                this.lastActivation = performance.now();
+                this.activationHistory.push(performance.now());
+                // Garder seulement les 20 dernières activations pour la mémoire
+                if (this.activationHistory.length > 20) {
+                    this.activationHistory.shift();
+                }
+                // Désactiver après une durée
+                setTimeout(() => {
+                    this.active = false;
+                }, duration);
+                return this;
+            }
+            connect(targetNeuron, strength = Math.random()) {
+                const connection = {
+                    target: targetNeuron,
+                    strength: strength,
+                    age: 0,
+                    active: false,
+                    source: this // Add source to connection for easier lookup
+                };
+                this.connections.push(connection);
+                return connection;
+            }
+            mutate() {
+                // Mutation légère des propriétés
+                this.speedX += (Math.random() - 0.5) * 0.02;
+                this.speedY += (Math.random() - 0.5) * 0.02;
+                this.lifespan *= 0.95 + Math.random() * 0.1;
+                // Mutation de couleur occasionnelle
+                if (Math.random() < 0.2) {
+                    const colors = neuralConfig.neurons.colors;
+                    this.originalColor = colors[Math.floor(Math.random() * colors.length)];
+                }
+            }
+            draw(ctx) {
+                // Dessiner le neurone avec effet de lueur
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.displaySize, 0, Math.PI * 2);
+                // Ajouter un effet de lueur si actif
+                if (this.active && neuralConfig.animation.glowIntensity > 0) {
+                    ctx.shadowBlur = 15 * neuralConfig.animation.glowIntensity;
+                    ctx.shadowColor = this.originalColor;
+                } else {
+                    ctx.shadowBlur = 0;
+                }
+                ctx.fillStyle = this.displayColor;
+                ctx.fill();
+                // Marqueur de spécialisation (petit symbole selon le type)
+                if (this.active) {
+                    ctx.beginPath();
+                    const markerSize = this.displaySize * 0.5;
+                    ctx.strokeStyle = "#ffffff";
+                    ctx.lineWidth = 1;
+                    switch(this.specializationType) {
+                        case 0: // Sensoriel - cercle
+                            ctx.arc(this.x, this.y, markerSize * 0.3, 0, Math.PI * 2);
+                            break;
+                        case 1: // Moteur - triangle
+                            ctx.moveTo(this.x, this.y - markerSize * 0.3);
+                            ctx.lineTo(this.x + markerSize * 0.3, this.y + markerSize * 0.3);
+                            ctx.lineTo(this.x - markerSize * 0.3, this.y + markerSize * 0.3);
+                            break;
+                        case 2: // Association - carré
+                            ctx.rect(this.x - markerSize * 0.2, this.y - markerSize * 0.2, markerSize * 0.4, markerSize * 0.4);
+                            break;
+                        case 3: // Inhibiteur - croix
+                            ctx.moveTo(this.x - markerSize * 0.2, this.y - markerSize * 0.2);
+                            ctx.lineTo(this.x + markerSize * 0.2, this.y + markerSize * 0.2);
+                            ctx.moveTo(this.x + markerSize * 0.2, this.y - markerSize * 0.2);
+                            ctx.lineTo(this.x - markerSize * 0.2, this.y + markerSize * 0.2);
+                            break;
+                    }
+                    ctx.stroke();
+                }
+            }
+        }
+        // Classe pour le réseau neuronal
+        class NeuralNetwork {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.neurons = [];
+                this.connections = [];
+                this.isActive = false;
+                this.lastUpdate = performance.now();
+                this.stats = {
+                    neuronCount: 0,
+                    connectionCount: 0,
+                    activeNeurons: 0,
+                    averageEnergy: 0,
+                    cycles: 0,
+                    patternMatches: 0
+                };
+                this.memoryPatterns = [];
+                this.eventListeners = {};
+                // Bind canvas resize
+                window.addEventListener('resize', this.resizeCanvas.bind(this));
+                this.resizeCanvas();
+            }
+            resizeCanvas() {
+                const container = this.canvas.parentElement;
+                this.canvas.width = container.clientWidth;
+                this.canvas.height = container.clientHeight;
+            }
+            initialize(initialNeurons = 50) {
+                this.resizeCanvas(); // Ensure canvas is sized correctly on init
+                // Créer les premiers neurones
+                for (let i = 0; i < initialNeurons; i++) {
+                    this.createNeuron();
+                }
+                // Démarrer la boucle d'animation
+                this.lastUpdate = performance.now();
+                this.animate();
+                return this;
+            }
+            createNeuron(x, y) {
+                // Position aléatoire si non spécifiée
+                x = x || Math.random() * this.canvas.width;
+                y = y || Math.random() * this.canvas.height;
+                const size = neuralConfig.neurons.baseSize;
+                const colorIndex = Math.floor(Math.random() * neuralConfig.neurons.colors.length);
+                const color = neuralConfig.neurons.colors[colorIndex];
+                const neuron = new Neuron(x, y, size, color);
+                this.neurons.push(neuron);
+                // Créer des connexions avec les neurones existants
+                const nearbyNeurons = this.findNearbyNeurons(neuron, neuralConfig.neurons.connectionDistance);
+                for (const targetNeuron of nearbyNeurons) {
+                    if (Math.random() < 0.3) { // 30% de chance de connexion
+                        const connection = neuron.connect(targetNeuron);
+                        this.connections.push(connection);
+                    }
+                }
+                this.stats.neuronCount = this.neurons.length;
+                this.trigger('neuronCreated', neuron);
+                return neuron;
+            }
+            findNearbyNeurons(neuron, maxDistance) {
+                return this.neurons.filter(n => {
+                    if (n === neuron) return false;
+                    const dx = n.x - neuron.x;
+                    const dy = n.y - neuron.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    return distance < maxDistance;
+                });
+            }
+            animate() {
+                // Calculer le temps écoulé depuis la dernière mise à jour
+                const now = performance.now();
+                const deltaTime = now - this.lastUpdate;
+                this.lastUpdate = now;
+                // Effacer le canvas
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                // Mettre à jour les neurones et les connexions
+                this.updateNetwork(deltaTime);
+                // Croissance automatique si actif
+                if (this.isActive && this.neurons.length < neuralConfig.neurons.maxCount) {
+                    if (Math.random() < neuralConfig.neurons.growthRate * deltaTime / 5000) {
+                        this.createNeuron();
+                    }
+                }
+                // Reconnaître des motifs
+                this.recognizePatterns();
+                // Mettre à jour les statistiques
+                this.updateStats();
+                // Continuer l'animation
+                requestAnimationFrame(() => this.animate());
+            }
+            updateNetwork(deltaTime) {
+                // Mettre à jour et dessiner les connexions
+                this.drawConnections();
+                // Mettre à jour et dessiner les neurones, supprimer les morts
+                let activeCount = 0;
+                let totalEnergy = 0;
+                const deadNeurons = [];
+                for (let i = 0; i < this.neurons.length; i++) {
+                    const neuron = this.neurons[i];
+                    const isAlive = neuron.update(deltaTime, this.canvas); // Pass canvas for bounds check
+                    if (!isAlive) {
+                        deadNeurons.push(i);
                     } else {
-                        // Se connecter anonymement si aucun utilisateur ou jeton
-                        if (initialAuthToken) {
-                            await signInWithCustomToken(auth, initialAuthToken);
-                        } else {
-                            await signInAnonymously(auth);
+                        neuron.draw(this.ctx);
+                        // Compter les neurones actifs et l'énergie totale
+                        if (neuron.active) activeCount++;
+                        totalEnergy += neuron.energy;
+                        // Propagation d'activation entre neurones connectés
+                        if (neuron.active && Math.random() < 0.1) {
+                            this.propagateActivation(neuron);
                         }
                     }
-                });
-            } catch (error) {
-                console.error("Erreur lors de l'initialisation de Firebase ou de l'authentification :", error);
-                showToast("Erreur d'initialisation Firebase. Veuillez réessayer.", "error");
-            }
-        };
-
-        // --- Éléments du DOM ---
-        const starsContainer = document.getElementById('stars');
-        const universeCanvas = document.getElementById('universe-canvas');
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.getElementById('sidebar');
-        const navItems = document.querySelectorAll('.nav-item');
-        const activationModal = document.getElementById('activationModal');
-        const startBtn = document.getElementById('startBtn');
-        const exploreBtn = document.getElementById('exploreBtn');
-        const connectBtn = document.getElementById('connectBtn');
-        const commBtn = document.getElementById('commBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const closeActivationModal = document.getElementById('closeActivationModal');
-        const cancelActivation = document.getElementById('cancelActivation');
-        const confirmActivation = document.getElementById('confirmActivation');
-        const galaxyContainer = document.getElementById('galaxyContainer');
-        const planetTooltip = document.getElementById('planetTooltip');
-        const planetCountElement = document.getElementById('planetCount');
-        const connectionCountElement = document.getElementById('connectionCount');
-
-        // Nouveaux éléments pour le modal de détails de planète
-        const planetDetailsModal = document.getElementById('planetDetailsModal');
-        const closePlanetDetailsModal = document.getElementById('closePlanetDetailsModal');
-        const detailPlanetName = document.getElementById('detailPlanetName');
-        const detailPlanetDescription = document.getElementById('detailPlanetDescription');
-        const detailPlanetType = document.getElementById('detailPlanetType');
-        const detailPlanetSize = document.getElementById('detailPlanetSize');
-        const detailPlanetPopulation = document.getElementById('detailPlanetPopulation');
-        const detailPlanetTech = document.getElementById('detailPlanetTech');
-        const detailPlanetConnections = document.getElementById('detailPlanetConnections');
-        const detailPlanetStability = document.getElementById('detailPlanetStability');
-        const interactWithPlanetBtn = document.getElementById('interactWithPlanetBtn');
-        const deletePlanetBtn = document.getElementById('deletePlanetBtn');
-
-        // --- Variables Globales pour les Données de la Galaxie ---
-        let planetsData = [];
-        let connectionsData = [];
-        let nextPlanetId = 1; // Pour générer des IDs uniques pour les nouvelles planètes
-
-        // --- Fonctions Utilitaires ---
-
-        // Génération du champ d'étoiles
-        const generateStars = () => {
-            starsContainer.innerHTML = ''; // Nettoyer les étoiles existantes
-            const numStars = 100;
-            for (let i = 0; i < numStars; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.width = `${Math.random() * 3 + 1}px`;
-                star.style.height = star.style.width;
-                star.style.left = `${Math.random() * 100}%`;
-                star.style.top = `${Math.random() * 100}%`;
-                star.style.animationDelay = `${Math.random() * 2}s`;
-                star.style.setProperty('--duration', `${Math.random() * 5 + 3}s`);
-                starsContainer.appendChild(star);
-            }
-        };
-
-        // Redimensionnement du Canvas de l'univers (si utilisé pour des effets visuels)
-        const resizeUniverseCanvas = () => {
-            if (universeCanvas) {
-                universeCanvas.width = window.innerWidth;
-                universeCanvas.height = window.innerHeight;
-                // Ici, vous pourriez redessiner des nébuleuses si votre effet les utilise
-            }
-        };
-
-        // Bascule de la barre latérale pour mobile
-        if (menuToggle && sidebar) {
-            menuToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
-            });
-        }
-
-        // État actif de l'élément de navigation
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                navItems.forEach(nav => nav.classList.remove('active'));
-                item.classList.add('active');
-                if (sidebar.classList.contains('open') && window.innerWidth <= 1024) {
-                    sidebar.classList.remove('open'); // Ferme la barre latérale sur un clic sur un élément de navigation sur mobile
                 }
-            });
-        });
-
-        // --- Fonctions des Modals et Toasts ---
-        const showModal = (modalElement) => {
-            modalElement.style.display = 'flex';
-        };
-
-        const hideModal = (modalElement) => {
-            modalElement.style.display = 'none';
-        };
-
-        const showToast = (message, type = 'success') => {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.remove();
-            }, 3500); // Supprimer après 3.5 secondes (incluant l'animation fadeOut)
-        };
-
-        // --- Logique de la Galaxie (Firestore-aware) ---
-
-        // Charger les données de la galaxie depuis Firestore
-        const loadGalaxyFromFirestore = () => {
-            if (!isAuthReady) return; // S'assurer que Firebase est initialisé et l'utilisateur authentifié
-
-            // Écouter les changements des planètes en temps réel
-            onSnapshot(planetsRef, (snapshot) => {
-                planetsData = [];
-                snapshot.forEach(doc => {
-                    planetsData.push(doc.data());
-                });
-                // Trouver le plus grand ID pour éviter les doublons lors de l'ajout de nouvelles planètes
-                const maxId = planetsData.reduce((max, p) => {
-                    if (p.id.startsWith('chatbot-')) {
-                        const num = parseInt(p.id.split('-')[1]);
-                        return Math.max(max, num);
-                    }
-                    return max;
-                }, 0);
-                nextPlanetId = maxId + 1;
-
-                positionPlanets();
-                renderGalaxy();
-                updateStats();
-            }, (error) => {
-                console.error("Erreur lors du chargement des planètes :", error);
-                showToast("Erreur de chargement des mondes.", "error");
-            });
-
-            // Écouter les changements des connexions en temps réel
-            onSnapshot(connectionsRef, (snapshot) => {
-                connectionsData = [];
-                snapshot.forEach(doc => {
-                    const conn = doc.data();
-                    // Récupérer les objets planète réels à partir de leurs IDs
-                    const fromPlanet = planetsData.find(p => p.id === conn.fromPlanetId);
-                    const toPlanet = planetsData.find(p => p.id === conn.toPlanetId);
-                    if (fromPlanet && toPlanet) {
-                        connectionsData.push({ from: fromPlanet, to: toPlanet, docId: doc.id }); // Stocker l'ID du document pour la suppression
-                    }
-                });
-                renderGalaxy();
-                updateStats();
-            }, (error) => {
-                console.error("Erreur lors du chargement des connexions :", error);
-                showToast("Erreur de chargement des routes spatiales.", "error");
-            });
-        };
-
-        // Sauvegarder les données de la galaxie dans Firestore
-        const savePlanetToFirestore = async (planet) => {
-            if (!isAuthReady) return;
-            try {
-                await setDoc(doc(planetsRef, planet.id), planet);
-                console.log(`Planète ${planet.id} sauvegardée.`);
-            } catch (e) {
-                console.error("Erreur lors de la sauvegarde de la planète : ", e);
-                showToast("Erreur de sauvegarde de planète.", "error");
+                // Supprimer les neurones morts (en partant de la fin pour ne pas perturber les indices)
+                for (let i = deadNeurons.length - 1; i >= 0; i--) {
+                    this.neurons.splice(deadNeurons[i], 1);
+                }
+                if (deadNeurons.length > 0) {
+                    this.trigger('neuronsRemoved', deadNeurons.length);
+                }
+                // Mettre à jour les statistiques
+                this.stats.activeNeurons = activeCount;
+                this.stats.averageEnergy = this.neurons.length > 0 ? totalEnergy / this.neurons.length : 0;
+                this.stats.cycles++;
             }
-        };
-
-        const saveConnectionToFirestore = async (connection) => {
-            if (!isAuthReady) return;
-            try {
-                // Firestore ne peut pas stocker directement des références circulaires ou des objets complexes
-                // Nous stockons simplement les IDs des planètes connectées
-                const connectionDoc = {
-                    fromPlanetId: connection.from.id,
-                    toPlanetId: connection.to.id
+            drawConnections() {
+                // Mise à jour des connexions et dessin
+                const deadConnections = [];
+                for (let i = 0; i < this.connections.length; i++) {
+                    const connection = this.connections[i];
+                    // Vérifier si les neurones existent toujours
+                    const source = connection.source;
+                    const target = connection.target;
+                    // Check if both source and target neurons still exist in the network's neurons array
+                    if (!this.neurons.includes(source) || !this.neurons.includes(target)) {
+                        deadConnections.push(i);
+                        continue;
+                    }
+                    // Calculer la distance
+                    const dx = target.x - source.x;
+                    const dy = target.y - source.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    // Dessiner seulement si assez proche
+                    if (distance < neuralConfig.neurons.connectionDistance) {
+                        // Calculer l'opacité basée sur la distance et l'énergie
+                        const distanceFactor = 1 - distance / neuralConfig.neurons.connectionDistance;
+                        const energyFactor = (source.energy + target.energy) / 200;
+                        const opacity = distanceFactor * neuralConfig.neurons.connectionOpacity * energyFactor;
+                        // Déterminer la couleur
+                        let color;
+                        if (source.active && target.active) {
+                            // Connexion très active
+                            color = `rgba(255, 255, 255, ${opacity * 1.5})`;
+                        } else if (source.active || target.active) {
+                            // Connexion semi-active
+                            const r = parseInt(source.originalColor.slice(1, 3), 16);
+                            const g = parseInt(source.originalColor.slice(3, 5), 16);
+                            const b = parseInt(source.originalColor.slice(5, 7), 16);
+                            color = `rgba(${r}, ${g}, ${b}, ${opacity * 1.2})`;
+                        } else {
+                            // Connexion inactive
+                            color = `rgba(52, 152, 219, ${opacity})`;
+                        }
+                        // Dessiner la connexion
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(source.x, source.y);
+                        this.ctx.lineTo(target.x, target.y);
+                        this.ctx.strokeStyle = color;
+                        this.ctx.lineWidth = source.active || target.active ? 1.5 : 1;
+                        // Effet de pulsation sur les connexions actives
+                        if ((source.active || target.active) && neuralConfig.animation.waveEffect) {
+                            this.ctx.setLineDash([5, 5]);
+                            this.ctx.lineDashOffset = -performance.now() / 100;
+                        } else {
+                            this.ctx.setLineDash([]);
+                        }
+                        this.ctx.stroke();
+                        this.ctx.setLineDash([]);
+                    } else {
+                        // Connexion trop éloignée
+                        deadConnections.push(i);
+                    }
+                }
+                // Supprimer les connexions mortes
+                for (let i = deadConnections.length - 1; i >= 0; i--) {
+                    this.connections.splice(deadConnections[i], 1);
+                }
+                this.stats.connectionCount = this.connections.length;
+            }
+            propagateActivation(sourceNeuron) {
+                // Propager l'activation aux neurones connectés
+                for (const connection of sourceNeuron.connections) {
+                    const targetNeuron = connection.target;
+                    // Probabilité d'activation basée sur la force de la connexion
+                    if (Math.random() < connection.strength * 0.7 && !targetNeuron.active) { // Prevent reactivating already active neurons
+                        targetNeuron.activate(1000 + Math.random() * 1000);
+                        // Renforcer la connexion (apprentissage)
+                        if (neuralConfig.learning.enabled) {
+                            connection.strength = Math.min(1, connection.strength + 0.01);
+                        }
+                    }
+                }
+            }
+            activateRandomNeurons(count = 3) {
+                // Activer quelques neurones aléatoires pour stimuler le réseau
+                if (this.neurons.length === 0) return;
+                for (let i = 0; i < count; i++) {
+                    const index = Math.floor(Math.random() * this.neurons.length);
+                    if (this.neurons[index]) {
+                        this.neurons[index].activate(2000 + Math.random() * 3000);
+                    }
+                }
+            }
+            activateByPattern(pattern) {
+                // Activation basée sur un motif spécifique (ex: entrée utilisateur)
+                if (this.neurons.length === 0) return;
+                // Convertir le pattern en une empreinte d'activation
+                const patternHash = this.hashPattern(pattern);
+                // Sélectionner les neurones à activer basés sur le hash
+                const neuronIndices = [];
+                // Simple mapping: use character codes to pick neurons
+                for (let i = 0; i < pattern.length; i++) {
+                    const charCode = pattern.charCodeAt(i);
+                    const index = charCode % this.neurons.length; // Ensures index is within bounds
+                    if (!neuronIndices.includes(index)) { // Avoid duplicate activations for same pattern char
+                         neuronIndices.push(index);
+                    }
+                }
+                // Activer les neurones sélectionnés
+                for (const index of neuronIndices) {
+                    if (this.neurons[index]) { // Ensure neuron still exists
+                        this.neurons[index].activate(3000);
+                    }
+                }
+                // Mémoriser le motif
+                if (neuralConfig.learning.enabled) {
+                    const currentPattern = {
+                        pattern: patternHash,
+                        originalPattern: pattern, // Store original for potential debug/recall
+                        neurons: [...new Set(neuronIndices)], // Store unique indices
+                        timestamp: Date.now()
+                    };
+                    // Check if a similar pattern already exists to avoid exact duplicates
+                    const existing = this.memoryPatterns.find(mp => mp.pattern === currentPattern.pattern);
+                    if (!existing) {
+                        this.memoryPatterns.push(currentPattern);
+                        // Limiter la taille de la mémoire
+                        if (this.memoryPatterns.length > neuralConfig.learning.memoryCapacity) {
+                            this.memoryPatterns.shift();
+                        }
+                        this.trigger('patternMemorized', currentPattern);
+                    }
+                }
+                this.trigger('patternActivated', pattern);
+            }
+            recognizePatterns() {
+                // Analyser l'état actuel pour reconnaître des motifs connus
+                if (!neuralConfig.learning.enabled || this.neurons.length === 0) return;
+                // Créer une empreinte de l'état actuel des neurones
+                const activeNeuronIndices = [];
+                for (let i = 0; i < this.neurons.length; i++) {
+                    if (this.neurons[i].active) {
+                        activeNeuronIndices.push(i);
+                    }
+                }
+                if (activeNeuronIndices.length < 3) return; // Pas assez de neurones actifs pour une reconnaissance significative
+                // Comparer avec les motifs mémorisés
+                for (const pattern of this.memoryPatterns) {
+                    let matches = 0;
+                    for (const activeIndex of activeNeuronIndices) {
+                        if (pattern.neurons.includes(activeIndex)) {
+                            matches++;
+                        }
+                    }
+                    // Calculer le score de correspondance
+                    const matchScore = matches / Math.max(pattern.neurons.length, activeNeuronIndices.length);
+                    // Si assez similaire, c'est un match
+                    if (matchScore > neuralConfig.learning.patternRecognition) {
+                        this.stats.patternMatches++;
+                        this.trigger('patternRecognized', pattern);
+                        // Renforcer ce motif en activant les neurones associés
+                        for (const neuronIndex of pattern.neurons) {
+                            if (this.neurons[neuronIndex]) { // Ensure neuron still exists
+                                this.neurons[neuronIndex].activate(2000);
+                            }
+                        }
+                        return pattern; // Return the recognized pattern
+                    }
+                }
+                return null; // No pattern recognized
+            }
+            hashPattern(input) {
+                // Fonction simple pour créer un hash du motif
+                let hash = 0;
+                for (let i = 0; i < input.length; i++) {
+                    const char = input.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // Conversion en entier 32 bits
+                }
+                return hash.toString(); // Return as string to avoid numerical issues with large hashes
+            }
+            updateStats() {
+                // Mettre à jour les statistiques de réseau
+                document.getElementById('neuronCount').textContent = this.stats.neuronCount;
+                document.getElementById('synapseCount').textContent = this.stats.connectionCount;
+                // Mettre à jour la progression de réplication
+                const progress = Math.min(100, Math.floor((this.stats.neuronCount / neuralConfig.neurons.maxCount) * 100));
+                document.getElementById('replicationProgress').style.width = `${progress}%`;
+            }
+            activate() {
+                // Activer le système neural
+                this.isActive = true;
+                this.activateRandomNeurons(5);
+                // Démarrer l'activation cyclique
+                this.activationInterval = setInterval(() => {
+                    this.activateRandomNeurons(2);
+                }, 2000);
+                this.trigger('systemActivated');
+                return this;
+            }
+            deactivate() {
+                // Désactiver le système neural
+                this.isActive = false;
+                clearInterval(this.activationInterval);
+                this.trigger('systemDeactivated');
+                return this;
+            }
+            // Système d'événements simple
+            on(eventName, callback) {
+                if (!this.eventListeners[eventName]) {
+                    this.eventListeners[eventName] = [];
+                }
+                this.eventListeners[eventName].push(callback);
+                return this;
+            }
+            trigger(eventName, data) {
+                if (this.eventListeners[eventName]) {
+                    for (const callback of this.eventListeners[eventName]) {
+                        callback(data);
+                    }
+                }
+                return this;
+            }
+            // Fonctions d'analyse
+            generateReport() {
+                return {
+                    neuronCount: this.stats.neuronCount,
+                    connectionCount: this.stats.connectionCount,
+                    activeNeurons: this.stats.activeNeurons,
+                    averageEnergy: this.stats.averageEnergy.toFixed(2),
+                    networkDensity: this.stats.neuronCount > 1 ? (this.stats.connectionCount / (this.stats.neuronCount * (this.stats.neuronCount - 1) / 2)).toFixed(4) : 0,
+                    recognizedPatterns: this.stats.patternMatches,
+                    memorySize: this.memoryPatterns.length,
+                    systemStatus: this.isActive ? 'Actif' : 'Inactif',
+                    timestamp: new Date().toISOString()
                 };
-                const docRef = await addDoc(connectionsRef, connectionDoc);
-                console.log(`Connexion ajoutée avec l'ID: ${docRef.id}`);
-                return docRef.id; // Retourne l'ID du document Firestore
-            } catch (e) {
-                console.error("Erreur lors de la sauvegarde de la connexion : ", e);
-                showToast("Erreur de sauvegarde de connexion.", "error");
             }
-        };
-
-        const deletePlanetFromFirestore = async (planetId) => {
-            if (!isAuthReady) return;
-            try {
-                await deleteDoc(doc(planetsRef, planetId));
-                // Supprimer aussi les connexions liées à cette planète
-                const connectionsToDelete = connectionsData.filter(c => c.from.id === planetId || c.to.id === planetId);
-                for (const conn of connectionsToDelete) {
-                    if (conn.docId) { // S'assurer que l'ID du document Firestore est stocké
-                        await deleteDoc(doc(connectionsRef, conn.docId));
-                    }
-                }
-                showToast(`Monde ${planetId} supprimé.`, 'success');
-            } catch (e) {
-                console.error("Erreur lors de la suppression de la planète : ", e);
-                showToast("Erreur de suppression de monde.", "error");
-            }
-        };
-
-        const deleteAllDataInFirestore = async () => {
-            if (!isAuthReady) return;
-            try {
-                // Supprimer toutes les planètes
-                const planetDocs = await getDocs(planetsRef);
-                for (const d of planetDocs.docs) {
-                    await deleteDoc(d.ref);
-                }
-                // Supprimer toutes les connexions
-                const connectionDocs = await getDocs(connectionsRef);
-                for (const d of connectionDocs.docs) {
-                    await deleteDoc(d.ref);
-                }
-                showToast("Toutes les données de la galaxie ont été effacées de Firestore.", "success");
-            } catch (e) {
-                console.error("Erreur lors de la suppression de toutes les données : ", e);
-                showToast("Erreur lors de la réinitialisation complète.", "error");
-            }
-        };
-
-
-        // Initialiser la galaxie avec un noyau (si vide)
-        const initializeGalaxy = async () => {
-            if (!isAuthReady) {
-                console.warn("Firebase non prêt pour l'initialisation de la galaxie.");
-                return;
-            }
-            const coreExists = planetsData.some(p => p.id === 'core');
-            if (!coreExists) {
-                const corePlanet = {
-                    id: 'core',
-                    name: 'Noyau NeuraX',
-                    type: 'core',
-                    size: 80,
-                    population: '∞',
-                    tech: '100%',
-                    connections: 0,
-                    stability: '99%',
-                    description: "Le cœur du réseau NeuraX, centre de toutes les opérations."
+            // Sauvegarde et chargement
+            exportState() {
+                // Version simplifiée - sauvegarde uniquement les configurations et statistiques
+                return {
+                    config: neuralConfig,
+                    stats: this.stats,
+                    memoryPatterns: this.memoryPatterns.map(p => ({
+                        pattern: p.pattern,
+                        neurons: p.neurons,
+                        timestamp: p.timestamp,
+                        originalPattern: p.originalPattern // Also store original for display
+                    })),
+                    timestamp: Date.now()
                 };
-                await savePlanetToFirestore(corePlanet); // Sauvegarder le noyau dans Firestore
-                // planetsData sera mis à jour via onSnapshot
             }
-        };
-
-        // Positionner les planètes de manière réactive
-        const positionPlanets = () => {
-            const containerRect = galaxyContainer.getBoundingClientRect();
-            const containerWidth = containerRect.width;
-            const containerHeight = containerRect.height;
-
-            const core = planetsData.find(p => p.id === 'core');
-            if (core) {
-                core.x = containerWidth / 2 - core.size / 2;
-                core.y = containerHeight / 2 - core.size / 2;
-            }
-
-            planetsData.forEach(planet => {
-                if (planet.id !== 'core') {
-                    if (!planet.originalAngle || !planet.originalDistance) {
-                        planet.originalAngle = Math.random() * Math.PI * 2;
-                        planet.originalDistance = Math.random() * (Math.min(containerWidth, containerHeight) / 3 - 50) + 50;
-                    }
-                    const size = planet.size || 25;
-                    planet.x = core.x + planet.originalDistance * Math.cos(planet.originalAngle) - size / 2;
-                    planet.y = core.y + planet.originalDistance * Math.sin(planet.originalAngle) - size / 2;
-
-                    planet.x = Math.max(0, Math.min(planet.x, containerWidth - size));
-                    planet.y = Math.max(0, Math.min(planet.y, containerHeight - size));
-                }
-            });
-        };
-
-        const renderGalaxy = () => {
-            galaxyContainer.innerHTML = '';
-
-            // Rendre les connexions
-            connectionsData.forEach(conn => {
-                const line = document.createElement('div');
-                line.className = 'connection';
-                const x1 = conn.from.x + conn.from.size / 2;
-                const y1 = conn.from.y + conn.from.size / 2;
-                const x2 = conn.to.x + conn.to.size / 2;
-                const y2 = conn.to.y + conn.to.size / 2;
-
-                const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-                const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
-
-                line.style.width = `${length}px`;
-                line.style.transform = `rotate(${angle}deg)`;
-                line.style.left = `${x1}px`;
-                line.style.top = `${y1}px`;
-                galaxyContainer.appendChild(line);
-            });
-
-            // Rendre les planètes
-            planetsData.forEach(planetData => {
-                const planet = document.createElement('div');
-                planet.className = `planet ${planetData.type}`;
-                planet.style.width = `${planetData.size}px`;
-                planet.style.height = `${planetData.size}px`;
-                planet.style.left = `${planetData.x}px`;
-                planet.style.top = `${planetData.y}px`;
-                if (planetData.id !== 'core') {
-                    planet.textContent = planetData.name.replace('Civi-IA-', 'IA');
-                }
-                
-                // Événements pour le tooltip (hover)
-                planet.addEventListener('mouseenter', (e) => {
-                    showPlanetTooltip(planetData, e.clientX, e.clientY);
-                    highlightConnections(planetData);
-                });
-                planet.addEventListener('mouseleave', () => {
-                    hidePlanetTooltip();
-                    clearHighlights();
-                });
-
-                // Événement pour le modal de détails (click)
-                planet.addEventListener('click', () => {
-                    showPlanetDetailsModal(planetData);
-                });
-
-                galaxyContainer.appendChild(planet);
-            });
-        };
-
-        const showPlanetTooltip = (data, mouseX, mouseY) => {
-            const tooltip = document.getElementById('planetTooltip');
-            document.getElementById('planetName').textContent = data.name;
-            document.getElementById('planetDesc').textContent = data.description || 'Information non disponible.';
-            document.getElementById('planetPopulation').textContent = data.population;
-            document.getElementById('planetTech').textContent = data.tech;
-            document.getElementById('planetConnections').textContent = data.connections;
-            document.getElementById('planetStability').textContent = data.stability;
-
-            let top = mouseY + 15;
-            let left = mouseX + 15;
-
-            const bodyRect = document.body.getBoundingClientRect();
-            const tooltipRect = tooltip.getBoundingClientRect();
-
-            if (left + tooltipRect.width > bodyRect.right - 20) {
-                left = mouseX - tooltipRect.width - 15;
-            }
-            if (top + tooltipRect.height > bodyRect.bottom - 20) {
-                top = bodyRect.bottom - tooltipRect.height - 20;
-            }
-            left = Math.max(20, left);
-            top = Math.max(20, top);
-
-            tooltip.style.left = `${left}px`;
-            tooltip.style.top = `${top}px`;
-            tooltip.classList.add('show');
-        };
-
-        const hidePlanetTooltip = () => {
-            document.getElementById('planetTooltip').classList.remove('show');
-        };
-
-        const highlightConnections = (selectedPlanet) => {
-            const lines = galaxyContainer.querySelectorAll('.connection');
-            lines.forEach(line => line.classList.remove('active'));
-
-            connectionsData.forEach((conn, index) => {
-                if (conn.from.id === selectedPlanet.id || conn.to.id === selectedPlanet.id) {
-                    const connectionElement = galaxyContainer.children[index];
-                    if(connectionElement) connectionElement.classList.add('active');
-                }
-            });
-        };
-
-        const clearHighlights = () => {
-            const lines = galaxyContainer.querySelectorAll('.connection');
-            lines.forEach(line => line.classList.remove('active'));
-        };
-
-        const updateStats = () => {
-            planetCountElement.textContent = planetsData.length;
-            connectionCountElement.textContent = connectionsData.length;
-        };
-
-        // --- Logique des Boutons de Contrôle ---
-
-        // Activation de la Matrice Stellaire
-        if (startBtn) {
-            startBtn.addEventListener('click', () => showModal(activationModal));
-        }
-        if (closeActivationModal) {
-            closeActivationModal.addEventListener('click', () => hideModal(activationModal));
-        }
-        if (cancelActivation) {
-            cancelActivation.addEventListener('click', () => hideModal(activationModal));
-        }
-        if (confirmActivation) {
-            confirmActivation.addEventListener('click', async () => {
-                const activationLevel = document.getElementById('activationLevel').value;
-                console.log(`Matrice activée au niveau: ${activationLevel}`);
-                showToast('Matrice Stellaire Activée !', 'success');
-                hideModal(activationModal);
-
-                // Initialiser la galaxie si elle est vide (créera le noyau et le sauvegardera)
-                if (planetsData.length === 0) {
-                    await initializeGalaxy();
-                    await addRandomPlanets(5); // Ajoutons quelques planètes après l'activation
-                }
-            });
-        }
-
-        // Explorer Nouveaux Mondes
-        if (exploreBtn) {
-            exploreBtn.addEventListener('click', async () => {
-                await addRandomPlanets(3); // Ajouter 3 nouvelles planètes
-                showToast('Nouveaux mondes découverts !', 'success');
-            });
-        }
-
-        // Établir Connexions
-        if (connectBtn) {
-            connectBtn.addEventListener('click', async () => {
-                await addRandomConnections(planetsData.length > 2 ? 2 : 0); // Ajouter 2 nouvelles connexions si assez de planètes
-                showToast('Connexions interstellaires établies !', 'success');
-            });
-        }
-
-        // Réseau de Communication (simulé)
-        if (commBtn) {
-            commBtn.addEventListener('click', () => {
-                showToast('Réseau de communication synchronisé.', 'info');
-            });
-        }
-
-        // Nova de Réinitialisation
-        if (resetBtn) {
-            resetBtn.addEventListener('click', async () => {
-                // Utilisation d'un modal personnalisé pour la confirmation
-                const confirmReset = await new Promise(resolve => {
-                    const confirmModal = document.createElement('div');
-                    confirmModal.className = 'modal';
-                    confirmModal.innerHTML = `
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h2 class="modal-title">Confirmation de Réinitialisation</h2>
-                            </div>
-                            <div class="modal-body">
-                                <p>Voulez-vous vraiment lancer une Nova de Réinitialisation ? Toutes les données de la galaxie seront perdues.</p>
-                            </div>
-                            <div class="modal-footer">
-                                <button class="btn btn-cancel" id="cancelReset">Annuler</button>
-                                <button class="btn btn-primary danger" id="confirmReset">Confirmer la Réinitialisation</button>
-                            </div>
-                        </div>
-                    `;
-                    document.body.appendChild(confirmModal);
-                    showModal(confirmModal);
-
-                    document.getElementById('cancelReset').onclick = () => { hideModal(confirmModal); confirmModal.remove(); resolve(false); };
-                    document.getElementById('confirmReset').onclick = () => { hideModal(confirmModal); confirmModal.remove(); resolve(true); };
-                });
-
-                if (confirmReset) {
-                    await deleteAllDataInFirestore(); // Supprimer toutes les données de Firestore
-                    // initializeGalaxy() sera appelé par onSnapshot après la suppression
-                    showToast('Nova de Réinitialisation terminée. Matrice réinitialisée.', 'error');
-                }
-            });
-        }
-
-        // --- Fonctions d'ajout dynamique (Firestore-aware) ---
-
-        const addRandomPlanets = async (count) => {
-            const core = planetsData.find(p => p.id === 'core');
-            if (!core) {
-                showToast('Le noyau n\'existe pas. Activez la matrice d\'abord.', 'error');
-                return;
-            }
-
-            const containerRect = galaxyContainer.getBoundingClientRect();
-            const containerWidth = containerRect.width;
-            const containerHeight = containerRect.height;
-
-            for (let i = 0; i < count; i++) {
-                const newPlanet = {
-                    id: `chatbot-${nextPlanetId++}`,
-                    name: `Civi-IA-${nextPlanetId - 1}`,
-                    type: 'chatbot',
-                    size: Math.random() * 20 + 15,
-                    population: (Math.random() * 500 + 50).toFixed(0) + ' M',
-                    tech: (Math.random() * 90 + 10).toFixed(0) + '%',
-                    connections: 0,
-                    stability: (Math.random() * 80 + 20).toFixed(0) + '%',
-                    description: `Un nouveau monde de civilisation IA découvert, ${Math.random() > 0.5 ? 'riche en ressources' : 'mystérieux et inexploré'}.`
-                };
-
-                newPlanet.originalAngle = Math.random() * Math.PI * 2;
-                newPlanet.originalDistance = Math.random() * (Math.min(containerWidth, containerHeight) / 3 - 50) + 50;
-                newPlanet.x = core.x + newPlanet.originalDistance * Math.cos(newPlanet.originalAngle) - newPlanet.size / 2;
-                newPlanet.y = core.y + newPlanet.originalDistance * Math.sin(newPlanet.originalAngle) - newPlanet.size / 2;
-                newPlanet.x = Math.max(0, Math.min(newPlanet.x, containerWidth - newPlanet.size));
-                newPlanet.y = Math.max(0, Math.min(newPlanet.y, containerHeight - newPlanet.size));
-
-                await savePlanetToFirestore(newPlanet); // Sauvegarder la nouvelle planète dans Firestore
-                // planetsData sera mis à jour via onSnapshot
-            }
-        };
-
-        const addRandomConnections = async (count) => {
-            if (planetsData.length < 2) {
-                showToast('Pas assez de mondes pour créer des connexions !', 'error');
-                return;
-            }
-
-            for (let i = 0; i < count; i++) {
-                let p1, p2;
-                let attempts = 0;
-                do {
-                    p1 = planetsData[Math.floor(Math.random() * planetsData.length)];
-                    p2 = planetsData[Math.floor(Math.random() * planetsData.length)];
-                    attempts++;
-                    if (attempts > 50 && planetsData.length > 2) { // Éviter la boucle infinie si toutes les connexions possibles sont faites
-                        console.warn("Impossible de trouver une nouvelle connexion unique.");
-                        return;
-                    }
-                } while (p1.id === p2.id || connectionsData.some(c => 
-                    (c.from.id === p1.id && c.to.id === p2.id) || 
-                    (c.from.id === p2.id && c.to.id === p1.id)
-                ));
-
-                const docId = await saveConnectionToFirestore({ from: p1, to: p2 }); // Sauvegarder la connexion dans Firestore
-                // connectionsData sera mis à jour via onSnapshot
-            }
-        };
-
-        // --- Logique du Modal de Détails de Planète ---
-        let currentSelectedPlanet = null; // Garder une référence à la planète actuellement affichée
-
-        const showPlanetDetailsModal = (planetData) => {
-            currentSelectedPlanet = planetData; // Définir la planète sélectionnée
-            detailPlanetName.textContent = planetData.name;
-            detailPlanetDescription.textContent = planetData.description || 'Aucune description disponible.';
-            detailPlanetType.textContent = planetData.type;
-            detailPlanetSize.textContent = `${planetData.size}px`;
-            detailPlanetPopulation.textContent = planetData.population;
-            detailPlanetTech.textContent = planetData.tech;
-            detailPlanetConnections.textContent = planetData.connections;
-            detailPlanetStability.textContent = planetData.stability;
-
-            showModal(planetDetailsModal);
-        };
-
-        // Fermeture du modal de détails de planète
-        if (closePlanetDetailsModal) {
-            closePlanetDetailsModal.addEventListener('click', () => {
-                hideModal(planetDetailsModal);
-                currentSelectedPlanet = null; // Réinitialiser la planète sélectionnée
-            });
-        }
-
-        // Bouton "Interagir" dans le modal de détails
-        if (interactWithPlanetBtn) {
-            interactWithPlanetBtn.addEventListener('click', () => {
-                if (currentSelectedPlanet) {
-                    showToast(`Interaction avec ${currentSelectedPlanet.name} initiée !`, 'info');
-                    hideModal(planetDetailsModal);
-                    // Ici, vous pourriez ajouter une logique pour ouvrir une interface de chat spécifique à cette planète,
-                    // ou lancer une mission, etc.
-                }
-            });
-        }
-
-        // Bouton "Supprimer" dans le modal de détails
-        if (deletePlanetBtn) {
-            deletePlanetBtn.addEventListener('click', async () => {
-                if (currentSelectedPlanet && currentSelectedPlanet.id !== 'core') { // Ne pas supprimer le noyau
-                    const confirmDelete = await new Promise(resolve => {
-                        const confirmModal = document.createElement('div');
-                        confirmModal.className = 'modal';
-                        confirmModal.innerHTML = `
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h2 class="modal-title">Confirmer la Suppression</h2>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Voulez-vous vraiment supprimer le monde "${currentSelectedPlanet.name}" ? Cette action est irréversible.</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button class="btn btn-cancel" id="cancelDelete">Annuler</button>
-                                    <button class="btn btn-primary danger" id="confirmDelete">Confirmer la Suppression</button>
-                                </div>
-                            </div>
-                        `;
-                        document.body.appendChild(confirmModal);
-                        showModal(confirmModal);
-
-                        document.getElementById('cancelDelete').onclick = () => { hideModal(confirmModal); confirmModal.remove(); resolve(false); };
-                        document.getElementById('confirmDelete').onclick = () => { hideModal(confirmModal); confirmModal.remove(); resolve(true); };
+            importState(state) {
+                // Importer seulement ce qui est sûr
+                if (state.config) {
+                    // Mise à jour de la configuration en préservant la structure
+                    Object.keys(state.config).forEach(section => {
+                        if (neuralConfig[section]) {
+                            Object.keys(state.config[section]).forEach(param => {
+                                if (neuralConfig[section][param] !== undefined) {
+                                    neuralConfig[section][param] = state.config[section][param];
+                                }
+                            });
+                        }
                     });
-
-                    if (confirmDelete) {
-                        await deletePlanetFromFirestore(currentSelectedPlanet.id);
-                        hideModal(planetDetailsModal);
-                        currentSelectedPlanet = null;
-                    }
-                } else if (currentSelectedPlanet && currentSelectedPlanet.id === 'core') {
-                    showToast("Le Noyau NeuraX ne peut pas être supprimé !", "error");
                 }
-            });
+                if (state.memoryPatterns) {
+                    // Filtrer uniquement les motifs valides
+                    this.memoryPatterns = state.memoryPatterns.filter(p =>
+                        p.pattern && Array.isArray(p.neurons) && p.timestamp
+                    ).slice(0, neuralConfig.learning.memoryCapacity);
+                }
+                // Note: Re-creating neurons from state requires more complex serialization,
+                // so for this example, we only import config and patterns.
+                return this;
+            }
         }
+        // Fonctions utilitaires pour l'interface utilisateur
+        const NeuraXUI = {
+            neuralNetwork: null,
+            voiceRecognitionActive: false,
+            // Initialisation de l'interface
+            initialize(neuralNetworkInstance) {
+                this.neuralNetwork = neuralNetworkInstance;
+
+                // Configure event listeners
+                document.getElementById('startBtn').addEventListener('click', () => {
+                    document.getElementById('activationModal').style.display = 'flex';
+                    document.getElementById('currentActivationLevel').textContent = document.getElementById('activationLevel').value;
+                });
+                document.getElementById('deactivateBtn').addEventListener('click', () => {
+                    this.deactivateSystem();
+                });
+                document.getElementById('closeActivationModal').addEventListener('click', () => {
+                    document.getElementById('activationModal').style.display = 'none';
+                });
+                document.getElementById('cancelActivation').addEventListener('click', () => {
+                    document.getElementById('activationModal').style.display = 'none';
+                });
+                document.getElementById('confirmActivation').addEventListener('click', () => {
+                    document.getElementById('activationModal').style.display = 'none';
+                    this.activateSystem();
+                });
+                document.getElementById('activationLevel').addEventListener('input', (e) => {
+                    document.getElementById('currentActivationLevel').textContent = e.target.value;
+                });
+
+                // Chat
+                const chatInput = document.getElementById('chatInput');
+                const sendBtn = document.getElementById('sendBtn');
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.sendChatMessage();
+                    }
+                });
+                sendBtn.addEventListener('click', () => {
+                    this.sendChatMessage();
+                });
+                document.getElementById('voiceBtn').addEventListener('click', (e) => {
+                    this.toggleVoiceRecognition(e.currentTarget);
+                });
+
+                // Menu latéral
+                document.getElementById('menuToggle')?.addEventListener('click', () => {
+                    document.getElementById('sidebar').classList.toggle('open');
+                });
+                // Fermer le menu latéral si clic à l'extérieur (pour mobile)
+                document.addEventListener('click', (event) => {
+                    const sidebar = document.getElementById('sidebar');
+                    const menuToggle = document.getElementById('menuToggle');
+                    if (sidebar.classList.contains('open') && !sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+                        sidebar.classList.remove('open');
+                    }
+                });
 
 
-        // --- Initialisation au chargement de la page ---
+                // Navigation
+                const navItems = document.querySelectorAll('.nav-item');
+                navItems.forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        // Empêcher la navigation par défaut
+                        if (item.getAttribute('href') && item.getAttribute('href').startsWith('#')) {
+                            e.preventDefault();
+                        }
+                        // Retirer la classe active de tous les éléments
+                        navItems.forEach(navItem => navItem.classList.remove('active'));
+                        // Ajouter la classe active à l'élément cliqué
+                        item.classList.add('active');
+                        // Simuler le changement de section
+                        const sectionName = item.querySelector('span:last-child').textContent.trim();
+                        this.showToast(`Navigation vers ${sectionName}`, 'success');
+
+                        // For a real SPA, you'd hide/show content based on sectionName
+                        // For this demo, just toast.
+                    });
+                });
+
+                // Initial messages
+                this.addChatMessage('Bonjour ! Je suis NeuraX. Comment puis-je vous aider aujourd\'hui ?', 'ai');
+
+                // Listen for network events
+                this.neuralNetwork.on('systemActivated', () => {
+                    document.getElementById('startBtn').classList.add('hidden');
+                    document.getElementById('deactivateBtn').classList.remove('hidden');
+                    this.addChatMessage('Système NeuraX activé. Initialisation du réseau en cours...', 'ai');
+                });
+                this.neuralNetwork.on('systemDeactivated', () => {
+                    document.getElementById('deactivateBtn').classList.add('hidden');
+                    document.getElementById('startBtn').classList.remove('hidden');
+                    this.addChatMessage('Système NeuraX désactivé. Mise en veille des processus.', 'ai');
+                });
+                this.neuralNetwork.on('patternRecognized', (patternData) => {
+                    this.addChatMessage(`NeuraX a reconnu un motif ! (${patternData.originalPattern || patternData.pattern})`, 'ai');
+                });
+                this.neuralNetwork.on('patternMemorized', (patternData) => {
+                    this.addChatMessage(`NeuraX a mémorisé un nouveau motif.`, 'ai');
+                });
+            },
+            // Activation du système
+            activateSystem() {
+                const activationLevel = parseInt(document.getElementById('activationLevel').value, 10);
+                if (this.neuralNetwork) {
+                    this.neuralNetwork.activate();
+                    neuralConfig.neurons.growthRate = 5 + (activationLevel / 10); // Adjust growth based on level
+                    this.showToast(`NeuraX-Ultime activé avec un niveau d'initialisation de ${activationLevel}%`, 'success');
+                } else {
+                    this.showToast('Erreur: Réseau neural non initialisé', 'error');
+                }
+            },
+            // Désactivation du système
+            deactivateSystem() {
+                if (this.neuralNetwork) {
+                    this.neuralNetwork.deactivate();
+                    this.showToast('NeuraX-Ultime désactivé.', 'info');
+                }
+            },
+            // Gestion du chat
+            sendChatMessage() {
+                const chatInput = document.getElementById('chatInput');
+                const message = chatInput.value.trim();
+                if (!message) return;
+
+                this.addChatMessage(message, 'user');
+                chatInput.value = '';
+
+                // Activer le modèle neural avec ce pattern
+                if (this.neuralNetwork) {
+                    this.neuralNetwork.activateByPattern(message);
+                }
+
+                // Afficher l'indicateur de réflexion
+                const chatBody = document.getElementById('chatBody');
+                const thinkingIndicator = document.createElement('div');
+                thinkingIndicator.className = 'thinking-indicator';
+                thinkingIndicator.innerHTML = `
+                    <div class="thinking-dot"></div>
+                    <div class="thinking-dot"></div>
+                    <div class="thinking-dot"></div>
+                `;
+                chatBody.appendChild(thinkingIndicator);
+                chatBody.scrollTop = chatBody.scrollHeight;
+
+                // Traiter la réponse (avec un délai pour simuler l'IA)
+                setTimeout(() => {
+                    thinkingIndicator.remove();
+                    this.generateResponse(message);
+                }, 1500 + Math.random() * 1000); // Simulate varying response times
+            },
+            addChatMessage(text, type) {
+                const chatBody = document.getElementById('chatBody');
+                const messageEl = document.createElement('div');
+                messageEl.className = `chat-message p-3 rounded-lg mb-2 max-w-xs md:max-w-md shadow-sm ${type}`;
+                messageEl.textContent = text;
+                chatBody.appendChild(messageEl);
+                chatBody.scrollTop = chatBody.scrollHeight; // Scroll to bottom
+            },
+            // Implémentation de generateResponse
+            generateResponse(userMessage) {
+                const report = this.neuralNetwork.generateReport();
+                let response = "";
+
+                const lowerCaseMessage = userMessage.toLowerCase();
+
+                if (lowerCaseMessage.includes("bonjour") || lowerCaseMessage.includes("salut")) {
+                    response = "Bonjour ! Comment puis-je vous assister concernant le réseau NeuraX ?";
+                } else if (lowerCaseMessage.includes("comment vas-tu") || lowerCaseMessage.includes("ca va")) {
+                    response = "En tant que système numérique, je n'ai pas de sensations, mais tous mes modules fonctionnent de manière optimale. Merci de demander !";
+                } else if (lowerCaseMessage.includes("combien de neurones")) {
+                    response = `Actuellement, le réseau compte ${report.neuronCount} neurones.`;
+                } else if (lowerCaseMessage.includes("combien de synapses") || lowerCaseMessage.includes("connexions")) {
+                    response = `Il y a ${report.connectionCount} synapses actives dans le réseau.`;
+                } else if (lowerCaseMessage.includes("état du système") || lowerCaseMessage.includes("actif") || lowerCaseMessage.includes("statut")) {
+                    response = `Le système est actuellement ${report.systemStatus}. Il y a ${report.activeNeurons} neurones actifs en ce moment.`;
+                } else if (lowerCaseMessage.includes("capacité de mémoire")) {
+                     response = `La capacité de mémoire actuelle pour les motifs est de ${neuralConfig.learning.memoryCapacity} emplacements, et nous avons mémorisé ${report.memorySize} motifs.`;
+                } else if (lowerCaseMessage.includes("que peux-tu faire")) {
+                    response = "Je simule un réseau neuronal avec des capacités de croissance, d'activation, de propagation et d'apprentissage de motifs. Je peux aussi vous fournir des statistiques en temps réel.";
+                } else if (lowerCaseMessage.includes("merci") || lowerCaseMessage.includes("super")) {
+                    response = "De rien ! N'hésitez pas si vous avez d'autres questions.";
+                } else {
+                    // Simulate pattern recognition feedback based on whether a pattern was activated/recognized
+                    const recognizedPattern = this.neuralNetwork.recognizePatterns(); // Try to recognize current pattern after user input activation
+                    if (recognizedPattern) {
+                        response = `Je détecte un motif lié à "${recognizedPattern.originalPattern || 'un concept abstrait'}". Intéressant.`;
+                    } else if (report.activeNeurons > 0) {
+                         response = `Je traite votre requête... L'activité neurale est de ${report.activeNeurons} neurones actifs.`;
+                    } else {
+                        response = "Hmm, je n'ai pas de réponse spécifique pour cela pour le moment. Mon réseau est en cours d'analyse.";
+                    }
+                }
+                this.addChatMessage(response, 'ai');
+            },
+            toggleVoiceRecognition(buttonElement) {
+                const dot = buttonElement.querySelector('.voice-active-dot');
+                if (!('webkitSpeechRecognition' in window)) {
+                    this.showToast('La reconnaissance vocale n\'est pas supportée par votre navigateur.', 'error');
+                    return;
+                }
+
+                if (this.voiceRecognitionActive) {
+                    // Stop recognition (simulated)
+                    this.voiceRecognitionActive = false;
+                    dot.classList.add('hidden');
+                    this.showToast('Reconnaissance vocale désactivée.', 'info');
+                } else {
+                    // Start recognition (simulated)
+                    this.voiceRecognitionActive = true;
+                    dot.classList.remove('hidden');
+                    this.showToast('Reconnaissance vocale activée. Parlez maintenant...', 'success');
+
+                    // Simulate actual voice recognition starting
+                    const recognition = new webkitSpeechRecognition();
+                    recognition.lang = 'fr-FR';
+                    recognition.interimResults = false;
+                    recognition.maxAlternatives = 1;
+
+                    recognition.onresult = (event) => {
+                        const transcript = event.results[0][0].transcript;
+                        document.getElementById('chatInput').value = transcript;
+                        this.sendChatMessage();
+                        this.toggleVoiceRecognition(buttonElement); // Auto-stop after result
+                    };
+
+                    recognition.onerror = (event) => {
+                        this.showToast(`Erreur de reconnaissance vocale: ${event.error}`, 'error');
+                        this.toggleVoiceRecognition(buttonElement);
+                    };
+
+                    recognition.onend = () => {
+                        if (this.voiceRecognitionActive) { // Only if not manually stopped
+                            this.toggleVoiceRecognition(buttonElement);
+                        }
+                    };
+                    recognition.start();
+                }
+            },
+            showToast(message, type = 'info', duration = 3000) {
+                const toastContainer = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast p-3 rounded-lg shadow-md mb-3 flex items-center space-x-2 ${type}`;
+                toast.innerHTML = `
+                    <span class="text-xl">
+                        ${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}
+                    </span>
+                    <span>${message}</span>
+                `;
+                toastContainer.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.remove();
+                }, duration);
+            }
+        };
+
+        // Main execution when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            generateStars(); // Génère les étoiles de fond
-            resizeUniverseCanvas(); // Initialise la taille du canvas d'univers
-            initializeFirebase(); // Démarre l'initialisation Firebase et l'authentification
+            const canvas = document.getElementById('neuralCanvas');
+            window.neuralNetwork = new NeuralNetwork(canvas); // Make it global for UI access
+            window.neuralNetwork.initialize(50); // Start with 50 neurons
 
-            // Gérer le redimensionnement de la fenêtre pour la réactivité de la galaxie
-            window.addEventListener('resize', () => {
-                positionPlanets(); // Recalculer les positions
-                renderGalaxy();    // Redessiner la galaxie
+            NeuraXUI.initialize(window.neuralNetwork);
+
+            // Update range slider value display
+            document.getElementById('activationLevel').addEventListener('input', function() {
+                document.getElementById('currentActivationLevel').textContent = this.value;
             });
         });
     </script>
