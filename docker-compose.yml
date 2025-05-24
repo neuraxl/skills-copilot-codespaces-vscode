@@ -1,0 +1,17 @@
+version: '3'
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+    restart: always
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: always
