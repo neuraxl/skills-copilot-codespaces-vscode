@@ -1,3 +1,6 @@
+if (data.token !== process.env.ADMIN_TOKEN) {
+  return ws.send(JSON.stringify({ type: 'error', msg: 'Accès non autorisé' }));
+}
 // server.js
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ port: 8080 });
