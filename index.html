@@ -2536,3 +2536,153 @@
     </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeuraX‑Ultime — Carte Financière Mondiale & QFS</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    body{margin:0;font-family:'Segoe UI',sans-serif;background:radial-gradient(circle at center,#0d0d1a,#000);color:#e0e0f0;overflow:hidden}
+    header{background:rgba(10,10,30,0.9);padding:18px;text-align:center;border-bottom:1px solid #222}
+    header h1{color:#00ffe0;margin:0;text-shadow:0 0 10px #00ffe0}
+    .layout{display:flex;gap:20px;padding:18px;height:calc(100vh - 120px)}
+    .container{flex:1;display:flex;flex-direction:column;gap:12px}
+    .card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:12px;box-shadow:0 0 10px rgba(0,255,224,0.04)}
+    aside{width:420px;background:rgba(5,7,20,0.95);border:1px solid rgba(0,255,224,0.06);padding:16px;border-radius:12px;overflow:auto}
+    #map{height:520px;border-radius:10px;border:1px solid rgba(255,255,255,0.06)}
+    .log{background:#071018;padding:8px;border-radius:8px;font-family:monospace;color:#9ff;height:180px;overflow:auto}
+    .btn{background:#00ffe0;color:#021;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:700;margin-top:5px}
+    .pulse{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(0,255,224,0.8),rgba(0,255,224,0));animation:pulseFlow 3s infinite ease-out}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    th,td{border:1px solid rgba(255,255,255,0.1);padding:6px;text-align:left}
+    th{background:rgba(0,255,224,0.1);}
+    @keyframes pulseFlow{0%{transform:scale(0);opacity:1}100%{transform:scale(4);opacity:0}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌐 NeuraX‑Ultime — Carte Financière Mondiale Connectée</h1>
+  </header>
+
+  <div class="layout">
+    <div class="container">
+      <div class="card" style="position:relative;">
+        <div id="map"></div>
+      </div>
+    </div>
+
+    <aside>
+      <h2>🔐 QFS — Quantic Financial System</h2>
+      <div><strong>État :</strong> <span id="qfsState">Inactif</span></div>
+      <button class="btn" id="btnInitQFS">Initialiser QFS</button>
+      <button class="btn" id="btnStartFlux">Activer Flux Neuronaux</button>
+      <button class="btn" id="btnStopFlux">Arrêter Flux</button>
+      <div style="margin-top:12px">
+        <strong>Journal :</strong>
+        <div id="qfsLog" class="log">Prêt.</div>
+      </div>
+      <div id="marketTable"></div>
+    </aside>
+  </div>
+
+  <footer>© 2025 Sav'art — NeuraX‑Ultime</footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    let map, neuralInterval;
+
+    const markets = [
+      { name: 'New York Stock Exchange (NYSE)', lat: 40.7069, lon: -74.0113, indices: { 'Dow Jones': '+0.52%', 'S&P 500': '+0.37%', 'Nasdaq': '+0.21%' } },
+      { name: 'London Stock Exchange (LSE)', lat: 51.5074, lon: -0.1278, indices: { 'FTSE 100': '+0.28%' } },
+      { name: 'Tokyo Stock Exchange (TSE)', lat: 35.6762, lon: 139.6503, indices: { 'Nikkei 225': '-0.42%' } },
+      { name: 'Hong Kong Stock Exchange (HKEX)', lat: 22.3193, lon: 114.1694, indices: { 'Hang Seng': '+0.11%' } },
+      { name: 'Euronext Paris', lat: 48.8566, lon: 2.3522, indices: { 'CAC 40': '+0.35%' } },
+      { name: 'Toronto Stock Exchange (TSX)', lat: 43.65107, lon: -79.347015, indices: { 'S&P/TSX': '+0.19%' } },
+      { name: 'Shanghai Stock Exchange (SSE)', lat: 31.2304, lon: 121.4737, indices: { 'SSE Composite': '+0.24%' } },
+      { name: 'Bombay Stock Exchange (BSE)', lat: 18.9388, lon: 72.8354, indices: { 'Sensex': '+0.55%' } },
+      { name: 'Australian Securities Exchange (ASX)', lat: -33.8688, lon: 151.2093, indices: { 'ASX 200': '+0.33%' } },
+      { name: 'Johannesburg Stock Exchange (JSE)', lat: -26.2041, lon: 28.0473, indices: { 'All Share': '+0.17%' } }
+    ];
+
+    function initQFS(){
+      document.getElementById('qfsState').textContent='Actif';
+      logQFS('QFS initialisé avec succès.');
+      initMap();
+    }
+
+    function logQFS(msg){
+      const el=document.getElementById('qfsLog');
+      el.innerHTML+='<br>'+new Date().toLocaleTimeString()+' — '+msg;
+      el.scrollTop=el.scrollHeight;
+    }
+
+    function initMap(){
+      if(typeof L==='undefined'){logQFS('Erreur : Leaflet non chargé.');return;}
+      map=L.map('map').setView([20,0],2);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+      
+      markets.forEach(m=>{
+        const marker=L.marker([m.lat,m.lon]).addTo(map);
+        marker.bindPopup(`<strong>${m.name}</strong><br><button onclick="showIndices('${m.name}')">Voir les indices</button>`);
+      });
+
+      logQFS('Toutes les bourses mondiales principales sont connectées.');
+    }
+
+    function showIndices(name){
+      const market=markets.find(m=>m.name===name);
+      if(!market) return;
+      let html=`<h3>${market.name}</h3><table><tr><th>Indice</th><th>Variation</th></tr>`;
+      for(const [key,val] of Object.entries(market.indices)){
+        html+=`<tr><td>${key}</td><td>${val}</td></tr>`;
+      }
+      html+='</table>';
+      document.getElementById('marketTable').innerHTML=html;
+    }
+
+    function createPulse(){
+      const p=document.createElement('div');
+      p.className='pulse';
+      p.style.left=Math.random()*100+'%';
+      p.style.top=Math.random()*100+'%';
+      p.style.width=p.style.height=Math.random()*20+10+'px';
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(),3000);
+    }
+
+    function startNeuralFlow(){
+      if(neuralInterval) return;
+      logQFS('Flux neuronaux financiers activés.');
+      neuralInterval=setInterval(()=>{
+        createPulse();
+        simulateMarketConnections();
+      },400);
+    }
+
+    function stopNeuralFlow(){
+      if(!neuralInterval) return;
+      clearInterval(neuralInterval);
+      neuralInterval=null;
+      logQFS('Flux neuronaux arrêtés.');
+    }
+
+    function simulateMarketConnections(){
+      if(!map) return;
+      const origin=markets[Math.floor(Math.random()*markets.length)];
+      const target=markets[Math.floor(Math.random()*markets.length)];
+      if(origin===target) return;
+
+      const latlngs=[[origin.lat,origin.lon],[target.lat,target.lon]];
+      const flow=L.polyline(latlngs,{color:'#00ffe0',weight:2,opacity:0.6}).addTo(map);
+      setTimeout(()=>map.removeLayer(flow),3000);
+    }
+
+    document.getElementById('btnInitQFS').addEventListener('click',initQFS);
+    document.getElementById('btnStartFlux').addEventListener('click',startNeuralFlow);
+    document.getElementById('btnStopFlux').addEventListener('click',stopNeuralFlow);
+  </script>
+</body>
+</html>
+
