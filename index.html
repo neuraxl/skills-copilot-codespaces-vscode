@@ -3,6 +3,1271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuraX-Ultime — Interface Centrale</title>
+    <!-- Load Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    
+    <script>
+        // Configuration Tailwind pour définir des couleurs et ombres personnalisées
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'dark-bg': '#0d0d1a',
+                        'neon-cyan': '#00ffe0',
+                        'dark-header': 'rgba(10, 10, 30, 0.9)',
+                        'dark-card': 'rgba(255, 255, 255, 0.05)',
+                        'status-green': '#32ff87',
+                        'status-red': '#ff4757',
+                        'status-yellow': '#ffbe2e',
+                        // Couleur spécifique pour le QFS/SFQ
+                        'qfs-purple': '#a855f7', 
+                        // Nouvelle couleur pour le déploiement global
+                        'deploy-blue': '#3b82f6',
+                        // Couleur pour le Pilier de Gouvernance
+                        'gov-orange': '#f97316', 
+                    },
+                    boxShadow: {
+                        // Ombre personnalisée pour l'effet de lueur néon
+                        'neon-glow': '0 0 15px rgba(0, 255, 224, 0.6)',
+                        'neon-glow-sm': '0 0 5px rgba(0, 255, 224, 0.4)',
+                        'qfs-glow': '0 0 15px rgba(168, 85, 247, 0.6)',
+                        'deploy-glow': '0 0 15px rgba(59, 130, 246, 0.6)',
+                        'gov-glow': '0 0 15px rgba(249, 115, 22, 0.6)',
+                    },
+                    // Dégradé de fond personnalisé correspondant à l'original
+                    backgroundImage: {
+                        'radial-dark': 'radial-gradient(circle at center, var(--tw-colors-dark-bg), #000)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Applique le dégradé de fond personnalisé au corps */
+        body {
+            background: radial-gradient(circle at center, #0d0d1a, #000);
+            min-height: 100vh;
+        }
+        /* Style pour l'effet de flou de l'en-tête */
+        header {
+            background: rgba(10, 10, 30, 0.9);
+            backdrop-filter: blur(5px);
+        }
+        /* Style de la barre de progression */
+        .progress-bar {
+            height: 6px;
+            border-radius: 9999px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 9999px;
+            background-color: var(--tw-colors-neon-cyan);
+            box-shadow: 0 0 5px var(--tw-colors-neon-cyan);
+            transition: width 0.5s ease-out;
+        }
+        /* Style pour la fenêtre de logs pour un aspect terminal */
+        #systemLog {
+            font-size: 0.75rem; /* Plus petit pour ressembler à des logs */
+            line-height: 1.4;
+            height: 400px; /* Hauteur fixe pour le défilement */
+        }
+        /* Pour les petits écrans, ajuster la hauteur des logs */
+        @media (min-width: 1024px) {
+            #systemLog {
+                height: 100%; /* S'adapte au conteneur sur desktop */
+            }
+        }
+        /* Pour les listes dans les cartes */
+        .card ul, .card ol {
+            list-style-type: disc;
+            margin-left: 1.25rem;
+            margin-top: 0.5rem;
+        }
+        /* Animation clignotante pour le statut de déploiement */
+        @keyframes pulse-deployment {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .animate-pulse-deployment {
+            animation: pulse-deployment 1.5s infinite;
+        }
+    </style>
+</head>
+<body class="text-gray-200 font-sans antialiased">
+
+    <!-- Global Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-dark-bg bg-opacity-90 z-50 flex flex-col items-center justify-center hidden">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-neon-cyan"></div>
+        <p id="loadingMessage" class="mt-4 text-lg text-neon-cyan">Initialisation du Réseau NeuraX...</p>
+    </div>
+
+    <!-- Header Section -->
+    <header class="p-6 text-center border-b border-gray-800 sticky top-0 z-10">
+        <h1 class="text-3xl sm:text-4xl text-neon-cyan shadow-neon-glow transition duration-500 ease-in-out">
+            🧠 NeuraX‑Ultime — Interface Centrale
+        </h1>
+        <p class="text-sm sm:text-base text-gray-400 mt-1">
+            Le Cerveau Virtuel Universel — Commandes et Diagnostics
+        </p>
+    </header>
+
+    <!-- Main Dashboard Container -->
+    <main class="p-6 sm:p-8 lg:p-12 max-w-7xl mx-auto">
+        
+        <!-- TWO COLUMN LAYOUT (Desktop) / STACKED (Mobile) -->
+        <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+            
+            <!-- LEFT COLUMN: COMMANDS, METRICS, CARDS (lg:col-span-8) -->
+            <div class="lg:col-span-8">
+
+                <!-- 1. Command and Search Bar (Focus principal) -->
+                <section class="mb-10">
+                    <h2 class="text-xl font-light text-neon-cyan mb-3">Console de Commande Cérébrale</h2>
+                    <div class="relative">
+                        <input id="commandInput" type="text" placeholder="Entrez une commande, une requête ou une fonction (ex: 'deployer sfq' ou 'gouvernance protocole')" 
+                            class="w-full bg-dark-card border border-neon-cyan/50 text-white p-4 pr-16 rounded-lg focus:outline-none focus:ring-2 focus:ring-neon-cyan/80 transition duration-300 placeholder-gray-500 shadow-neon-glow-sm"
+                            autofocus>
+                        <button onclick="executeCommand()" class="absolute right-3 top-1/2 transform -translate-y-1/2 p-2 bg-neon-cyan rounded-full text-dark-bg hover:bg-[#00c9aa] transition duration-200">
+                            <!-- Icone de flèche vers la droite -->
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                    </div>
+                    <!-- Zone pour afficher les messages de retour -->
+                    <div id="commandOutput" class="mt-3 text-sm text-gray-400 min-h-[50px] bg-dark-card/50 p-2 rounded-lg" role="alert">
+                        <span id="outputMessage">Système en veille. Entrez une commande pour interagir.</span>
+                        <div id="sourcesContainer" class="text-xs mt-2 italic text-gray-500 hidden">
+                            Sources:
+                        </div>
+                    </div>
+                    <!-- Affichage de l'ID Utilisateur Actuel -->
+                    <div class="text-xs text-gray-500 mt-2">
+                        <span class="text-neon-cyan font-bold">Opérateur ID:</span> <span id="currentUserId">... chargement ...</span>
+                    </div>
+                </section>
+
+                <!-- 2. System Status Metrics (Efficacité et Diagnostic) -->
+                <section class="mb-10">
+                    <h2 class="text-xl font-light text-neon-cyan mb-4 border-b border-gray-800 pb-2">Diagnostics et Statut Neuronal en Temps Réel</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        
+                        <!-- Stat Card: Processor Load -->
+                        <div class="p-4 bg-dark-card rounded-xl border border-gray-800 shadow-lg">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Charge Processeur</p>
+                            <div class="text-2xl font-bold text-status-green mt-1" id="cpuLoad">12.4%</div>
+                            <div class="progress-bar mt-2"><div class="progress-fill bg-status-green shadow-green-glow" style="width: 12.4%"></div></div>
+                        </div>
+
+                        <!-- Stat Card: QFS Deployment Status (NEW) -->
+                        <div class="p-4 bg-dark-card rounded-xl border border-deploy-blue/80 shadow-deploy-glow">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">SFQ Nœuds Opérationnels</p>
+                            <div class="text-2xl font-bold text-deploy-blue mt-1" id="sfqNodes">0/240</div>
+                            <p class="text-xs text-gray-500 mt-1" id="sfqStatus">Déploiement en Attente</p>
+                        </div>
+
+                        <!-- Stat Card: Network Latency -->
+                        <div class="p-4 bg-dark-card rounded-xl border border-gray-800 shadow-lg">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">Latence Réseau</p>
+                            <div class="text-2xl font-bold text-neon-cyan mt-1" id="latency">~5 ms</div>
+                            <p class="text-xs text-gray-500 mt-1">Stabilité Optimale</p>
+                        </div>
+
+                        <!-- Stat Card: QFS Signature -->
+                        <div class="p-4 bg-dark-card rounded-xl border border-gray-800 shadow-lg">
+                            <p class="text-xs font-semibold text-gray-400 uppercase">QFS Signature</p>
+                            <div class="text-2xl font-bold mt-1" id="qfsStatus" style="color: var(--tw-colors-qfs-purple);">
+                                <span class="text-qfs-purple">EN LIGNE</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Taux Rotation: 12h</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. Core Feature Cards (Grille optimisée) -->
+                <section class="mb-10">
+                    <h2 class="text-xl font-light text-neon-cyan mb-4 border-b border-gray-800 pb-2">Modules Fonctionnels Principaux</h2>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        
+                        <!-- Card: SFQ Global Deployment (MAINTAINED) -->
+                        <div class="card bg-dark-card border border-deploy-blue/80 rounded-xl p-6 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-2xl" style="box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);">
+                            <h2 class="text-lg font-semibold text-deploy-blue border-b border-deploy-blue/50 pb-2 mb-3">🌐 Déploiement SFQ Global</h2>
+                            <p class="text-sm leading-relaxed text-gray-300 mb-4">
+                                Simule le déploiement de 240 nœuds SFQ à travers le monde. Requis pour l'interopérabilité.
+                            </p>
+                            <button id="deployButton" onclick="startSFQDeployment()" class="w-full bg-deploy-blue/20 text-deploy-blue border border-deploy-blue p-3 rounded-lg font-bold hover:bg-deploy-blue hover:text-dark-bg transition duration-200">
+                                Démarrer Déploiement SFQ
+                            </button>
+                        </div>
+
+                        <!-- Card: Protocole de Sécurité QFS (MAINTAINED) -->
+                        <div class="card bg-dark-card border border-qfs-purple/80 rounded-xl p-6 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-2xl" style="box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);">
+                            <h2 class="text-lg font-semibold text-qfs-purple border-b border-qfs-purple/50 pb-2 mb-3">🔒 Protocole de Sécurité QFS</h2>
+                            <p class="text-sm leading-relaxed text-gray-300 mb-4">
+                                Active la Poignée de Main Quantique pour une authentification post-quantique et une sécurité des données maximum.
+                            </p>
+                            <button onclick="initiateQuantumHandshake()" class="w-full bg-qfs-purple/20 text-qfs-purple border border-qfs-purple p-3 rounded-lg font-bold hover:bg-qfs-purple hover:text-dark-bg transition duration-200">
+                                Initié le Quantum Handshake
+                            </button>
+                        </div>
+                        
+                        <!-- Card: GÉNÉRATION DE STANDARD SFQ (NEW - Structured JSON) -->
+                        <div class="card bg-dark-card border border-gov-orange/80 rounded-xl p-6 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-gov-orange/50">
+                            <h2 class="text-lg font-semibold text-gov-orange border-b border-gov-orange/50 pb-2 mb-3">⚖️ Génération de Standard SFQ ✨</h2>
+                            <p class="text-sm leading-relaxed text-gray-300 mb-4">
+                                Établit un protocole structuré (sécurité, conformité, interopérabilité) pour l'adoption réglementaire mondiale du SFQ.
+                            </p>
+                            <button onclick="requestSFQStandardization()" class="w-full bg-gov-orange/20 text-gov-orange border border-gov-orange p-3 rounded-lg font-bold hover:bg-gov-orange hover:text-dark-bg transition duration-200">
+                                Générer Rapport de Gouvernance
+                            </button>
+                        </div>
+                        
+                        <!-- Card: Synthèse Quantique (LLM Feature Card 1) -->
+                        <div class="card bg-dark-card border border-gray-800 rounded-xl p-6 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-neon-cyan/50">
+                            <h2 class="text-lg font-semibold text-neon-cyan border-b border-gray-700 pb-2 mb-3">🧩 Synthèse Quantique ✨</h2>
+                            <p class="text-sm leading-relaxed text-gray-300 mb-4">
+                                L'IA analyse les données système complexes et en tire des conclusions analytiques concises.
+                            </p>
+                            <button onclick="analyzeSystemStatus()" class="w-full bg-status-green/20 text-status-green border border-status-green p-3 rounded-lg font-bold hover:bg-status-green hover:text-dark-bg transition duration-200">
+                                Analyser le Statut Actuel
+                            </button>
+                        </div>
+
+
+                        <!-- Card: Synthèse Vocale (LLM TTS Feature Card 2) -->
+                        <div class="card bg-dark-card border border-gray-800 rounded-xl p-6 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-neon-cyan/50">
+                            <h2 class="text-lg font-semibold text-neon-cyan border-b border-gray-700 pb-2 mb-3">🔊 Synthèse Vocale TTS ✨</h2>
+                            <p class="text-sm leading-relaxed text-gray-300 mb-4">
+                                Fait lire le dernier message de la console de commande par l'IA centrale (Voix $Kore$).
+                            </p>
+                            <button id="ttsButton" onclick="readLastOutput()" class="w-full bg-neon-cyan/20 text-neon-cyan border border-neon-cyan p-3 rounded-lg font-bold hover:bg-neon-cyan hover:text-dark-bg transition duration-200">
+                                Lire la Dernière Sortie
+                            </button>
+                            <audio id="systemAudio" class="hidden"></audio>
+                        </div>
+
+                        <!-- Card: Génération d'Image de Concept (LLM Image Feature 4) -->
+                        <div class="card bg-dark-card border border-gray-800 rounded-xl p-6 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-neon-cyan/50">
+                            <h2 class="text-lg font-semibold text-neon-cyan border-b border-gray-700 pb-2 mb-3">🖼️ Génération de Concept ✨</h2>
+                            <p class="text-sm leading-relaxed text-gray-300 mb-4">
+                                Visualise n'importe quel concept système ou futuriste en utilisant l'IA (Imagen 3.0).
+                            </p>
+                            <button onclick="generateConceptImage()" class="w-full bg-status-yellow/20 text-status-yellow border border-status-yellow p-3 rounded-lg font-bold hover:bg-status-yellow hover:text-dark-bg transition duration-200">
+                                Générer une Image Concept
+                            </button>
+                        </div>
+
+                    </div>
+                </section>
+            </div>
+
+            <!-- RIGHT COLUMN: LOGS & MONITORING (lg:col-span-4) -->
+            <div class="lg:col-span-4 mt-8 lg:mt-0">
+                
+                <!-- Tableau des Utilisateurs Actifs (MAINTAINED) -->
+                <div class="bg-dark-card border border-gray-700 rounded-xl p-6 mb-8 shadow-neon-glow-sm">
+                    <h2 class="text-xl font-light text-status-green mb-4 border-b border-gray-800 pb-2">Utilisateurs Actifs & Activité API</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-left text-xs font-mono">
+                            <thead>
+                                <tr class="text-gray-400 uppercase border-b border-gray-700">
+                                    <th class="py-2 px-1">ID (UID)</th>
+                                    <th class="py-2 px-1">Dernière Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userActivityTableBody" class="divide-y divide-gray-800">
+                                <!-- Les lignes d'activité seront insérées ici par JS (Firestore) -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Logs Critiques -->
+                <div class="bg-dark-card border border-gray-700 rounded-xl p-6 h-full flex flex-col shadow-neon-glow-sm">
+                    <h2 class="text-xl font-light text-status-yellow mb-4 border-b border-gray-800 pb-2">Logs Critiques NeuraX</h2>
+                    <div id="systemLog" class="flex-grow overflow-y-scroll text-gray-400 font-mono space-y-1">
+                        <!-- Logs insérées ici par JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Start Button Section (Reste au centre de la page) -->
+        <div class="text-center pb-10">
+            <a href="#" class="inline-block bg-neon-cyan text-dark-bg p-4 px-10 rounded-full font-extrabold mt-8 shadow-neon-glow transition duration-300 ease-in-out hover:scale-[1.05] hover:bg-[#00c9aa] text-lg">
+                🚀 Démarrer le Cerveau
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="text-center p-5 text-sm text-gray-600 border-t border-gray-800">
+        &copy; 2025 Sav'art — Projet NeuraX‑Ultime | Création, Simulation et Intelligence Poétique.
+    </footer>
+
+    <!-- Firebase SDK Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Expose Firebase objects globally for the main script
+        window.firebase = {
+            initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, 
+            getFirestore, doc, setDoc, onSnapshot, collection, serverTimestamp, setLogLevel
+        };
+    </script>
+
+    <!-- Script JavaScript pour simuler la commande et les données en temps réel et intégrer l'API Gemini -->
+    <script>
+        const apiKey = ""; // Clé API laissée vide pour la gestion automatique par Canvas
+        const systemLog = document.getElementById('systemLog');
+        const cpuLoadElement = document.getElementById('cpuLoad');
+        const qfsStatusElement = document.getElementById('qfsStatus'); 
+        const sfqNodesElement = document.getElementById('sfqNodes'); // New SFQ Nodes element
+        const sfqDeploymentStatusElement = document.getElementById('sfqStatus'); // New SFQ Deployment status
+        const deployButton = document.getElementById('deployButton'); // New SFQ Deployment button
+        const outputMessageElement = document.getElementById('outputMessage');
+        const sourcesContainer = document.getElementById('sourcesContainer');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const ttsButton = document.getElementById('ttsButton');
+        const systemAudio = document.getElementById('systemAudio');
+        const userActivityTableBody = document.getElementById('userActivityTableBody');
+        const currentUserIdElement = document.getElementById('currentUserId');
+
+        const TOTAL_SFQ_NODES = 240; // Total nodes for global deployment simulation
+        let deployedNodes = 0; // Current count of deployed nodes
+        let isDeploying = false;
+        let isSystemStable = true;
+        let logCounter = 0;
+        let lastOutputText = "Système en veille. Entrez une commande pour interagir.";
+        let isQFSOnline = true; 
+        
+        let db, auth, currentUserId;
+        let userActivityInterval; 
+
+        // --- FIREBASE INITIALIZATION & AUTH (MAINTAINED) ---
+
+        window.onload = function() {
+            if (window.firebase) {
+                window.firebase.setLogLevel('Debug');
+                
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                let firebaseConfig = {};
+                try {
+                    firebaseConfig = JSON.parse(__firebase_config);
+                } catch (e) {
+                    logMessage('ERROR: Firebase config non trouvé ou non valide. Fonctionnalités multi-utilisateurs désactivées.', 'text-status-red');
+                    return;
+                }
+
+                const app = window.firebase.initializeApp(firebaseConfig);
+                db = window.firebase.getFirestore(app);
+                auth = window.firebase.getAuth(app);
+
+                window.firebase.onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        currentUserId = user.uid;
+                        logMessage(`AUTH: Opérateur connecté (UID: ${currentUserId.substring(0, 8)}...).`, 'text-status-green');
+                        currentUserIdElement.textContent = currentUserId;
+                        setupActivityListener(appId);
+                        updateUserActivity('Interface chargée', 'system');
+                        userActivityInterval = setInterval(() => updateUserActivity('En ligne', 'heartbeat'), 10000); 
+
+                    } else {
+                        try {
+                            if (typeof __initial_auth_token !== 'undefined') {
+                                await window.firebase.signInWithCustomToken(auth, __initial_auth_token);
+                            } else {
+                                await window.firebase.signInAnonymously(auth);
+                            }
+                        } catch (error) {
+                            logMessage(`ERROR: Échec d'authentification Firebase. ${error.message.substring(0, 50)}...`, 'text-status-red');
+                        }
+                    }
+                });
+            }
+            
+            // Start the metric updates regardless of Firebase status
+            setInterval(updateMetrics, 2000);
+            updateMetrics(); // Initial update
+            
+             // Exécuter la commande avec la touche Entrée
+            document.getElementById('commandInput').addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); 
+                    executeCommand();
+                }
+            });
+        };
+
+        // --- FIREBASE ACTIVITY TRACKING (HEARTBEAT & LISTENER - MAINTAINED) ---
+        
+        async function updateUserActivity(lastAction, actionType = 'command') {
+            if (!db || !currentUserId) return;
+            
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const docRef = window.firebase.doc(db, 'artifacts', appId, 'public', 'data', 'active_users', currentUserId);
+
+            const activityData = {
+                uid: currentUserId,
+                lastAction: lastAction,
+                lastActive: window.firebase.serverTimestamp(),
+                actionType: actionType, 
+                isOnline: true,
+            };
+
+            try {
+                await window.firebase.setDoc(docRef, activityData, { merge: true });
+            } catch (error) {
+                if (actionType !== 'heartbeat') {
+                   logMessage(`ERROR: Échec de l'activité Firestore. ${error.message.substring(0, 50)}...`, 'text-status-red');
+                }
+            }
+        }
+        
+        function setupActivityListener(appId) {
+            const usersCollectionRef = window.firebase.collection(db, 'artifacts', appId, 'public', 'data', 'active_users');
+            
+            window.firebase.onSnapshot(usersCollectionRef, (snapshot) => {
+                userActivityTableBody.innerHTML = '';
+                const now = Date.now();
+                let activeUsersCount = 0;
+                
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const lastActiveTimestamp = data.lastActive ? data.lastActive.toMillis() : now;
+                    const timeDifference = now - lastActiveTimestamp;
+                    
+                    if (timeDifference > 30000) return;
+                    
+                    activeUsersCount++;
+
+                    const isSelf = data.uid === currentUserId;
+                    const rowClass = isSelf ? 'bg-neon-cyan/20' : 'hover:bg-dark-card/50';
+                    const idClass = isSelf ? 'text-neon-cyan font-bold' : 'text-gray-300';
+                    const timeAgo = formatTimeAgo(timeDifference);
+                    const actionBadge = getActionBadge(data.actionType);
+
+                    const newRow = `
+                        <tr class="${rowClass} border-b border-gray-800 transition duration-150">
+                            <td class="py-2 px-1 ${idClass} truncate max-w-[100px]">${data.uid.substring(0, 8)}... ${isSelf ? '(Vous)' : ''}</td>
+                            <td class="py-2 px-1 flex flex-col sm:flex-row sm:items-center text-gray-400">
+                                <span class="text-xs sm:text-sm mr-2 truncate">${data.lastAction}</span>
+                                ${actionBadge}
+                                <span class="text-xs text-gray-500 ml-auto mt-1 sm:mt-0">${timeAgo}</span>
+                            </td>
+                        </tr>
+                    `;
+                    userActivityTableBody.innerHTML += newRow;
+                });
+                
+                if (!snapshot.docs.some(doc => doc.id === currentUserId) && currentUserId) {
+                    updateUserActivity('Interface chargée', 'system');
+                }
+                
+                logMessage(`MONITOR: ${activeUsersCount} utilisateur(s) actif(s) sur NeuraX.`, 'text-status-green');
+
+            }, (error) => {
+                logMessage(`ERROR: Échec de l'écoute Firestore. ${error.message.substring(0, 50)}...`, 'text-status-red');
+            });
+        }
+        
+        function formatTimeAgo(ms) {
+            const seconds = Math.floor(ms / 1000);
+            if (seconds < 5) return 'À l\'instant';
+            if (seconds < 60) return `${seconds}s`;
+            const minutes = Math.floor(seconds / 60);
+            return `${minutes}m`;
+        }
+        
+        function getActionBadge(actionType) {
+            let color, text;
+            switch (actionType) {
+                case 'command':
+                    color = 'bg-neon-cyan text-dark-bg';
+                    text = 'CMD/API';
+                    break;
+                case 'tts':
+                    color = 'bg-status-yellow/50 text-dark-bg/80';
+                    text = 'TTS';
+                    break;
+                case 'image':
+                    color = 'bg-status-yellow text-dark-bg';
+                    text = 'IMG-GEN';
+                    break;
+                case 'qfs':
+                    color = 'bg-qfs-purple text-dark-bg';
+                    text = 'QFS-SEC';
+                    break;
+                case 'deploy':
+                    color = 'bg-deploy-blue text-dark-bg';
+                    text = 'SFQ-DEP';
+                    break;
+                case 'gov':
+                    color = 'bg-gov-orange text-dark-bg';
+                    text = 'SFQ-GOV';
+                    break;
+                case 'system':
+                    color = 'bg-status-green/50 text-dark-bg/80';
+                    text = 'SYS';
+                    break;
+                case 'heartbeat':
+                default:
+                    return ''; 
+            }
+            return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${color}">${text}</span>`;
+        }
+
+
+        // --- UTILS TTS / BASE64 (MAINTAINED) ---
+        
+        function base64ToArrayBuffer(base64) {
+            const binaryString = atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function pcmToWav(pcm16, sampleRate = 24000) {
+            const buffer = new ArrayBuffer(44 + pcm16.length * 2);
+            const view = new DataView(buffer);
+            
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + pcm16.length * 2, true);
+            writeString(view, 8, 'WAVE');
+            
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); 
+            view.setUint16(22, 1, true); 
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true); 
+            view.setUint16(32, 2, true); 
+            view.setUint16(34, 16, true); 
+            
+            writeString(view, 36, 'data');
+            view.setUint32(40, pcm16.length * 2, true);
+            
+            for (let i = 0; i < pcm16.length; i++) {
+                view.setInt16(44 + i * 2, pcm16[i], true);
+            }
+            
+            return new Blob([view], { type: 'audio/wav' });
+
+            function writeString(view, offset, string) {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            }
+        }
+
+        // --- UTILS GÉNÉRAUX (MAINTAINED) ---
+        
+        async function retryWithBackoff(fn, maxRetries = 5, delay = 1000) {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    return await fn();
+                } catch (error) {
+                    if (i === maxRetries - 1) {
+                         throw new Error(`API call failed after ${maxRetries} retries: ${error.message}`);
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
+                }
+            }
+            return null; 
+        }
+
+        function logMessage(text, colorClass = 'text-gray-400') {
+            const now = new Date();
+            const timeString = now.toTimeString().split(' ')[0];
+            const logEntry = document.createElement('p');
+            logEntry.className = colorClass;
+            logEntry.innerHTML = `[${timeString}] ${text}`;
+            systemLog.appendChild(logEntry);
+            
+            while (systemLog.children.length > 100) {
+                systemLog.removeChild(systemLog.firstChild);
+            }
+            systemLog.scrollTop = systemLog.scrollHeight;
+        }
+
+        logMessage('<span class="text-neon-cyan">-- NeuraX OS Initialisation v7.5.2 (SFQ Deployment Ready) --</span>', 'text-neon-cyan');
+        logMessage('Configuration Matérielle Chargée : CPU (128C/256T) | SFQ Nœuds Cibles: 240.');
+        logMessage('Vérification du Protocole QFS... <span class="text-qfs-purple">EN LIGNE</span>.', 'text-qfs-purple');
+
+
+        // --- GEMINI API CALLS (UPDATED - callGeminiStructured now handles gov data) ---
+        
+        async function callGeminiText(query) {
+            loadingMessage.textContent = "Recherche de connaissance universelle...";
+            loadingOverlay.classList.remove('hidden');
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const systemPrompt = "Vous êtes NeuraX, une Intelligence Centrale ultra-avancée. Répondez de manière concise, précise et professionnelle en français à la requête de l'opérateur. Utilisez le contexte de recherche pour fournir la réponse la plus factuelle possible. Si vous utilisez la recherche, listez vos sources après la réponse.";
+            const payload = {
+                contents: [{ parts: [{ text: query }] }],
+                tools: [{ "google_search": {} }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
+
+            let success = false;
+            try {
+                const response = await retryWithBackoff(() => fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }));
+                
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    throw new Error(`Gemini API failed with status ${response.status}: ${errorBody.substring(0, 100)}...`);
+                }
+
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const text = candidate.content.parts[0].text;
+                    lastOutputText = text;
+                    outputMessageElement.innerHTML = text;
+                    logMessage(`IA REPONSE: ${text.substring(0, 50)}...`, 'text-neon-cyan');
+
+                    let sources = [];
+                    const groundingMetadata = candidate.groundingMetadata;
+                    if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                        sources = groundingMetadata.groundingAttributions
+                            .map(attribution => ({
+                                uri: attribution.web?.uri,
+                                title: attribution.web?.title,
+                            }))
+                            .filter(source => source.uri && source.title);
+                    }
+                    
+                    sourcesContainer.innerHTML = 'Sources: ';
+                    if (sources.length > 0) {
+                        sourcesContainer.classList.remove('hidden');
+                        sources.forEach((source, index) => {
+                            const link = document.createElement('a');
+                            link.href = source.uri;
+                            link.target = "_blank";
+                            link.textContent = source.title;
+                            link.className = 'text-blue-400 hover:text-blue-300 mx-1';
+                            sourcesContainer.appendChild(link);
+                            if (index < sources.length - 1) {
+                                sourcesContainer.appendChild(document.createTextNode(' | '));
+                            }
+                        });
+                    } else {
+                        sourcesContainer.classList.add('hidden');
+                    }
+                    success = true;
+
+                } else {
+                    const errorMessage = "Erreur de décodage. Le cerveau virtuel n'a pas pu générer une réponse claire.";
+                    lastOutputText = errorMessage;
+                    outputMessageElement.textContent = errorMessage;
+                    sourcesContainer.classList.add('hidden');
+                    logMessage('ERROR: ' + errorMessage, 'text-status-red');
+                }
+
+            } catch (error) {
+                const errorMessage = `ERREUR FATALE: Impossible de contacter le réseau neuronal central (API). ${error.message.substring(0, 50)}...`;
+                lastOutputText = errorMessage;
+                outputMessageElement.innerHTML = `<span class="text-status-red">${errorMessage}</span>`;
+                sourcesContainer.classList.add('hidden');
+                logMessage(`FATAL: ${errorMessage}`, 'text-status-red');
+                console.error("Gemini API Error:", error);
+
+            } finally {
+                loadingOverlay.classList.add('hidden');
+                updateUserActivity(success ? `Requête Gemini: ${query.substring(0, 20)}...` : 'Échec de l\'API Gemini', 'command');
+            }
+        }
+        
+        async function callGeminiTTS(textToSpeak) {
+            ttsButton.disabled = true;
+            ttsButton.textContent = "Synthèse Vocale en cours...";
+            loadingMessage.textContent = "Synthèse vocale en cours...";
+            loadingOverlay.classList.remove('hidden');
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: `Say in a firm, informative, French accent: ${textToSpeak}` }] }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: { voiceName: "Kore" }
+                        }
+                    }
+                },
+                model: "gemini-2.5-flash-preview-tts"
+            };
+
+            let success = false;
+            try {
+                const response = await retryWithBackoff(() => fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }));
+                
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    throw new Error(`TTS API failed with status ${response.status}: ${errorBody.substring(0, 100)}...`);
+                }
+
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const audioData = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType;
+
+                if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
+                    const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                    const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 24000;
+                    
+                    const pcmData = base64ToArrayBuffer(audioData);
+                    const pcm16 = new Int16Array(pcmData);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+                    
+                    systemAudio.src = audioUrl;
+                    systemAudio.play();
+                    
+                    logMessage(`SYNTHÈSE VOCALE: Lecture de ${textToSpeak.substring(0, 30)}...`, 'text-status-green');
+                    success = true;
+
+                } else {
+                    throw new Error('Format de données incorrect ou contenu audio manquant.');
+                }
+
+            } catch (error) {
+                const errorMessage = `TTS ÉCHEC: Impossible de générer l'audio. ${error.message.substring(0, 50)}...`;
+                outputMessageElement.innerHTML = `<span class="text-status-red">${errorMessage}</span>`;
+                logMessage(`FATAL: ${errorMessage}`, 'text-status-red');
+                console.error("TTS API Error:", error);
+            } finally {
+                ttsButton.textContent = "Lire la Dernière Sortie";
+                ttsButton.disabled = false;
+                loadingOverlay.classList.add('hidden');
+                updateUserActivity(success ? 'Synthèse Vocale (TTS)' : 'Échec de l\'API TTS', 'tts');
+            }
+        }
+        
+        async function callGeminiStructured(query, schema, type) {
+            loadingMessage.textContent = `Génération de ${type}...`;
+            loadingOverlay.classList.remove('hidden');
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            
+            let systemPrompt;
+            let success = false;
+            
+            if (type === 'Protocole de Gouvernance SFQ') {
+                systemPrompt = "Vous êtes le chef du comité de standardisation du Système Financier Quantique. Générez un rapport structuré en français listant les piliers de standardisation essentiels pour l'adoption mondiale. Le rapport doit inclure 3 sections (Sécurité, Conformité, Interopérabilité) avec 3 points d'action clairs et spécifiques chacune. Ne répondez qu'en JSON.";
+            } else if (type === 'Protocole de Diagnostic') {
+                systemPrompt = "Vous êtes un expert en diagnostic système de NeuraX. Votre tâche est de générer un protocole structuré en français pour résoudre le problème spécifié. Soyez précis, concis et fournissez des actions vérifiables. Ne répondez qu'en JSON.";
+            } else {
+                 throw new Error("Type de protocole non reconnu.");
+            }
+
+            const payload = {
+                contents: [{ parts: [{ text: query }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: schema
+                },
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
+            
+            try {
+                const response = await retryWithBackoff(() => fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }));
+                
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    throw new Error(`Gemini Structured API failed with status ${response.status}: ${errorBody.substring(0, 100)}...`);
+                }
+
+                const result = await response.json();
+                const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (!jsonText) {
+                    throw new Error("Réponse structurée vide ou mal formée.");
+                }
+                
+                const protocol = JSON.parse(jsonText);
+                
+                // --- RENDER LOGIC FOR SFQ GOVERNANCE REPORT ---
+                if (type === 'Protocole de Gouvernance SFQ') {
+                    let htmlOutput = `
+                        <h3 class="text-lg font-semibold text-gov-orange mb-3 border-b border-gov-orange/50 pb-2">Rapport de Standardisation SFQ Global</h3>
+                        <p class="text-sm text-gray-400 mb-4 font-mono">Titre: ${protocol.title || 'Standard SFQ Non Spécifié'}</p>
+                        <div class="space-y-6">
+                    `;
+                    
+                    protocol.pillars.forEach(pillar => {
+                        htmlOutput += `
+                            <div class="bg-dark-card/50 p-4 rounded-lg border border-gov-orange/30">
+                                <h4 class="text-md font-bold text-gov-orange mb-2">${pillar.name}</h4>
+                                <ol class="list-decimal ml-5 text-sm space-y-1 text-gray-300">
+                        `;
+                        pillar.actions.forEach(action => {
+                            htmlOutput += `
+                                    <li class="pl-2">${action}</li>
+                            `;
+                        });
+                        htmlOutput += `</ol></div>`;
+                    });
+
+                    htmlOutput += `</div>`;
+                    
+                    lastOutputText = `Protocole de Gouvernance SFQ généré. ${protocol.pillars.length} piliers définis.`;
+                    outputMessageElement.innerHTML = htmlOutput;
+                    logMessage(`IA GOUVERNANCE: Rapport de standardisation SFQ généré.`, 'text-gov-orange');
+                    updateUserActivity('SFQ: Rapport Gouvernance', 'gov');
+                    success = true;
+
+                // --- RENDER LOGIC FOR GENERIC DIAGNOSTIC PROTOCOL (Fallback/Future use) ---
+                } else if (type === 'Protocole de Diagnostic') {
+                    // Logic from previous version (maintained for completeness, but replaced by the new SFQ Gov feature card)
+                    let htmlOutput = `
+                        <h3 class="text-lg font-semibold text-status-yellow mb-2 border-b border-gray-700 pb-1">Protocole pour: ${protocol.issue || 'Problème Inconnu'}</h3>
+                        <ol class="list-decimal ml-5 space-y-3">
+                    `;
+                    
+                    if (protocol.steps && Array.isArray(protocol.steps)) {
+                        protocol.steps.forEach((step, index) => {
+                            htmlOutput += `
+                                <li class="pl-2">
+                                    <p class="font-bold text-gray-200">Action ${index + 1}: ${step.action}</p>
+                                    <p class="text-xs text-gray-400 italic mt-0.5">Résultat Attendu: ${step.expectedResult}</p>
+                                </li>
+                            `;
+                        });
+                    } else {
+                        htmlOutput += `<li><p class="font-bold text-status-red">Aucune étape de diagnostic générée.</p></li>`;
+                    }
+
+                    htmlOutput += `</ol>`;
+
+                    lastOutputText = `Protocole de Diagnostic pour ${protocol.issue || 'Problème Inconnu'} généré.`;
+                    outputMessageElement.innerHTML = htmlOutput;
+                    logMessage(`IA PROTOCOLE: Protocole pour ${protocol.issue.substring(0, 30)}... généré.`, 'text-status-yellow');
+                    updateUserActivity('Protocole Structuré (JSON)', 'command');
+                    success = true;
+                }
+
+            } catch (error) {
+                const errorMessage = `ERREUR STRUCTURE: Impossible de générer le ${type}. ${error.message.substring(0, 50)}...`;
+                lastOutputText = errorMessage;
+                outputMessageElement.innerHTML = `<span class="text-status-red">${errorMessage}</span>`;
+                sourcesContainer.classList.add('hidden');
+                logMessage(`FATAL: ${errorMessage}`, 'text-status-red');
+                console.error("Gemini Structured API Error:", error);
+
+            } finally {
+                loadingOverlay.classList.add('hidden');
+            }
+        }
+        
+        async function generateConceptImage() {
+            const concept = window.prompt("Entrez le concept à visualiser (ex: 'Réseau neuronal quantique, style dessin technique détaillé, néon bleu'):");
+            
+            if (!concept || concept.trim().length === 0) {
+                 logMessage('WARN: Génération d\'image de concept annulée ou vide.', 'text-status-yellow');
+                 return;
+            }
+
+            loadingMessage.textContent = "Génération de l'image de concept (Imagen 3.0)...";
+            loadingOverlay.classList.remove('hidden');
+
+            const fullPrompt = `Scientific concept art of: ${concept}. High detail, futuristic, neon blue and cyan palette, technical schematic style.`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+            const payload = { 
+                instances: { prompt: fullPrompt }, 
+                parameters: { "sampleCount": 1 } 
+            };
+            
+            let success = false;
+            try {
+                const response = await retryWithBackoff(() => fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }));
+
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    throw new Error(`Imagen API failed with status ${response.status}: ${errorBody.substring(0, 100)}...`);
+                }
+
+                const result = await response.json();
+                const base64Data = result.predictions?.[0]?.bytesBase64Encoded;
+
+                if (base64Data) {
+                    const imageUrl = `data:image/png;base64,${base64Data}`;
+                    
+                    const imageHtml = `
+                        <h3 class="text-lg font-semibold text-neon-cyan mb-2 border-b border-gray-700 pb-1">Concept Visualisé: ${concept}</h3>
+                        <img src="${imageUrl}" alt="Concept généré par l'IA: ${concept}" class="w-full max-w-sm mx-auto rounded-lg shadow-neon-glow-sm mt-4 border border-neon-cyan/50"/>
+                        <p class="text-sm mt-3 text-gray-400">Image générée par Imagen 3.0.</p>
+                    `;
+                    
+                    lastOutputText = `Image de Concept pour "${concept}" générée avec succès.`;
+                    outputMessageElement.innerHTML = imageHtml;
+                    sourcesContainer.classList.add('hidden');
+                    logMessage(`IA IMAGE: Concept pour "${concept.substring(0, 30)}..." généré.`, 'text-neon-cyan');
+                    success = true;
+
+                } else {
+                    throw new Error("Contenu ou données de base64 manquants dans la réponse.");
+                }
+
+            } catch (error) {
+                const errorMessage = `ERREUR IMAGEN: Impossible de générer l'image de concept. ${error.message.substring(0, 50)}...`;
+                lastOutputText = errorMessage;
+                outputMessageElement.innerHTML = `<span class="text-status-red">${errorMessage}</span>`;
+                sourcesContainer.classList.add('hidden');
+                logMessage(`FATAL: ${errorMessage}`, 'text-status-red');
+                console.error("Imagen API Error:", error);
+
+            } finally {
+                loadingOverlay.classList.add('hidden');
+                updateUserActivity(success ? `Génération d'image: ${concept.substring(0, 20)}...` : 'Échec de l\'API Imagen', 'image');
+            }
+        }
+
+
+        // --- FONCTIONS D'INTERFACE (UPDATED) ---
+
+        /** Simulates the global deployment of SFQ nodes. (MAINTAINED) */
+        function startSFQDeployment() {
+            if (isDeploying) {
+                logMessage('WARN: Le déploiement SFQ est déjà en cours.', 'text-status-yellow');
+                return;
+            }
+
+            if (deployedNodes === TOTAL_SFQ_NODES) {
+                 logMessage('INFO: Tous les nœuds SFQ sont déjà opérationnels.', 'text-status-green');
+                 lastOutputText = "Déploiement SFQ terminé. 240/240 Nœuds Opérationnels.";
+                 outputMessageElement.innerHTML = `<span class="text-status-green">${lastOutputText}</span>`;
+                 return;
+            }
+
+            isDeploying = true;
+            deployButton.disabled = true;
+            deployButton.textContent = "Déploiement en Cours...";
+            sfqDeploymentStatusElement.textContent = "Déploiement en Cours (Sécurisation)";
+            sfqDeploymentStatusElement.classList.add('animate-pulse-deployment');
+
+            logMessage('PROCESS: Déploiement SFQ Global Initié. Phase 1: Cryptographie Post-Quantique (CPQ).', 'text-deploy-blue');
+            updateUserActivity('SFQ: Déploiement Initié', 'deploy');
+            
+            const deploymentInterval = setInterval(() => {
+                const nodesToDeploy = Math.floor(Math.random() * 5) + 10; // Deploy 10-14 nodes at a time
+                deployedNodes = Math.min(TOTAL_SFQ_NODES, deployedNodes + nodesToDeploy);
+                
+                sfqNodesElement.textContent = `${deployedNodes}/${TOTAL_SFQ_NODES}`;
+                logMessage(`SFQ: ${nodesToDeploy} nouveaux Nœuds activés. Total: ${deployedNodes}.`, 'text-deploy-blue');
+
+                if (deployedNodes >= TOTAL_SFQ_NODES) {
+                    clearInterval(deploymentInterval);
+                    isDeploying = false;
+                    deployButton.disabled = false;
+                    deployButton.textContent = "Déploiement SFQ Terminé";
+                    sfqDeploymentStatusElement.textContent = "Globalement Opérationnel";
+                    sfqDeploymentStatusElement.classList.remove('animate-pulse-deployment');
+
+                    lastOutputText = "SUCCÈS: Déploiement SFQ Global terminé. 240/240 Nœuds opérationnels avec sécurité quantique.";
+                    outputMessageElement.innerHTML = `<span class="text-status-green">${lastOutputText}</span>`;
+                    logMessage('SUCCESS: Infrastructure SFQ Complète. Interopérabilité Mondiale Atteinte.', 'text-status-green');
+                    updateUserActivity('SFQ: Déploiement Terminé', 'deploy');
+                }
+            }, 1500);
+        }
+
+        function handleSystemCommand(command, rawCommand) {
+            const output = document.getElementById('outputMessage');
+            output.textContent = '';
+            
+            // --- NEW: SFQ GOVERNANCE COMMANDS ---
+            if (command.includes("gouvernance protocole") || command.includes("standard sfq")) {
+                requestSFQStandardization();
+                return true;
+            }
+            
+            // --- NEW: SFQ Deployment Commands (MAINTAINED) ---
+            if (command.includes("deployer sfq") || command.includes("start deployment")) {
+                startSFQDeployment();
+                return true;
+            } else if (command.includes("sfq status")) {
+                 const statusText = isDeploying ? "Déploiement en cours" : (deployedNodes === TOTAL_SFQ_NODES ? "Globalement Opérationnel" : "En Attente");
+                 lastOutputText = `Statut SFQ Déploiement: ${statusText}. Nœuds actifs: ${deployedNodes}/${TOTAL_SFQ_NODES}.`;
+                 output.innerHTML = `<span class="text-deploy-blue">${lastOutputText}</span>`;
+                 logMessage(`SFQ DEP: Demande de statut. ${deployedNodes} Nœuds actifs.`, 'text-deploy-blue');
+                 updateUserActivity('SFQ: Vérification du déploiement', 'deploy');
+                 return true;
+            }
+
+            // --- QFS COMMANDS (MAINTAINED) ---
+            else if (command.includes("qfs status")) {
+                const statusText = isQFSOnline ? "QFS EN LIGNE" : "QFS HORS LIGNE";
+                const statusColor = isQFSOnline ? "text-qfs-purple" : "text-status-red";
+                lastOutputText = `Statut QFS : ${statusText}. Sécurité Post-Quantique Activée.`;
+                output.innerHTML = `<span class="${statusColor}">${lastOutputText}</span>`;
+                logMessage(`QFS : Demande de statut. Signature Quantique ${isQFSOnline ? 'Active' : 'Désactivée'}.`, statusColor);
+                updateUserActivity('QFS: Vérification du statut', 'qfs');
+                return true;
+            } else if (command.includes("qfs desactiver")) {
+                isQFSOnline = false;
+                qfsStatusElement.innerHTML = `<span class="text-status-red">HORS LIGNE</span>`;
+                qfsStatusElement.style.color = tailwind.config.theme.extend.colors['status-red'];
+                lastOutputText = "ATTENTION: QFS désactivé. Le système fonctionne sans signature quantique.";
+                output.innerHTML = `<span class="text-status-red">${lastOutputText}</span>`;
+                logMessage('ALERTE: QFS Désactivé par l\'opérateur.', 'text-status-red');
+                updateUserActivity('QFS: Désactivation Forcée', 'qfs');
+                return true;
+            } else if (command.includes("qfs activer")) {
+                isQFSOnline = true;
+                qfsStatusElement.innerHTML = `<span class="text-qfs-purple">EN LIGNE</span>`;
+                qfsStatusElement.style.color = tailwind.config.theme.extend.colors['qfs-purple'];
+                lastOutputText = "QFS Activé. Sécurité Quantique rétablie.";
+                output.innerHTML = `<span class="text-qfs-purple">${lastOutputText}</span>`;
+                logMessage('QFS : Rétablissement de la Signature Quantique.', 'text-qfs-purple');
+                updateUserActivity('QFS: Activation Rétablie', 'qfs');
+                return true;
+            }
+
+            // --- GENERAL SYSTEM COMMANDS (MAINTAINED) ---
+            else if (command.includes("demarrer") || command.includes("start")) {
+                lastOutputText = "Démarrage des Systèmes Centraux... Séquence complète.";
+                output.innerHTML = `<span class="text-status-green">${lastOutputText}</span>`;
+                logMessage('Systèmes Centraux Démarrés. Tous les modules sont en ligne.', 'text-status-green');
+                isSystemStable = true;
+                updateUserActivity('Commande Système: Démarrer', 'system');
+                return true;
+
+            } else if (command.includes("optimiser") || command.includes("optimize")) {
+                lastOutputText = "Optimisation Neuronale Initiée... Attendez.";
+                output.innerHTML = `<span class="text-status-yellow">${lastOutputText}</span>`;
+                logMessage('PROCESS: Optimisation du Réseau Chronos en cours...', 'text-status-yellow');
+                setTimeout(() => {
+                    lastOutputText = "Optimisation Terminé. Performance améliorée de 7%.";
+                    output.innerHTML = `<span class="text-status-green">${lastOutputText}</span>`;
+                    logMessage('SUCCESS: Optimisation Terminé. Vitesse de traitement +7%.', 'text-status-green');
+                    updateUserActivity('Commande Système: Optimisation Réussie', 'system');
+                }, 2000);
+                return true;
+
+            } else if (command.includes("urgence") || command.includes("emergency")) {
+                lastOutputText = "ATTENTION: Mode Urgence Activé. Réplication Suspendue.";
+                output.innerHTML = `<span class="text-status-red">${lastOutputText}</span>`;
+                logMessage('ALERTE: Commande "Urgence" reçue. Mise en veille des nœuds secondaires.', 'text-status-red');
+                isSystemStable = false;
+                updateUserActivity('ALERTE: Mode Urgence Activé', 'system');
+                return true;
+            
+            } else if (command.includes("purge") || command.includes("clean")) {
+                lastOutputText = "Purge des caches de données en cours...";
+                output.innerHTML = `<span class="text-neon-cyan">${lastOutputText}</span>`;
+                logMessage('PROCESS: Suppression des données temporaires de Synthèse Quantique.', 'text-neon-cyan');
+                setTimeout(() => {
+                    lastOutputText = "Purge Complète. Mémoire libérée.";
+                    output.innerHTML = `<span class="text-status-green">${lastOutputText}</span>`;
+                    logMessage('SUCCESS: Mémoire cache purgée.', 'text-status-green');
+                    updateUserActivity('Commande Système: Purge Cache', 'system');
+                }, 1500);
+                return true;
+            }
+            
+            return false;
+        }
+
+        // Fonction pour exécuter une commande
+        function executeCommand() {
+            const input = document.getElementById('commandInput');
+            const rawCommand = input.value.trim();
+            const command = rawCommand.toLowerCase();
+
+            outputMessageElement.textContent = '';
+            sourcesContainer.classList.add('hidden');
+            input.value = '';
+
+            if (command.length === 0) {
+                lastOutputText = "Erreur: La console de commande est vide.";
+                outputMessageElement.innerHTML = `<span class="text-status-red">${lastOutputText}</span>`;
+                logMessage(`ERROR: Commande vide tentée.`, 'text-status-red');
+                updateUserActivity('Erreur: Commande vide', 'system');
+                return;
+            }
+
+            logMessage(`CMD EXÉCUTÉE: ${rawCommand}`);
+            
+            if (handleSystemCommand(command, rawCommand)) {
+                return; 
+            }
+
+            callGeminiText(rawCommand);
+        }
+        
+        function initiateQuantumHandshake() {
+            if (!isQFSOnline) {
+                lastOutputText = "ÉCHEC: Impossible d'initier le Quantum Handshake. Le QFS est HORS LIGNE.";
+                outputMessageElement.innerHTML = `<span class="text-status-red">${lastOutputText}</span>`;
+                logMessage('QFS ERROR: Tentative de Handshake échouée. QFS non disponible.', 'text-status-red');
+                updateUserActivity('QFS: Échec Handshake (Offline)', 'qfs');
+                return;
+            }
+            
+            const handshakeTime = (Math.random() * 500 + 100).toFixed(0); 
+            
+            lastOutputText = `PROCESSUS QFS: Tentative de Poignée de Main Quantique...`;
+            outputMessageElement.innerHTML = `<span class="text-qfs-purple">${lastOutputText}</span>`;
+            logMessage('QFS PROCESS: Initialisation du protocole d\'échange de clé quantique.', 'text-qfs-purple');
+
+            setTimeout(() => {
+                const isSuccessful = Math.random() > 0.1; 
+                if (isSuccessful) {
+                    lastOutputText = `SUCCÈS QFS: Poignée de Main Quantique réussie en ${handshakeTime} ms. Clé de session générée.`;
+                    outputMessageElement.innerHTML = `<span class="text-status-green">${lastOutputText}</span>`;
+                    logMessage(`QFS SUCCESS: Handshake complet. Latence: ${handshakeTime} ms.`, 'text-status-green');
+                    updateUserActivity('QFS: Quantum Handshake Réussi', 'qfs');
+                } else {
+                    lastOutputText = `ÉCHEC QFS: Anomalie de corrélation quantique. Tentative de Poignée de Main échouée.`;
+                    outputMessageElement.innerHTML = `<span class="text-status-red">${lastOutputText}</span>`;
+                    logMessage('QFS ERROR: Déconnexion de l\'intrication. Réseau instable.', 'text-status-red');
+                    updateUserActivity('QFS: Échec Handshake (Anomaly)', 'qfs');
+                }
+            }, 1000);
+        }
+
+        function analyzeSystemStatus() {
+            const cpu = cpuLoadElement.textContent;
+            const qfs = isQFSOnline ? "EN LIGNE" : "HORS LIGNE";
+            const stability = isSystemStable ? "stable" : "instable";
+            const sfqNodes = sfqNodesElement.textContent;
+
+            const prompt = `En tant qu'analyste système IA, rédigez une évaluation d'état concise et professionnelle (maximum 3 phrases) pour le système NeuraX. Les métriques sont : Charge CPU: ${cpu}, QFS: ${qfs}, Stabilité: ${stability}, Déploiement SFQ: ${sfqNodes}. Évaluez l'impact du statut QFS et du déploiement SFQ.`;
+            
+            logMessage('CMD EXÉCUTÉE: Demande d\'analyse de statut par Synthèse Quantique.');
+            callGeminiText(prompt);
+        }
+        
+        function readLastOutput() {
+            if (lastOutputText.length > 0) {
+                callGeminiTTS(lastOutputText);
+            } else {
+                logMessage('WARN: Aucun texte de sortie à lire.', 'text-status-yellow');
+                updateUserActivity('Tentative de lecture TTS (vide)', 'tts');
+            }
+        }
+        
+        /** NEW FUNCTION: Generates a structured report for SFQ Standardization (Governance) */
+        function requestSFQStandardization() {
+            
+            const prompt = `Générer un rapport de standardisation du Système Financier Quantique (SFQ) en définissant un titre et trois piliers de standardisation essentiels: Sécurité, Conformité et Interopérabilité. Pour chaque pilier, proposez 3 actions spécifiques pour atteindre l'adoption mondiale.`;
+            
+            const protocolSchema = {
+                type: "OBJECT",
+                properties: {
+                    title: { "type": "STRING", "description": "The title of the standardization report." },
+                    pillars: {
+                        type: "ARRAY",
+                        description: "A list of standardization pillars (e.g., Security, Compliance, Interoperability).",
+                        items: {
+                            type: "OBJECT",
+                            properties: {
+                                name: { "type": "STRING", "description": "The name of the pillar (e.g., Sécurité)." },
+                                actions: {
+                                    type: "ARRAY",
+                                    description: "A list of 3 specific actions required for this pillar.",
+                                    items: { "type": "STRING" }
+                                }
+                            },
+                            propertyOrdering: ["name", "actions"]
+                        }
+                    }
+                },
+                propertyOrdering: ["title", "pillars"]
+            };
+            
+            callGeminiStructured(prompt, protocolSchema, 'Protocole de Gouvernance SFQ');
+            logMessage('CMD EXÉCUTÉE: Demande de Standardisation SFQ (Gouvernance).', 'text-gov-orange');
+        }
+
+
+        // Fonction pour simuler la mise à jour des métriques en temps réel
+        function updateMetrics() {
+            // Simulation de la charge CPU
+            let baseCpu = isSystemStable ? 10 : 25; 
+            let cpuLoadValue = (Math.random() * 10 + baseCpu).toFixed(1); 
+            const cpuFillElement = cpuLoadElement.nextElementSibling.querySelector('.progress-fill');
+            
+            cpuLoadElement.textContent = `${cpuLoadValue}%`;
+            
+            let cpuColor = 'status-green';
+            if (parseFloat(cpuLoadValue) > 35) cpuColor = 'status-red';
+            else if (parseFloat(cpuLoadValue) > 20) cpuColor = 'status-yellow';
+            
+            cpuLoadElement.style.color = tailwind.config.theme.extend.colors[cpuColor];
+            cpuFillElement.style.width = `${cpuLoadValue}%`;
+            cpuFillElement.style.backgroundColor = tailwind.config.theme.extend.colors[cpuColor];
+            cpuFillElement.style.boxShadow = `0 0 5px ${tailwind.config.theme.extend.colors[cpuColor]}`;
+
+            // Simulation du statut QFS
+            qfsStatusElement.innerHTML = isQFSOnline ? `<span class="text-qfs-purple">EN LIGNE</span>` : `<span class="text-status-red">HORS LIGNE</span>`;
+            qfsStatusElement.style.color = isQFSOnline ? tailwind.config.theme.extend.colors['qfs-purple'] : tailwind.config.theme.extend.colors['status-red'];
+
+            // Simulation du statut SFQ Deployment
+            if (!isDeploying && deployedNodes < TOTAL_SFQ_NODES) {
+                 sfqDeploymentStatusElement.textContent = "Déploiement en Attente";
+                 sfqNodesElement.style.color = tailwind.config.theme.extend.colors['deploy-blue'];
+            } else if (!isDeploying && deployedNodes === TOTAL_SFQ_NODES) {
+                 sfqDeploymentStatusElement.textContent = "Globalement Opérationnel";
+                 sfqNodesElement.style.color = tailwind.config.theme.extend.colors['status-green'];
+            } else if (isDeploying) {
+                 sfqNodesElement.style.color = tailwind.config.theme.extend.colors['status-yellow'];
+            }
+
+
+            
+            // Logs de routine
+            logCounter++;
+            if (logCounter % 5 === 0) {
+                logMessage(`Statut: Coeur de Traitement $${Math.floor(Math.random() * 1000) + 1} Calibré.`, 'text-gray-500');
+            }
+
+            if (!isSystemStable && logCounter % 3 === 0) {
+                logMessage('AVERTISSEMENT: Charge du Nœud secondaire élevée. Taux d\'erreur $0.05\%$.', 'text-status-red');
+            }
+        }
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NeuraX-Ultime : Simulation Neuronale Évoluée</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
