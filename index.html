@@ -2536,3 +2536,110 @@
     </script>
 </body>
 </html>
+import React, { useEffect, useRef } from 'react';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { motion } from 'framer-motion';
+
+export default function CortexQuantique() {
+  const mountRef = useRef(null);
+
+  useEffect(() => {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    mountRef.current.appendChild(renderer.domElement);
+
+    // Lumières dynamiques
+    const light1 = new THREE.PointLight(0x00ffff, 2, 100);
+    const light2 = new THREE.PointLight(0xff00ff, 2, 100);
+    light1.position.set(10, 10, 10);
+    light2.position.set(-10, -10, -10);
+    scene.add(light1);
+    scene.add(light2);
+
+    // Cerveau quantique : réseau de sphères reliées par des liens lumineux
+    const nodes = [];
+    const lines = [];
+    const nodeGeometry = new THREE.SphereGeometry(0.15, 16, 16);
+    const nodeMaterial = new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x0088ff, emissiveIntensity: 0.8 });
+
+    for (let i = 0; i < 200; i++) {
+      const node = new THREE.Mesh(nodeGeometry, nodeMaterial.clone());
+      node.position.set((Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20);
+      node.material.color.setHSL(Math.random(), 1, 0.5);
+      scene.add(node);
+      nodes.push(node);
+    }
+
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.15 });
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        if (Math.random() < 0.015) {
+          const geometry = new THREE.BufferGeometry().setFromPoints([nodes[i].position, nodes[j].position]);
+          const line = new THREE.Line(geometry, lineMaterial);
+          scene.add(line);
+          lines.push(line);
+        }
+      }
+    }
+
+    // Caméra et contrôles
+    camera.position.z = 30;
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+
+    // Animation quantique
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+
+      nodes.forEach((node, i) => {
+        node.position.x += Math.sin(Date.now() * 0.001 + i) * 0.002;
+        node.position.y += Math.cos(Date.now() * 0.001 + i) * 0.002;
+      });
+
+      lines.forEach((line, idx) => {
+        if (Math.random() < 0.001) line.material.color.setHSL(Math.random(), 1, 0.5);
+      });
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Redimensionnement dynamique
+    const handleResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      mountRef.current.removeChild(renderer.domElement);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  return (
+    <motion.div
+      ref={mountRef}
+      className="w-screen h-screen bg-gradient-to-r from-black via-indigo-950 to-cyan-900 overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 2 }}
+    >
+      <div className="absolute top-10 left-10 text-cyan-400 text-3xl font-bold drop-shadow-lg">
+        ⚛️ Cortex Quantique – NeuraX Ultime
+      </div>
+      <div className="absolute bottom-10 right-10 text-sm text-cyan-200 italic">
+        Simulation d’un réseau neuronal quantique autonome.
+      </div>
+    </motion.div>
+  );
+}
+
